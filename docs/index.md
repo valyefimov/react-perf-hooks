@@ -1,0 +1,62 @@
+# react-perf-hooks — Documentation
+
+A focused collection of React hooks for **performance monitoring, profiling, and Core Web Vitals** measurement.
+
+## Available hooks
+
+| Hook | Purpose |
+|------|---------|
+| [useRenderTracker](./useRenderTracker.md) | Count re-renders, detect which props changed, warn when threshold is exceeded |
+| [usePerformanceMark](./usePerformanceMark.md) | Measure arbitrary code paths using the browser Performance API |
+| [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
+
+## Installation
+
+```bash
+npm install react-perf-hooks
+```
+
+For `useWebVitals`, also install the optional peer dependency:
+
+```bash
+npm install web-vitals
+```
+
+**Requirements:** React ≥ 16.8, Node ≥ 18 (dev/build only)
+
+## Quick start
+
+```tsx
+import {
+  useRenderTracker,
+  usePerformanceMark,
+  useWebVitals,
+} from 'react-perf-hooks';
+```
+
+All hooks are **tree-shakeable** — only the hooks you import end up in your bundle.
+
+## TypeScript
+
+The package ships with full type declarations. No `@types/*` needed.
+
+```ts
+import type {
+  RenderInfo,
+  UseRenderTrackerOptions,
+  PerformanceMeasureResult,
+  UsePerformanceMarkReturn,
+  WebVitalMetric,
+  WebVitalsState,
+  UseWebVitalsOptions,
+  VitalRating,
+} from 'react-perf-hooks';
+```
+
+## Contributing
+
+See the [Contributing guide](../README.md#contributing) in the root README.
+
+## License
+
+MIT © Valentyn Yefimov
