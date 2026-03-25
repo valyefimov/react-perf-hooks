@@ -56,12 +56,7 @@ export function useRenderTracker(props?: Record<string, unknown>, options: UseRe
 
     // Guard against null, NaN, Infinity, 0, negative numbers, and non-numeric types
     // before relying on warnAt to trigger the warning threshold
-    if (
-      warnAt != null &&
-      Number.isFinite(warnAt) &&
-      warnAt > 0 &&
-      renderCount.current >= warnAt
-    ) {
+    if (warnAt != null && Number.isFinite(warnAt) && warnAt > 0 && renderCount.current >= warnAt) {
       console.warn(
         `[useRenderTracker] "${name}" has rendered ${renderCount.current} times! ` +
           `Consider wrapping it in React.memo() or optimising its dependencies.`
