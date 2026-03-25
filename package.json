@@ -85,6 +85,6 @@
   },
   "homepage": "https://github.com/valyefimov/react-perf-hooks#readme",
   "engines": {
-    "node": ">=22"
+    "node": ">=20"
   }
 }
