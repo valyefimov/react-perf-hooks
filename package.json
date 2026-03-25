@@ -1,0 +1,90 @@
+{
+  "name": "react-perf-hooks",
+  "version": "1.0.0",
+  "description": "React hooks for performance monitoring, profiling, and Core Web Vitals measurement",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "build:watch": "tsup --watch",
+    "build:check": "tsc --noEmit && tsup",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "lint:fix": "eslint src --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx}\"",
+    "ci": "npm run type-check && npm run lint && npm run format:check && npm run test:run && npm run build",
+    "prepublishOnly": "npm run ci",
+    "release:patch": "npm version patch && npm publish --access public",
+    "release:minor": "npm version minor && npm publish --access public",
+    "release:major": "npm version major && npm publish --access public"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": false }
+  },
+  "optionalDependencies": {
+    "web-vitals": "^3.5.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/node": "^20.0.0",
+    "@testing-library/jest-dom": "^6.4.2",
+    "@testing-library/react": "^14.2.1",
+    "@types/react": "^18.2.65",
+    "@vitest/coverage-v8": "^1.4.0",
+    "eslint": "^9.9.0",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "jsdom": "^24.0.0",
+    "prettier": "^3.3.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.2",
+    "typescript-eslint": "^8.3.0",
+    "vitest": "^1.4.0",
+    "web-vitals": "^3.5.2"
+  },
+  "keywords": [
+    "react",
+    "hooks",
+    "performance",
+    "web-vitals",
+    "profiling",
+    "optimization",
+    "render-tracking",
+    "performance-api",
+    "core-web-vitals",
+    "typescript"
+  ],
+  "author": {
+    "name": "Valentyn Yefimov"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valyefimov/react-perf-hooks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/valyefimov/react-perf-hooks/issues"
+  },
+  "homepage": "https://github.com/valyefimov/react-perf-hooks#readme",
+  "engines": {
+    "node": ">=18"
+  }
+}
