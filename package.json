@@ -47,7 +47,7 @@
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^14.2.1",
     "@types/react": "^18.2.65",
-    "@vitest/coverage-v8": "^1.4.0",
+    "@vitest/coverage-v8": "^4.1.1",
     "eslint": "^9.9.0",
     "eslint-plugin-react-hooks": "^4.6.2",
     "jsdom": "^24.0.0",
@@ -57,7 +57,7 @@
     "tsup": "^8.0.2",
     "typescript": "^5.4.2",
     "typescript-eslint": "^8.3.0",
-    "vitest": "^1.4.0",
+    "vitest": "^4.1.1",
     "web-vitals": "^3.5.2"
   },
   "keywords": [
