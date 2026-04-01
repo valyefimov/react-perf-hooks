@@ -40,6 +40,7 @@ npm install web-vitals
 | `useRenderTracker` | Find components that re-render too often and why | [Full docs](./docs/useRenderTracker.md) |
 | `usePerformanceMark` | Precise timing of any code path via the Performance API | [Full docs](./docs/usePerformanceMark.md) |
 | `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](./docs/useWebVitals.md) |
+| `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](./docs/useDebouncedState.md) |
 
 See the [docs overview](./docs/index.md) for a complete reference.
 
@@ -48,7 +49,7 @@ See the [docs overview](./docs/index.md) for a complete reference.
 ## Quick start
 
 ```tsx
-import { useRenderTracker, usePerformanceMark, useWebVitals } from 'react-perf-hooks';
+import { useRenderTracker, usePerformanceMark, useWebVitals, useDebouncedState } from 'react-perf-hooks';
 
 function App() {
   // Track re-renders and warn if a component renders more than 10 times
@@ -62,9 +63,14 @@ function App() {
     onMetric: (m) => navigator.sendBeacon('/analytics', JSON.stringify(m)),
   });
 
+  // Debounce state updates and inspect profiling counters
+  const [query, setQuery, stats] = useDebouncedState('', 250);
+
   return <div>...</div>;
 }
 ```
+
+`useDebouncedState` demo: [docs/demos/useDebouncedStateDemo.tsx](./docs/demos/useDebouncedStateDemo.tsx)
 
 ---
 
@@ -82,6 +88,8 @@ import type {
   WebVitalsState,
   UseWebVitalsOptions,
   VitalRating,
+  DebouncedStateStats,
+  UseDebouncedStateReturn,
 } from 'react-perf-hooks';
 ```
 
