@@ -6,3 +6,6 @@ export type { PerformanceMeasureResult, UsePerformanceMarkReturn } from './hooks
 
 export { useWebVitals } from './hooks/useWebVitals';
 export type { WebVitalMetric, WebVitalsState, UseWebVitalsOptions, VitalRating } from './hooks/useWebVitals';
+
+export { useDebouncedState } from './hooks/useDebouncedState';
+export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDebouncedState';
