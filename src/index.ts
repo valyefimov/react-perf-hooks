@@ -12,3 +12,6 @@ export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDe
 
 export { useThrottledState } from './hooks/useThrottledState';
 export type { ThrottledStateStats, UseThrottledStateOptions, UseThrottledStateReturn } from './hooks/useThrottledState';
+
+export { useIntersectionObserver } from './hooks/useIntersectionObserver';
+export type { IntersectionObserverMetrics, UseIntersectionObserverReturn } from './hooks/useIntersectionObserver';
