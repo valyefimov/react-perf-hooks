@@ -9,3 +9,6 @@ export type { WebVitalMetric, WebVitalsState, UseWebVitalsOptions, VitalRating }
 
 export { useDebouncedState } from './hooks/useDebouncedState';
 export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDebouncedState';
+
+export { useThrottledState } from './hooks/useThrottledState';
+export type { ThrottledStateStats, UseThrottledStateOptions, UseThrottledStateReturn } from './hooks/useThrottledState';

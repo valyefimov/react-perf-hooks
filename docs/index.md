@@ -10,6 +10,7 @@ A focused collection of React hooks for **performance monitoring, profiling, and
 | [usePerformanceMark](./usePerformanceMark.md) | Measure arbitrary code paths using the browser Performance API |
 | [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
 | [useDebouncedState](./useDebouncedState.md) | Debounced `useState` replacement with skipped-render profiling |
+| [useThrottledState](./useThrottledState.md) | Throttled `useState` replacement with dropped-update profiling |
 
 ## Installation
 
@@ -33,6 +34,7 @@ import {
   usePerformanceMark,
   useWebVitals,
   useDebouncedState,
+  useThrottledState,
 } from 'react-perf-hooks';
 ```
 
@@ -54,6 +56,9 @@ import type {
   VitalRating,
   DebouncedStateStats,
   UseDebouncedStateReturn,
+  ThrottledStateStats,
+  UseThrottledStateOptions,
+  UseThrottledStateReturn,
 } from 'react-perf-hooks';
 ```
 
