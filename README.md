@@ -42,6 +42,7 @@ npm install web-vitals
 | `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](./docs/useWebVitals.md) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](./docs/useDebouncedState.md) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](./docs/useThrottledState.md) |
+| `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](./docs/useIntersectionObserver.md) |
 
 See the [docs overview](./docs/index.md) for a complete reference.
 
@@ -50,7 +51,14 @@ See the [docs overview](./docs/index.md) for a complete reference.
 ## Quick start
 
 ```tsx
-import { useRenderTracker, usePerformanceMark, useWebVitals, useDebouncedState, useThrottledState } from 'react-perf-hooks';
+import {
+  useRenderTracker,
+  usePerformanceMark,
+  useWebVitals,
+  useDebouncedState,
+  useThrottledState,
+  useIntersectionObserver,
+} from 'react-perf-hooks';
 
 function App() {
   // Track re-renders and warn if a component renders more than 10 times
@@ -70,6 +78,9 @@ function App() {
   // Throttle high-frequency state while measuring discarded updates
   const [pointer, setPointer, pointerStats] = useThrottledState({ x: 0, y: 0 }, 120);
 
+  // Track when an element first becomes visible and for how long it stays visible
+  const { ref, isVisible, metrics } = useIntersectionObserver({ threshold: 0.25 });
+
   return <div>...</div>;
 }
 ```
@@ -77,6 +88,8 @@ function App() {
 `useDebouncedState` demo: [docs/demos/useDebouncedStateDemo.tsx](./docs/demos/useDebouncedStateDemo.tsx)
 
 `useThrottledState` demo: [docs/demos/useThrottledStateDemo.tsx](./docs/demos/useThrottledStateDemo.tsx)
+
+`useIntersectionObserver` demo: [docs/demos/useIntersectionObserverDemo.tsx](./docs/demos/useIntersectionObserverDemo.tsx)
 
 ---
 
@@ -99,6 +112,8 @@ import type {
   ThrottledStateStats,
   UseThrottledStateOptions,
   UseThrottledStateReturn,
+  IntersectionObserverMetrics,
+  UseIntersectionObserverReturn,
 } from 'react-perf-hooks';
 ```
 

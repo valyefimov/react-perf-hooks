@@ -11,6 +11,7 @@ A focused collection of React hooks for **performance monitoring, profiling, and
 | [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
 | [useDebouncedState](./useDebouncedState.md) | Debounced `useState` replacement with skipped-render profiling |
 | [useThrottledState](./useThrottledState.md) | Throttled `useState` replacement with dropped-update profiling |
+| [useIntersectionObserver](./useIntersectionObserver.md) | Observe element visibility and collect first-visible and total-visible metrics |
 
 ## Installation
 
@@ -35,6 +36,7 @@ import {
   useWebVitals,
   useDebouncedState,
   useThrottledState,
+  useIntersectionObserver,
 } from 'react-perf-hooks';
 ```
 
@@ -59,6 +61,8 @@ import type {
   ThrottledStateStats,
   UseThrottledStateOptions,
   UseThrottledStateReturn,
+  IntersectionObserverMetrics,
+  UseIntersectionObserverReturn,
 } from 'react-perf-hooks';
 ```
 
