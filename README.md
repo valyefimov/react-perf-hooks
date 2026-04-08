@@ -41,6 +41,7 @@ npm install web-vitals
 | `usePerformanceMark` | Precise timing of any code path via the Performance API | [Full docs](./docs/usePerformanceMark.md) |
 | `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](./docs/useWebVitals.md) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](./docs/useDebouncedState.md) |
+| `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](./docs/useThrottledState.md) |
 
 See the [docs overview](./docs/index.md) for a complete reference.
 
@@ -49,7 +50,7 @@ See the [docs overview](./docs/index.md) for a complete reference.
 ## Quick start
 
 ```tsx
-import { useRenderTracker, usePerformanceMark, useWebVitals, useDebouncedState } from 'react-perf-hooks';
+import { useRenderTracker, usePerformanceMark, useWebVitals, useDebouncedState, useThrottledState } from 'react-perf-hooks';
 
 function App() {
   // Track re-renders and warn if a component renders more than 10 times
@@ -66,11 +67,16 @@ function App() {
   // Debounce state updates and inspect profiling counters
   const [query, setQuery, stats] = useDebouncedState('', 250);
 
+  // Throttle high-frequency state while measuring discarded updates
+  const [pointer, setPointer, pointerStats] = useThrottledState({ x: 0, y: 0 }, 120);
+
   return <div>...</div>;
 }
 ```
 
 `useDebouncedState` demo: [docs/demos/useDebouncedStateDemo.tsx](./docs/demos/useDebouncedStateDemo.tsx)
+
+`useThrottledState` demo: [docs/demos/useThrottledStateDemo.tsx](./docs/demos/useThrottledStateDemo.tsx)
 
 ---
 
@@ -90,6 +96,9 @@ import type {
   VitalRating,
   DebouncedStateStats,
   UseDebouncedStateReturn,
+  ThrottledStateStats,
+  UseThrottledStateOptions,
+  UseThrottledStateReturn,
 } from 'react-perf-hooks';
 ```
 
