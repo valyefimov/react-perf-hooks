@@ -9,6 +9,7 @@ A focused collection of React hooks for **performance monitoring, profiling, and
 | [useRenderTracker](./useRenderTracker.md) | Count re-renders, detect which props changed, warn when threshold is exceeded |
 | [usePerformanceMark](./usePerformanceMark.md) | Measure arbitrary code paths using the browser Performance API |
 | [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
+| [useDebouncedState](./useDebouncedState.md) | Debounced `useState` replacement with skipped-render profiling |
 
 ## Installation
 
@@ -31,6 +32,7 @@ import {
   useRenderTracker,
   usePerformanceMark,
   useWebVitals,
+  useDebouncedState,
 } from 'react-perf-hooks';
 ```
 
@@ -50,6 +52,8 @@ import type {
   WebVitalsState,
   UseWebVitalsOptions,
   VitalRating,
+  DebouncedStateStats,
+  UseDebouncedStateReturn,
 } from 'react-perf-hooks';
 ```
 
