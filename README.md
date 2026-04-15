@@ -39,6 +39,7 @@ npm install web-vitals
 |------|---------------|------|
 | `useRenderTracker` | Find components that re-render too often and why | [Full docs](./docs/useRenderTracker.md) |
 | `usePerformanceMark` | Precise timing of any code path via the Performance API | [Full docs](./docs/usePerformanceMark.md) |
+| `useComponentLifecycle` | Track mount/unmount timings and live component lifetime | [Full docs](./docs/useComponentLifecycle.md) |
 | `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](./docs/useWebVitals.md) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](./docs/useDebouncedState.md) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](./docs/useThrottledState.md) |
@@ -54,6 +55,7 @@ See the [docs overview](./docs/index.md) for a complete reference.
 import {
   useRenderTracker,
   usePerformanceMark,
+  useComponentLifecycle,
   useWebVitals,
   useDebouncedState,
   useThrottledState,
@@ -66,6 +68,9 @@ function App() {
 
   // Measure fetch duration with the Performance API
   const { mark, measure } = usePerformanceMark('App');
+
+  // Track mount time and current lifetime of a component
+  const { mountedAt, aliveMs } = useComponentLifecycle('App');
 
   // Subscribe to Core Web Vitals and report to analytics
   const vitals = useWebVitals({
@@ -89,6 +94,8 @@ function App() {
 
 `useThrottledState` demo: [docs/demos/useThrottledStateDemo.tsx](./docs/demos/useThrottledStateDemo.tsx)
 
+`useComponentLifecycle` demo: [docs/demos/useComponentLifecycleDemo.tsx](./docs/demos/useComponentLifecycleDemo.tsx)
+
 `useIntersectionObserver` demo: [docs/demos/useIntersectionObserverDemo.tsx](./docs/demos/useIntersectionObserverDemo.tsx)
 
 ---
@@ -103,6 +110,7 @@ import type {
   UseRenderTrackerOptions,
   PerformanceMeasureResult,
   UsePerformanceMarkReturn,
+  ComponentLifecycleInfo,
   WebVitalMetric,
   WebVitalsState,
   UseWebVitalsOptions,
