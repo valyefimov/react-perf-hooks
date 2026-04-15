@@ -4,6 +4,9 @@ export type { RenderInfo, UseRenderTrackerOptions } from './hooks/useRenderTrack
 export { usePerformanceMark } from './hooks/usePerformanceMark';
 export type { PerformanceMeasureResult, UsePerformanceMarkReturn } from './hooks/usePerformanceMark';
 
+export { useComponentLifecycle } from './hooks/useComponentLifecycle';
+export type { ComponentLifecycleInfo } from './hooks/useComponentLifecycle';
+
 export { useWebVitals } from './hooks/useWebVitals';
 export type { WebVitalMetric, WebVitalsState, UseWebVitalsOptions, VitalRating } from './hooks/useWebVitals';
 

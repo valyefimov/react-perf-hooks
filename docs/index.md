@@ -8,6 +8,7 @@ A focused collection of React hooks for **performance monitoring, profiling, and
 |------|---------|
 | [useRenderTracker](./useRenderTracker.md) | Count re-renders, detect which props changed, warn when threshold is exceeded |
 | [usePerformanceMark](./usePerformanceMark.md) | Measure arbitrary code paths using the browser Performance API |
+| [useComponentLifecycle](./useComponentLifecycle.md) | Track mount and unmount times, plus live lifetime since mount |
 | [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
 | [useDebouncedState](./useDebouncedState.md) | Debounced `useState` replacement with skipped-render profiling |
 | [useThrottledState](./useThrottledState.md) | Throttled `useState` replacement with dropped-update profiling |
@@ -33,6 +34,7 @@ npm install web-vitals
 import {
   useRenderTracker,
   usePerformanceMark,
+  useComponentLifecycle,
   useWebVitals,
   useDebouncedState,
   useThrottledState,
@@ -52,6 +54,7 @@ import type {
   UseRenderTrackerOptions,
   PerformanceMeasureResult,
   UsePerformanceMarkReturn,
+  ComponentLifecycleInfo,
   WebVitalMetric,
   WebVitalsState,
   UseWebVitalsOptions,
