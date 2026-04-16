@@ -1,4 +1,4 @@
-import { type DependencyList, useMemo } from 'react';
+import { type DependencyList, useEffect, useMemo, useRef } from 'react';
 
 export interface MemoProfilingStats {
   /** Label associated with the profiled memoized value */
@@ -17,6 +17,11 @@ interface MutableMemoProfilingStats {
   hits: number;
   misses: number;
   totalRecomputeMs: number;
+}
+
+interface MemoSnapshot<T> {
+  value: T;
+  recomputeMs: number;
 }
 
 const DEFAULT_LABEL = 'default';
@@ -87,35 +92,48 @@ export function useMemoProfiling<T>(factory: () => T, deps: DependencyList, labe
   const resolvedLabel = normalizeLabel(label);
   const profilingEnabled = isProfilingEnabled();
 
-  let cacheHit = true;
-  let recomputeMs = 0;
-
-  const value = useMemo(() => {
+  // Intentionally mirror useMemo semantics by trusting caller-provided deps.
+  /* eslint-disable react-hooks/use-memo, react-hooks/exhaustive-deps */
+  const currentSnapshot = useMemo<MemoSnapshot<T>>(() => {
     if (!profilingEnabled) {
-      return factory();
+      return {
+        value: factory(),
+        recomputeMs: 0,
+      };
     }
 
-    cacheHit = false;
     const start = getNow();
-    const computed = factory();
-    recomputeMs = Math.max(0, getNow() - start);
-    return computed;
+    const value = factory();
+
+    return {
+      value,
+      recomputeMs: Math.max(0, getNow() - start),
+    };
   }, deps);
+  /* eslint-enable react-hooks/use-memo, react-hooks/exhaustive-deps */
 
-  if (!profilingEnabled) {
-    return value;
-  }
+  const previousSnapshotRef = useRef<MemoSnapshot<T> | null>(null);
 
-  const stats = getOrCreateStats(resolvedLabel);
+  useEffect(() => {
+    if (!profilingEnabled) return;
 
-  if (cacheHit) {
-    stats.hits += 1;
-    console.log(`[useMemoProfiling:${resolvedLabel}] HIT`);
-  } else {
-    stats.misses += 1;
-    stats.totalRecomputeMs += recomputeMs;
-    console.log(`[useMemoProfiling:${resolvedLabel}] MISS (recomputed in ${recomputeMs.toFixed(2)}ms)`);
-  }
+    const previousSnapshot = previousSnapshotRef.current;
+    const isHit = previousSnapshot === currentSnapshot && previousSnapshot !== null;
+    const stats = getOrCreateStats(resolvedLabel);
 
-  return value;
+    if (isHit) {
+      stats.hits += 1;
+      console.log(`[useMemoProfiling:${resolvedLabel}] HIT`);
+    } else {
+      stats.misses += 1;
+      stats.totalRecomputeMs += currentSnapshot.recomputeMs;
+      console.log(
+        `[useMemoProfiling:${resolvedLabel}] MISS (recomputed in ${currentSnapshot.recomputeMs.toFixed(2)}ms)`
+      );
+    }
+
+    previousSnapshotRef.current = currentSnapshot;
+  });
+
+  return currentSnapshot.value;
 }
