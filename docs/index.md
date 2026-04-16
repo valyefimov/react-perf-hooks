@@ -9,6 +9,7 @@ A focused collection of React hooks for **performance monitoring, profiling, and
 | [useRenderTracker](./useRenderTracker.md) | Count re-renders, detect which props changed, warn when threshold is exceeded |
 | [usePerformanceMark](./usePerformanceMark.md) | Measure arbitrary code paths using the browser Performance API |
 | [useComponentLifecycle](./useComponentLifecycle.md) | Track mount and unmount times, plus live lifetime since mount |
+| [useMemoProfiling](./useMemoProfiling.md) | Profile `useMemo` cache effectiveness with HIT/MISS stats |
 | [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
 | [useDebouncedState](./useDebouncedState.md) | Debounced `useState` replacement with skipped-render profiling |
 | [useThrottledState](./useThrottledState.md) | Throttled `useState` replacement with dropped-update profiling |
@@ -35,6 +36,7 @@ import {
   useRenderTracker,
   usePerformanceMark,
   useComponentLifecycle,
+  useMemoProfiling,
   useWebVitals,
   useDebouncedState,
   useThrottledState,
@@ -55,6 +57,7 @@ import type {
   PerformanceMeasureResult,
   UsePerformanceMarkReturn,
   ComponentLifecycleInfo,
+  MemoProfilingStats,
   WebVitalMetric,
   WebVitalsState,
   UseWebVitalsOptions,

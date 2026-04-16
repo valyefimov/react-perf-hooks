@@ -7,6 +7,9 @@ export type { PerformanceMeasureResult, UsePerformanceMarkReturn } from './hooks
 export { useComponentLifecycle } from './hooks/useComponentLifecycle';
 export type { ComponentLifecycleInfo } from './hooks/useComponentLifecycle';
 
+export { getStats, useMemoProfiling } from './hooks/useMemoProfiling';
+export type { MemoProfilingStats } from './hooks/useMemoProfiling';
+
 export { useWebVitals } from './hooks/useWebVitals';
 export type { WebVitalMetric, WebVitalsState, UseWebVitalsOptions, VitalRating } from './hooks/useWebVitals';
 

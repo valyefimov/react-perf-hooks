@@ -40,6 +40,7 @@ npm install web-vitals
 | `useRenderTracker` | Find components that re-render too often and why | [Full docs](./docs/useRenderTracker.md) |
 | `usePerformanceMark` | Precise timing of any code path via the Performance API | [Full docs](./docs/usePerformanceMark.md) |
 | `useComponentLifecycle` | Track mount/unmount timings and live component lifetime | [Full docs](./docs/useComponentLifecycle.md) |
+| `useMemoProfiling` | Profile `useMemo` cache hits/misses and recomputation costs | [Full docs](./docs/useMemoProfiling.md) |
 | `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](./docs/useWebVitals.md) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](./docs/useDebouncedState.md) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](./docs/useThrottledState.md) |
@@ -56,6 +57,7 @@ import {
   useRenderTracker,
   usePerformanceMark,
   useComponentLifecycle,
+  useMemoProfiling,
   useWebVitals,
   useDebouncedState,
   useThrottledState,
@@ -71,6 +73,9 @@ function App() {
 
   // Track mount time and current lifetime of a component
   const { mountedAt, aliveMs } = useComponentLifecycle('App');
+
+  // Profile whether this memoized computation is mostly cache HITs or MISSes
+  const filteredUsers = useMemoProfiling(() => users.filter((u) => u.active), [users], 'ActiveUsers');
 
   // Subscribe to Core Web Vitals and report to analytics
   const vitals = useWebVitals({
@@ -96,6 +101,8 @@ function App() {
 
 `useComponentLifecycle` demo: [docs/demos/useComponentLifecycleDemo.tsx](./docs/demos/useComponentLifecycleDemo.tsx)
 
+`useMemoProfiling` demo: [docs/demos/useMemoProfilingDemo.tsx](./docs/demos/useMemoProfilingDemo.tsx)
+
 `useIntersectionObserver` demo: [docs/demos/useIntersectionObserverDemo.tsx](./docs/demos/useIntersectionObserverDemo.tsx)
 
 ---
@@ -111,6 +118,7 @@ import type {
   PerformanceMeasureResult,
   UsePerformanceMarkReturn,
   ComponentLifecycleInfo,
+  MemoProfilingStats,
   WebVitalMetric,
   WebVitalsState,
   UseWebVitalsOptions,
