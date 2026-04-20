@@ -7,6 +7,7 @@ A focused collection of React hooks for **performance monitoring, profiling, and
 | Hook | Purpose |
 |------|---------|
 | [useRenderTracker](./useRenderTracker.md) | Count re-renders, detect which props changed, warn when threshold is exceeded |
+| [useRenderBudget](./useRenderBudget.md) | Measure render-to-commit time and warn when a component exceeds a frame budget |
 | [usePerformanceMark](./usePerformanceMark.md) | Measure arbitrary code paths using the browser Performance API |
 | [useComponentLifecycle](./useComponentLifecycle.md) | Track mount and unmount times, plus live lifetime since mount |
 | [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
@@ -33,6 +34,7 @@ npm install web-vitals
 ```tsx
 import {
   useRenderTracker,
+  useRenderBudget,
   usePerformanceMark,
   useComponentLifecycle,
   useWebVitals,
@@ -52,6 +54,7 @@ The package ships with full type declarations. No `@types/*` needed.
 import type {
   RenderInfo,
   UseRenderTrackerOptions,
+  UseRenderBudgetOptions,
   PerformanceMeasureResult,
   UsePerformanceMarkReturn,
   ComponentLifecycleInfo,
