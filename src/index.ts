@@ -1,6 +1,9 @@
 export { useRenderTracker } from './hooks/useRenderTracker';
 export type { RenderInfo, UseRenderTrackerOptions } from './hooks/useRenderTracker';
 
+export { useRenderBudget } from './hooks/useRenderBudget';
+export type { UseRenderBudgetOptions } from './hooks/useRenderBudget';
+
 export { usePerformanceMark } from './hooks/usePerformanceMark';
 export type { PerformanceMeasureResult, UsePerformanceMarkReturn } from './hooks/usePerformanceMark';
 

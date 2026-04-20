@@ -38,6 +38,7 @@ npm install web-vitals
 | Hook | What it solves | Docs |
 |------|---------------|------|
 | `useRenderTracker` | Find components that re-render too often and why | [Full docs](./docs/useRenderTracker.md) |
+| `useRenderBudget` | Warn when a single render commit exceeds a time budget (default: 16ms) | [Full docs](./docs/useRenderBudget.md) |
 | `usePerformanceMark` | Precise timing of any code path via the Performance API | [Full docs](./docs/usePerformanceMark.md) |
 | `useComponentLifecycle` | Track mount/unmount timings and live component lifetime | [Full docs](./docs/useComponentLifecycle.md) |
 | `useMemoProfiling` | Profile `useMemo` cache hits/misses and recomputation costs | [Full docs](./docs/useMemoProfiling.md) |
@@ -55,6 +56,7 @@ See the [docs overview](./docs/index.md) for a complete reference.
 ```tsx
 import {
   useRenderTracker,
+  useRenderBudget,
   usePerformanceMark,
   useComponentLifecycle,
   useMemoProfiling,
@@ -67,6 +69,9 @@ import {
 function App() {
   // Track re-renders and warn if a component renders more than 10 times
   const { count } = useRenderTracker({ userId }, { name: 'App', warnAt: 10 });
+
+  // Warn when a render exceeds one frame budget (16ms by default)
+  useRenderBudget(16, 'App');
 
   // Measure fetch duration with the Performance API
   const { mark, measure } = usePerformanceMark('App');
@@ -105,6 +110,8 @@ function App() {
 
 `useIntersectionObserver` demo: [docs/demos/useIntersectionObserverDemo.tsx](./docs/demos/useIntersectionObserverDemo.tsx)
 
+`useRenderBudget` demo: [docs/demos/useRenderBudgetDemo.tsx](./docs/demos/useRenderBudgetDemo.tsx)
+
 ---
 
 ## TypeScript
@@ -115,6 +122,7 @@ All hooks ship with full type declarations. No `@types/*` packages needed.
 import type {
   RenderInfo,
   UseRenderTrackerOptions,
+  UseRenderBudgetOptions,
   PerformanceMeasureResult,
   UsePerformanceMarkReturn,
   ComponentLifecycleInfo,
