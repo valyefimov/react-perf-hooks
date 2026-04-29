@@ -1,0 +1,162 @@
+.page {
+  margin: 0 auto;
+  max-width: 1120px;
+  padding: 2rem 1rem 4rem;
+}
+
+.hero {
+  background:
+    linear-gradient(132deg, rgba(10, 143, 114, 0.18), rgba(234, 120, 54, 0.2)),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9));
+  border: 1px solid rgba(10, 143, 114, 0.25);
+  border-radius: 24px;
+  box-shadow: 0 18px 70px rgba(5, 40, 34, 0.08);
+  padding: 2.5rem;
+}
+
+.kicker {
+  color: #066751;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.title {
+  color: #142b2a;
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.05;
+  margin: 0.5rem 0 1rem;
+  max-width: 900px;
+}
+
+.subtitle {
+  color: #234847;
+  font-size: 1.08rem;
+  margin: 0;
+  max-width: 750px;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.installCard {
+  background: rgba(14, 35, 32, 0.9);
+  border-radius: 14px;
+  color: #e3f8f2;
+  margin-top: 1.5rem;
+  max-width: 520px;
+  padding: 0.85rem 1rem;
+}
+
+.installLabel {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  margin: 0 0 0.4rem;
+  opacity: 0.88;
+  text-transform: uppercase;
+}
+
+.installCode {
+  font-family: var(--ifm-font-family-monospace);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.gridSection {
+  margin-top: 2.5rem;
+}
+
+.cardGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 1rem;
+}
+
+.card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(247, 252, 250, 0.95));
+  border: 1px solid rgba(10, 143, 114, 0.2);
+  border-radius: 16px;
+  min-height: 180px;
+  padding: 1rem;
+}
+
+.card h3 {
+  margin-top: 0.25rem;
+}
+
+.card p {
+  color: #1f4641;
+  margin-bottom: 0;
+}
+
+.hookListSection {
+  margin-top: 2.5rem;
+}
+
+.hookList {
+  background: rgba(10, 143, 114, 0.1);
+  border: 1px solid rgba(10, 143, 114, 0.25);
+  border-radius: 16px;
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 1rem;
+}
+
+.hookList li {
+  background: rgba(255, 255, 255, 0.78);
+  border-radius: 10px;
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.88rem;
+  padding: 0.5rem 0.6rem;
+}
+
+[data-theme='dark'] .hero {
+  background:
+    linear-gradient(132deg, rgba(70, 211, 178, 0.18), rgba(234, 120, 54, 0.22)),
+    linear-gradient(180deg, rgba(11, 20, 19, 0.92), rgba(11, 20, 19, 0.92));
+  border-color: rgba(70, 211, 178, 0.35);
+}
+
+[data-theme='dark'] .kicker,
+[data-theme='dark'] .title,
+[data-theme='dark'] .subtitle,
+[data-theme='dark'] .card p {
+  color: #eaf8f5;
+}
+
+[data-theme='dark'] .card,
+[data-theme='dark'] .hookList li {
+  background: rgba(15, 27, 26, 0.86);
+  border-color: rgba(70, 211, 178, 0.25);
+}
+
+[data-theme='dark'] .hookList {
+  background: rgba(70, 211, 178, 0.12);
+  border-color: rgba(70, 211, 178, 0.25);
+}
+
+@media (max-width: 996px) {
+  .hero {
+    padding: 1.5rem;
+  }
+
+  .cardGrid,
+  .hookList {
+    grid-template-columns: 1fr;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+}

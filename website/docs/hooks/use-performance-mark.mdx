@@ -1,0 +1,66 @@
+---
+title: usePerformanceMark
+description: Hook-friendly wrapper around browser Performance marks and measures.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`usePerformanceMark` creates named marks and measures duration between them. Use it for precise timing of fetches, rendering paths, and user interactions.
+
+## API signature
+
+```ts
+function usePerformanceMark(namespace?: string): UsePerformanceMarkReturn
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `namespace` | `string` | No | Optional prefix for mark/measure names to avoid collisions. |
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `mark` | `(markName: string) => void` | Creates a performance mark. |
+| `measure` | `(measureName: string, startMark: string, endMark?: string) => PerformanceMeasureResult \| null` | Measures duration and returns result or `null`. |
+| `clearMarks` | `(markName?: string) => void` | Clears one or all marks. |
+| `clearMeasures` | `(measureName?: string) => void` | Clears one or all measures. |
+| `getEntries` | `() => PerformanceMeasureResult[]` | Returns collected measure entries for reporting. |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="usePerformanceMark demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/usePerformanceMarkDemo.tsx&embed=1&view=editor"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/usePerformanceMarkDemo.tsx"
+/>
+
+## Code example
+
+```tsx
+import {usePerformanceMark} from 'react-perf-hooks';
+
+export function ProductList() {
+  const {mark, measure} = usePerformanceMark('ProductList');
+
+  async function loadProducts() {
+    mark('fetch-start');
+    await fetch('/api/products');
+    mark('fetch-end');
+
+    const result = measure('fetch-duration', 'fetch-start', 'fetch-end');
+    console.log(result?.duration);
+  }
+
+  return <button onClick={loadProducts}>Load</button>;
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=usePerformanceMark)
+- [Medium companion article](https://medium.com/search?q=usePerformanceMark)

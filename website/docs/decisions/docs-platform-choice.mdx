@@ -1,0 +1,35 @@
+---
+title: Docs Platform Decision
+description: Why this docs site uses Docusaurus with GitHub Pages and StackBlitz embeds.
+---
+
+## Decision summary
+
+- **Framework**: Docusaurus v3
+- **Hosting**: GitHub Pages
+- **Demo strategy**: Embedded StackBlitz (with open-in-new-tab fallback)
+
+## Why Docusaurus over Nextra
+
+- Better out-of-the-box docs IA (sidebars, doc metadata, edit links, version-ready structure).
+- Native Markdown/MDX authoring without building custom Next.js docs plumbing.
+- Static build output optimized for GitHub Pages deployment.
+- Fast path to launch with clear docs conventions for contributors.
+
+## Why GitHub Pages over Vercel
+
+- Zero-cost hosting aligned with open-source repo workflows.
+- Native GitHub Actions deployment on push to `main`.
+- No additional platform account setup required for first release.
+
+## Why StackBlitz embeds over link-only demos
+
+- Keeps experimentation in-page, reducing context-switching.
+- Allows readers to inspect and modify examples quickly.
+- Still supports opening demos in a dedicated StackBlitz tab when preferred.
+
+## Tradeoffs acknowledged
+
+- Nextra offers a lighter Next.js footprint and flexible theme composition.
+- Vercel offers excellent PR previews and richer edge runtime support.
+- For this phase, delivery speed and maintenance simplicity are prioritized.

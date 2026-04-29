@@ -1,0 +1,60 @@
+---
+title: useRenderBudget
+description: Warn or fail when a render exceeds your component frame budget.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useRenderBudget` measures render-to-commit duration and flags slow commits. It is useful for preventing gradual regressions in high-impact components.
+
+## API signature
+
+```ts
+function useRenderBudget(
+  budgetMs?: number,
+  componentName?: string,
+  options?: UseRenderBudgetOptions
+): void
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `budgetMs` | `number` | No | Allowed render duration in ms. Defaults to `16`. |
+| `componentName` | `string` | No | Name included in warnings/errors. |
+| `options.enabled` | `boolean` | No | Enable/disable measurement. |
+| `options.strict` | `boolean` | No | Throw error instead of warning when budget is exceeded. |
+
+## Return value
+
+| Value | Type | Description |
+| --- | --- | --- |
+| Return | `void` | This hook reports through side effects (warn/error), not return data. |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useRenderBudget demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/useRenderBudgetDemo.tsx&embed=1&view=editor"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/useRenderBudgetDemo.tsx"
+/>
+
+## Code example
+
+```tsx
+import {useRenderBudget} from 'react-perf-hooks';
+
+export function PricingGrid() {
+  useRenderBudget(16, 'PricingGrid', {strict: false});
+
+  return <section>...</section>;
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useRenderBudget)
+- [Medium companion article](https://medium.com/search?q=useRenderBudget)

@@ -1,0 +1,69 @@
+---
+title: useIntersectionObserver
+description: Observe visibility and collect first-visible and total-visible metrics.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useIntersectionObserver` exposes visibility state plus timing metrics for lazy loading and engagement tracking.
+
+## API signature
+
+```ts
+function useIntersectionObserver<T extends Element = Element>(
+  options?: IntersectionObserverInit
+): UseIntersectionObserverReturn<T>
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `options` | `IntersectionObserverInit` | No | Standard `root`, `rootMargin`, and `threshold` observer options. |
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `ref` | `(node: T \| null) => void` | Callback ref to attach to target element. |
+| `isVisible` | `boolean` | Whether element currently satisfies intersection visibility threshold. |
+| `metrics.firstVisibleAt` | `number \| null` | Timestamp of first visibility event. |
+| `metrics.totalVisibleMs` | `number` | Accumulated visible duration across sessions. |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useIntersectionObserver demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/useIntersectionObserverDemo.tsx&embed=1&view=editor"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/useIntersectionObserverDemo.tsx"
+/>
+
+## Code example
+
+```tsx
+import {useIntersectionObserver} from 'react-perf-hooks';
+
+export function HeroImage() {
+  const {ref, isVisible, metrics} = useIntersectionObserver<HTMLImageElement>({
+    threshold: 0.25,
+    rootMargin: '150px 0px',
+  });
+
+  return (
+    <figure>
+      <img ref={ref} src={isVisible ? '/hero-large.jpg' : '/hero-placeholder.jpg'} alt="Hero" />
+      <figcaption>
+        First visible at: {metrics.firstVisibleAt?.toFixed(1) ?? 'n/a'}ms, total visible:{' '}
+        {metrics.totalVisibleMs.toFixed(1)}ms
+      </figcaption>
+    </figure>
+  );
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useIntersectionObserver)
+- [Medium companion article](https://medium.com/search?q=useIntersectionObserver)

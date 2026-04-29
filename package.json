@@ -20,6 +20,8 @@
   "sideEffects": false,
   "scripts": {
     "build": "tsup",
+    "docs:dev": "npm run start --prefix website",
+    "docs:build": "npm run build --prefix website",
     "build:watch": "tsup --watch",
     "build:check": "tsc --noEmit && tsup",
     "test": "vitest",

@@ -1,0 +1,65 @@
+---
+title: useRenderTracker
+description: Track render count, changed props, and render timestamp in development.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useRenderTracker` helps identify components that render too often and why. Pass tracked props to log changed keys and optionally trigger warnings when a render threshold is reached.
+
+## API signature
+
+```ts
+function useRenderTracker(
+  props?: Record<string, unknown>,
+  options?: UseRenderTrackerOptions
+): RenderInfo
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `props` | `Record<string, unknown>` | No | Object to diff against previous render using `Object.is` per key. |
+| `options.name` | `string` | No | Label in console output. Defaults to `"Component"`. |
+| `options.enabled` | `boolean` | No | Enable/disable tracking (dev true, prod false by default). |
+| `options.warnAt` | `number` | No | Warn once render count reaches threshold. |
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `count` | `number` | Total render count while tracking is enabled. |
+| `lastRenderTime` | `number` | `performance.now()` timestamp of latest render. |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useRenderTracker demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/useRenderTrackerDemo.tsx&embed=1&view=editor"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/useRenderTrackerDemo.tsx"
+/>
+
+## Code example
+
+```tsx
+import {useRenderTracker} from 'react-perf-hooks';
+
+type Props = {
+  userId: string;
+  filters: Record<string, string>;
+};
+
+export function UserTable({userId, filters}: Props) {
+  const {count} = useRenderTracker({userId, filters}, {name: 'UserTable', warnAt: 10});
+
+  return <p>Render count: {count}</p>;
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useRenderTracker)
+- [Medium companion article](https://medium.com/search?q=useRenderTracker)

@@ -1,0 +1,62 @@
+---
+title: useWebVitals
+description: Subscribe to all Core Web Vitals as reactive hook state.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useWebVitals` provides live Core Web Vitals data and optional metric callbacks for analytics pipelines.
+
+## API signature
+
+```ts
+function useWebVitals(options?: UseWebVitalsOptions): WebVitalsState
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `options.onMetric` | `(metric: WebVitalMetric) => void` | No | Callback fired whenever a metric is updated. |
+| `options.enabled` | `boolean` | No | Set `false` to disable subscriptions (useful for SSR/tests). |
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `CLS` | `WebVitalMetric \| null` | Cumulative Layout Shift metric. |
+| `LCP` | `WebVitalMetric \| null` | Largest Contentful Paint metric. |
+| `INP` | `WebVitalMetric \| null` | Interaction to Next Paint metric. |
+| `FCP` | `WebVitalMetric \| null` | First Contentful Paint metric. |
+| `TTFB` | `WebVitalMetric \| null` | Time to First Byte metric. |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useWebVitals demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/useWebVitalsDemo.tsx&embed=1&view=editor"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks?file=docs/demos/useWebVitalsDemo.tsx"
+/>
+
+## Code example
+
+```tsx
+import {useWebVitals} from 'react-perf-hooks';
+
+export function VitalsOverlay() {
+  const vitals = useWebVitals({
+    onMetric: (metric) => {
+      navigator.sendBeacon('/api/vitals', JSON.stringify(metric));
+    },
+  });
+
+  return <p>LCP: {vitals.LCP?.value ?? 'waiting'}</p>;
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useWebVitals)
+- [Medium companion article](https://medium.com/search?q=useWebVitals)

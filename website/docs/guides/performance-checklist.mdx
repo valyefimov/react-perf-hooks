@@ -1,0 +1,42 @@
+---
+title: Performance Checklist
+description: Practical checklist for using react-perf-hooks in daily development.
+---
+
+Use this checklist when introducing `react-perf-hooks` into a production React codebase.
+
+## 1. Baseline before optimizing
+
+- Capture current Core Web Vitals in production (`LCP`, `CLS`, `INP`, `FCP`, `TTFB`).
+- Identify top components by render volume using `useRenderTracker`.
+- Record bottlenecks before making changes so improvements are measurable.
+
+## 2. Prioritize render hotspots
+
+- Add `useRenderBudget` to expensive views.
+- Profile memoized derivations with `useMemoProfiling` to verify real hit/miss ratios.
+- Track long-lived components with `useComponentLifecycle` to spot accidental remounts.
+
+## 3. Stabilize high-frequency state updates
+
+- Prefer `useDebouncedState` for search/filter text input.
+- Prefer `useThrottledState` for pointer, scroll, and resize-driven state.
+- Monitor dropped and skipped update counters in QA.
+
+## 4. Watch visibility-driven UX
+
+- Use `useIntersectionObserver` for lazy loading and viewport engagement metrics.
+- Track `firstVisibleAt` and `totalVisibleMs` for key conversion elements.
+
+## 5. Wire analytics for real user monitoring
+
+- Send `useWebVitals` metrics to your analytics endpoint.
+- Use `delta` and `id` values to avoid double counting.
+- Correlate page-level vitals with hook-level debug sessions in staging.
+
+## Companion reading pipeline
+
+- [dev.to: React performance drafts](https://dev.to/search?q=react%20performance%20hooks)
+- [Medium: React performance guides](https://medium.com/search?q=react%20performance%20hooks)
+
+As new hook-specific articles are published, link them from each hook page in the docs sidebar.
