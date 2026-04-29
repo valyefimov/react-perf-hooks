@@ -1,0 +1,50 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="78" y1="40" x2="1116" y2="596" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#071A2F"/>
+      <stop offset="1" stop-color="#0E5EA8"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="227" y1="218" x2="909" y2="556" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5FE0FF"/>
+      <stop offset="1" stop-color="#3DFF9B"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#02101E"/>
+  <rect x="34" y="34" width="1132" height="562" rx="28" fill="url(#bg)"/>
+  <rect x="78" y="78" width="1044" height="474" rx="22" fill="#0B2240" fill-opacity="0.78"/>
+
+  <circle cx="1066" cy="133" r="84" fill="#61E8F8" fill-opacity="0.08"/>
+  <circle cx="173" cy="497" r="108" fill="#3DFF9B" fill-opacity="0.06"/>
+
+  <path d="M160 468C264 451 318 399 424 400C551 401 605 478 720 462C811 449 849 400 924 386" stroke="url(#accent)" stroke-width="9" stroke-linecap="round"/>
+  <path d="M160 507C243 488 289 452 363 453C455 454 498 505 583 497C671 488 714 445 801 439" stroke="#6FA4FF" stroke-opacity="0.7" stroke-width="5" stroke-linecap="round"/>
+
+  <rect x="184" y="199" width="18" height="154" rx="9" fill="#58D6FF"/>
+  <rect x="218" y="160" width="18" height="193" rx="9" fill="#69D9E8"/>
+  <rect x="252" y="221" width="18" height="132" rx="9" fill="#7DDBD3"/>
+  <rect x="286" y="121" width="18" height="232" rx="9" fill="#97DEA5"/>
+
+  <text x="346" y="236" fill="white" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="74" font-weight="800" letter-spacing="0.2">
+    react-perf-hooks
+  </text>
+  <text x="348" y="296" fill="#9EBCDD" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="36" font-weight="500">
+    Performance hooks for modern React apps
+  </text>
+
+  <rect x="349" y="348" width="432" height="56" rx="28" fill="#132C4C"/>
+  <circle cx="378" cy="376" r="8" fill="#3DFF9B"/>
+  <text x="398" y="387" fill="#D6F2FF" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="27" font-weight="600">
+    SSR-safe APIs
+  </text>
+
+  <rect x="805" y="348" width="271" height="56" rx="28" fill="#132C4C"/>
+  <circle cx="834" cy="376" r="8" fill="#61E8F8"/>
+  <text x="854" y="387" fill="#D6F2FF" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="27" font-weight="600">
+    TypeScript-first
+  </text>
+
+  <text x="83" y="586" fill="#88B6E0" font-family="system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="27" font-weight="600">
+    valyefimov.github.io/react-perf-hooks
+  </text>
+</svg>

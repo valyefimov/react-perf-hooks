@@ -47,7 +47,7 @@ const config: Config = {
   ],
 
   themeConfig: {
-    image: 'img/docusaurus-social-card.jpg',
+    image: 'img/react-perf-hooks-social-card.svg',
     colorMode: {
       defaultMode: 'light',
       disableSwitch: false,
