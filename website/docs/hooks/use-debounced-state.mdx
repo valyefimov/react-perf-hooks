@@ -1,0 +1,65 @@
+---
+title: useDebouncedState
+description: Debounced useState alternative with skipped-render counters.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useDebouncedState` reduces render churn for bursty updates like search input while exposing profiling stats for skipped commits.
+
+## API signature
+
+```ts
+function useDebouncedState<T>(
+  initialState: T | (() => T),
+  delay?: number
+): [T, Dispatch<SetStateAction<T>>, DebouncedStateStats]
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `initialState` | `T \| (() => T)` | Yes | Initial state value or lazy initializer. |
+| `delay` | `number` | No | Debounce delay in ms. Defaults to `300`. |
+
+## Return value
+
+| Position | Type | Description |
+| --- | --- | --- |
+| `0` | `T` | Current committed value. |
+| `1` | `Dispatch<SetStateAction<T>>` | Debounced setter function. |
+| `2` | `DebouncedStateStats` | `{ skippedRenders, totalUpdates }` counters. |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useDebouncedState demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&embed=1&view=preview&startScript=dev&demo=useDebouncedState"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&startScript=dev&demo=useDebouncedState"
+/>
+
+## Code example
+
+```tsx
+import {useDebouncedState} from 'react-perf-hooks';
+
+export function SearchInput() {
+  const [query, setQuery, stats] = useDebouncedState('', 250);
+
+  return (
+    <div>
+      <input value={query} onChange={(event) => setQuery(event.target.value)} />
+      <p>Skipped renders: {stats.skippedRenders}</p>
+      <p>Total updates: {stats.totalUpdates}</p>
+    </div>
+  );
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useDebouncedState)
+- [Medium companion article](https://medium.com/search?q=useDebouncedState)

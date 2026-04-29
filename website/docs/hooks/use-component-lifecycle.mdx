@@ -1,0 +1,59 @@
+---
+title: useComponentLifecycle
+description: Capture mount timestamp and live component lifetime.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useComponentLifecycle` tracks when a component mounts and how long it stays alive. It is useful for detecting remount churn and validating cleanup timing.
+
+## API signature
+
+```ts
+function useComponentLifecycle(componentName?: string): ComponentLifecycleInfo
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `componentName` | `string` | No | Optional name used in development lifecycle logs. |
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `mountedAt` | `number` | Mount timestamp from `performance.now()` (or `Date.now()` fallback). |
+| `aliveMs` | `number` | Time elapsed since mount, recomputed on each render. |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useComponentLifecycle demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&embed=1&view=preview&startScript=dev&demo=useComponentLifecycle"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&startScript=dev&demo=useComponentLifecycle"
+/>
+
+## Code example
+
+```tsx
+import {useComponentLifecycle} from 'react-perf-hooks';
+
+export function LifecyclePanel() {
+  const {mountedAt, aliveMs} = useComponentLifecycle('LifecyclePanel');
+
+  return (
+    <div>
+      <p>Mounted at: {mountedAt.toFixed(1)}ms</p>
+      <p>Alive: {aliveMs.toFixed(1)}ms</p>
+    </div>
+  );
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useComponentLifecycle)
+- [Medium companion article](https://medium.com/search?q=useComponentLifecycle)

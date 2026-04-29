@@ -1,0 +1,79 @@
+---
+title: useMemoProfiling
+description: Profile memo hit/miss behavior and recompute time in development.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useMemoProfiling` wraps `useMemo` and records cache effectiveness. Use it to validate whether memoization actually improves performance.
+
+## API signature
+
+```ts
+function useMemoProfiling<T>(
+  factory: () => T,
+  deps: DependencyList,
+  label?: string
+): T
+
+function getStats(label?: string): MemoProfilingStats
+```
+
+## Parameters
+
+| Name | Type | Required | Description |
+| --- | --- | --- | --- |
+| `factory` | `() => T` | Yes | Computation callback, same as `useMemo`. |
+| `deps` | `DependencyList` | Yes | Dependency list controlling recomputation. |
+| `label` | `string` | No | Grouping key for logs and accumulated stats. |
+
+## Return value
+
+| Field | Type | Description |
+| --- | --- | --- |
+| Hook return | `T` | Memoized value produced by `factory`. |
+| `getStats(label)` | `MemoProfilingStats` | Returns cumulative hit/miss and recompute timing stats. |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useMemoProfiling demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&embed=1&view=preview&startScript=dev&demo=useMemoProfiling"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&startScript=dev&demo=useMemoProfiling"
+/>
+
+## Code example
+
+```tsx
+import {getStats, useMemoProfiling} from 'react-perf-hooks';
+
+type Props = {items: string[]; query: string};
+
+export function FilteredList({items, query}: Props) {
+  const filtered = useMemoProfiling(
+    () => items.filter((item) => item.includes(query)),
+    [items, query],
+    'FilteredList'
+  );
+
+  const stats = getStats('FilteredList');
+
+  return (
+    <div>
+      <p>
+        Hits: {stats.hits} | Misses: {stats.misses}
+      </p>
+      {filtered.map((item) => (
+        <div key={item}>{item}</div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useMemoProfiling)
+- [Medium companion article](https://medium.com/search?q=useMemoProfiling)

@@ -1,0 +1,62 @@
+---
+title: Getting Started
+description: Install react-perf-hooks and understand development vs production behavior.
+---
+
+`react-perf-hooks` is a focused toolkit for measuring render frequency, runtime cost, and user-facing performance signals in React applications.
+
+## Installation
+
+```bash
+npm install react-perf-hooks
+```
+
+Optional peer dependency for `useWebVitals`:
+
+```bash
+npm install web-vitals
+```
+
+## Setup
+
+Import only the hooks you need. The package is tree-shakeable.
+
+```tsx
+import {
+  useRenderTracker,
+  useRenderBudget,
+  usePerformanceMark,
+  useComponentLifecycle,
+  useMemoProfiling,
+  useWebVitals,
+  useDebouncedState,
+  useThrottledState,
+  useIntersectionObserver,
+} from 'react-perf-hooks';
+```
+
+## Development vs production behavior
+
+- `useRenderTracker`, `useRenderBudget`, `useComponentLifecycle`, and `useMemoProfiling` are development-oriented by default.
+- Most debug logging is disabled when `NODE_ENV=production`.
+- If needed, you can force-enable selected hooks in production for temporary diagnostics via their `enabled` options.
+
+## Quick start example
+
+```tsx
+import {useRenderTracker, useRenderBudget, useDebouncedState} from 'react-perf-hooks';
+
+export function SearchPanel() {
+  const [query, setQuery, stats] = useDebouncedState('', 250);
+
+  useRenderTracker({query}, {name: 'SearchPanel', warnAt: 12});
+  useRenderBudget(16, 'SearchPanel');
+
+  return (
+    <section>
+      <input value={query} onChange={(event) => setQuery(event.target.value)} />
+      <p>Skipped renders: {stats.skippedRenders}</p>
+    </section>
+  );
+}
+```

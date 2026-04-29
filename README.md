@@ -7,6 +7,8 @@
 [![CI](https://github.com/valyefimov/react-perf-hooks/actions/workflows/ci.yml/badge.svg)](https://github.com/valyefimov/react-perf-hooks/actions)
 [![bundle size](https://img.shields.io/bundlephobia/minzip/react-perf-hooks)](https://bundlephobia.com/package/react-perf-hooks)
 
+**Live docs:** [react-perf-hooks docs website](https://valyefimov.github.io/react-perf-hooks/)
+
 ---
 
 ## Why react-perf-hooks?
@@ -37,17 +39,17 @@ npm install web-vitals
 
 | Hook | What it solves | Docs |
 |------|---------------|------|
-| `useRenderTracker` | Find components that re-render too often and why | [Full docs](./docs/useRenderTracker.md) |
-| `useRenderBudget` | Warn when a single render commit exceeds a time budget (default: 16ms) | [Full docs](./docs/useRenderBudget.md) |
-| `usePerformanceMark` | Precise timing of any code path via the Performance API | [Full docs](./docs/usePerformanceMark.md) |
-| `useComponentLifecycle` | Track mount/unmount timings and live component lifetime | [Full docs](./docs/useComponentLifecycle.md) |
-| `useMemoProfiling` | Profile `useMemo` cache hits/misses and recomputation costs | [Full docs](./docs/useMemoProfiling.md) |
-| `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](./docs/useWebVitals.md) |
-| `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](./docs/useDebouncedState.md) |
-| `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](./docs/useThrottledState.md) |
-| `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](./docs/useIntersectionObserver.md) |
+| `useRenderTracker` | Find components that re-render too often and why | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-render-tracker) |
+| `useRenderBudget` | Warn when a single render commit exceeds a time budget (default: 16ms) | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-render-budget) |
+| `usePerformanceMark` | Precise timing of any code path via the Performance API | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-performance-mark) |
+| `useComponentLifecycle` | Track mount/unmount timings and live component lifetime | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-component-lifecycle) |
+| `useMemoProfiling` | Profile `useMemo` cache hits/misses and recomputation costs | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-memo-profiling) |
+| `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-web-vitals) |
+| `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-debounced-state) |
+| `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-throttled-state) |
+| `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-intersection-observer) |
 
-See the [docs overview](./docs/index.md) for a complete reference.
+See the [docs overview](https://valyefimov.github.io/react-perf-hooks/docs/getting-started) for a complete reference.
 
 ---
 
