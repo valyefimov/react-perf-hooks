@@ -21,7 +21,6 @@ npm run serve
 - `docs/getting-started.mdx`
 - `docs/hooks/*.mdx` (one page per hook)
 - `docs/guides/performance-checklist.mdx`
-- `docs/decisions/docs-platform-choice.mdx`
 
 ## Deployment
 

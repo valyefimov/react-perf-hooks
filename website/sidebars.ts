@@ -24,11 +24,6 @@ const sidebars: SidebarsConfig = {
       label: 'Guides',
       items: ['guides/performance-checklist'],
     },
-    {
-      type: 'category',
-      label: 'Decisions',
-      items: ['decisions/docs-platform-choice'],
-    },
   ],
 };
 
