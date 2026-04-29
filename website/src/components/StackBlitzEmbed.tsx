@@ -37,7 +37,7 @@ export default function StackBlitzEmbed({
   title,
   src,
   openHref,
-  height = 520,
+  height = 760,
 }: StackBlitzEmbedProps) {
   const [loaded, setLoaded] = useState(false);
 
