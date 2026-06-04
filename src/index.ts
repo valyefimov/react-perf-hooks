@@ -16,6 +16,9 @@ export type { MemoProfilingStats } from './hooks/useMemoProfiling';
 export { useWebVitals } from './hooks/useWebVitals';
 export type { WebVitalMetric, WebVitalsState, UseWebVitalsOptions, VitalRating } from './hooks/useWebVitals';
 
+export { useINP } from './hooks/useINP';
+export type { INPMetric, INPRating, UseINPOptions, UseINPReturn } from './hooks/useINP';
+
 export { useDebouncedState } from './hooks/useDebouncedState';
 export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDebouncedState';
 

@@ -45,6 +45,7 @@ npm install web-vitals
 | `useComponentLifecycle` | Track mount/unmount timings and live component lifetime | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-component-lifecycle) |
 | `useMemoProfiling` | Profile `useMemo` cache hits/misses and recomputation costs | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-memo-profiling) |
 | `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-web-vitals) |
+| `useINP` | Native Interaction to Next Paint tracking with PerformanceObserver event entries | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-inp) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-debounced-state) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-throttled-state) |
 | `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-intersection-observer) |
@@ -63,6 +64,7 @@ import {
   useComponentLifecycle,
   useMemoProfiling,
   useWebVitals,
+  useINP,
   useDebouncedState,
   useThrottledState,
   useIntersectionObserver,
@@ -87,6 +89,11 @@ function App() {
   // Subscribe to Core Web Vitals and report to analytics
   const vitals = useWebVitals({
     onMetric: (m) => navigator.sendBeacon('/analytics', JSON.stringify(m)),
+  });
+
+  // Track the current page's worst Interaction to Next Paint
+  const inp = useINP({
+    onMetric: (m) => navigator.sendBeacon('/analytics/inp', JSON.stringify(m)),
   });
 
   // Debounce state updates and inspect profiling counters
@@ -114,6 +121,8 @@ function App() {
 
 `useRenderBudget` demo: [docs/demos/useRenderBudgetDemo.tsx](./docs/demos/useRenderBudgetDemo.tsx)
 
+`useINP` demo: [docs/demos/useINPDemo.tsx](./docs/demos/useINPDemo.tsx)
+
 ---
 
 ## TypeScript
@@ -133,6 +142,10 @@ import type {
   WebVitalsState,
   UseWebVitalsOptions,
   VitalRating,
+  INPMetric,
+  INPRating,
+  UseINPOptions,
+  UseINPReturn,
   DebouncedStateStats,
   UseDebouncedStateReturn,
   ThrottledStateStats,

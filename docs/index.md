@@ -12,6 +12,7 @@ A focused collection of React hooks for **performance monitoring, profiling, and
 | [useComponentLifecycle](./useComponentLifecycle.md) | Track mount and unmount times, plus live lifetime since mount |
 | [useMemoProfiling](./useMemoProfiling.md) | Profile `useMemo` cache effectiveness with HIT/MISS stats |
 | [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
+| [useINP](./useINP.md) | Track Interaction to Next Paint from native Event Timing entries |
 | [useDebouncedState](./useDebouncedState.md) | Debounced `useState` replacement with skipped-render profiling |
 | [useThrottledState](./useThrottledState.md) | Throttled `useState` replacement with dropped-update profiling |
 | [useIntersectionObserver](./useIntersectionObserver.md) | Observe element visibility and collect first-visible and total-visible metrics |
@@ -40,6 +41,7 @@ import {
   useComponentLifecycle,
   useMemoProfiling,
   useWebVitals,
+  useINP,
   useDebouncedState,
   useThrottledState,
   useIntersectionObserver,
@@ -65,6 +67,10 @@ import type {
   WebVitalsState,
   UseWebVitalsOptions,
   VitalRating,
+  INPMetric,
+  INPRating,
+  UseINPOptions,
+  UseINPReturn,
   DebouncedStateStats,
   UseDebouncedStateReturn,
   ThrottledStateStats,
