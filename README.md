@@ -46,6 +46,7 @@ npm install web-vitals
 | `useMemoProfiling` | Profile `useMemo` cache hits/misses and recomputation costs | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-memo-profiling) |
 | `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-web-vitals) |
 | `useINP` | Native Interaction to Next Paint tracking with PerformanceObserver event entries | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-inp) |
+| `useCLS` | Component-scoped Cumulative Layout Shift tracking for a specific DOM node | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-cls) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-debounced-state) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-throttled-state) |
 | `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-intersection-observer) |
@@ -65,6 +66,7 @@ import {
   useMemoProfiling,
   useWebVitals,
   useINP,
+  useCLS,
   useDebouncedState,
   useThrottledState,
   useIntersectionObserver,
@@ -96,6 +98,11 @@ function App() {
     onMetric: (m) => navigator.sendBeacon('/analytics/inp', JSON.stringify(m)),
   });
 
+  // Track Cumulative Layout Shift for one component root
+  const cls = useCLS<HTMLDivElement>({
+    onMetric: (m) => navigator.sendBeacon('/analytics/cls/component', JSON.stringify(m)),
+  });
+
   // Debounce state updates and inspect profiling counters
   const [query, setQuery, stats] = useDebouncedState('', 250);
 
@@ -105,7 +112,7 @@ function App() {
   // Track when an element first becomes visible and for how long it stays visible
   const { ref, isVisible, metrics } = useIntersectionObserver({ threshold: 0.25 });
 
-  return <div>...</div>;
+  return <div ref={cls.ref}>...</div>;
 }
 ```
 
@@ -122,6 +129,8 @@ function App() {
 `useRenderBudget` demo: [docs/demos/useRenderBudgetDemo.tsx](./docs/demos/useRenderBudgetDemo.tsx)
 
 `useINP` demo: [docs/demos/useINPDemo.tsx](./docs/demos/useINPDemo.tsx)
+
+`useCLS` demo: [docs/demos/useCLSDemo.tsx](./docs/demos/useCLSDemo.tsx)
 
 ---
 
@@ -146,6 +155,11 @@ import type {
   INPRating,
   UseINPOptions,
   UseINPReturn,
+  CLSAttribution,
+  CLSMetric,
+  CLSRating,
+  UseCLSOptions,
+  UseCLSReturn,
   DebouncedStateStats,
   UseDebouncedStateReturn,
   ThrottledStateStats,
