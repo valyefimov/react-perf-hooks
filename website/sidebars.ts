@@ -14,6 +14,7 @@ const sidebars: SidebarsConfig = {
         'hooks/use-component-lifecycle',
         'hooks/use-memo-profiling',
         'hooks/use-web-vitals',
+        'hooks/use-inp',
         'hooks/use-debounced-state',
         'hooks/use-throttled-state',
         'hooks/use-intersection-observer',
