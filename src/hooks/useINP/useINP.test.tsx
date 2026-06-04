@@ -143,12 +143,15 @@ describe('useINP', () => {
     expect(onMetric).toHaveBeenLastCalledWith(expect.objectContaining({ value: 350 }));
   });
 
-  it('reports null interactionId when the browser does not expose a positive id', () => {
-    const { result } = renderHook(() => useINP());
+  it('ignores entries without a positive interaction id', () => {
+    const onMetric = vi.fn();
+    const { result } = renderHook(() => useINP({ onMetric }));
 
     emitEntry({ name: 'click', duration: 120, startTime: 10, interactionId: 0 });
+    emitEntry({ name: 'pointerover', duration: 400, startTime: 20 });
 
-    expect(result.current.metric?.interactionId).toBeNull();
+    expect(result.current.metric).toBeNull();
+    expect(onMetric).not.toHaveBeenCalled();
   });
 
   it('does not subscribe when enabled=false', () => {

@@ -136,7 +136,10 @@ export function useINP(options: UseINPOptions = {}): UseINPReturn {
     const Observer = PerformanceObserver as PerformanceObserverConstructorLike;
     const observer = new Observer((list) => {
       for (const entry of list.getEntries()) {
-        updateMetric(entry as PerformanceEventTimingLike);
+        const eventEntry = entry as PerformanceEventTimingLike;
+        if (typeof eventEntry.interactionId !== 'number' || eventEntry.interactionId <= 0) continue;
+
+        updateMetric(eventEntry);
       }
     });
 
