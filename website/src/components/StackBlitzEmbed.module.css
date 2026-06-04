@@ -1,0 +1,61 @@
+.container {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.frame {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  width: 100%;
+}
+
+.actionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.primaryAction,
+.secondaryAction {
+  align-items: center;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 700;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.7rem 1rem;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.primaryAction {
+  background: var(--ifm-color-primary);
+  color: #ffffff;
+}
+
+.primaryAction:hover,
+.primaryAction:focus {
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.secondaryAction {
+  background: var(--ifm-color-emphasis-200);
+  color: var(--ifm-font-color-base);
+}
+
+.secondaryAction:hover,
+.secondaryAction:focus {
+  color: var(--ifm-font-color-base);
+  text-decoration: none;
+}
+
+.notice {
+  background: var(--ifm-color-emphasis-100);
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 10px;
+  margin: 0;
+  padding: 0.8rem 1rem;
+}

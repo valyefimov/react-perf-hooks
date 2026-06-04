@@ -30,7 +30,7 @@ export default function Home(): ReactNode {
             Measure React performance without slowing your workflow
           </Heading>
           <p className={styles.subtitle}>
-            Explore all hooks with API references, live demo embeds, and practical guidance before you install.
+            Explore all hooks with API references, interactive demos, and practical guidance before you install.
           </p>
           <div className={styles.ctaRow}>
             <Link className="button button--primary button--lg" to="/docs/getting-started">
@@ -56,8 +56,8 @@ export default function Home(): ReactNode {
               <p>Every hook has signature details, parameter and return tables, and copy-ready usage examples.</p>
             </article>
             <article className={styles.card}>
-              <h3>Live demo embeds</h3>
-              <p>Each hook page includes a StackBlitz embed so developers can test behavior interactively.</p>
+              <h3>Interactive demos</h3>
+              <p>Each hook page links to a StackBlitz workspace so developers can test behavior interactively.</p>
             </article>
             <article className={styles.card}>
               <h3>Performance guide</h3>
