@@ -251,37 +251,34 @@ export function useCLS<T extends Element = HTMLElement>(options: UseCLSOptions =
     setTarget(node);
   }, []);
 
-  const updateMetric = useCallback(
-    (entry: LayoutShiftEntryLike, matchingSources: CLSAttribution[]) => {
-      const shiftValue = typeof entry.value === 'number' ? entry.value : 0;
-      if (shiftValue <= 0) return;
+  const updateMetric = useCallback((entry: LayoutShiftEntryLike, matchingSources: CLSAttribution[]) => {
+    const shiftValue = typeof entry.value === 'number' ? entry.value : 0;
+    if (shiftValue <= 0) return;
 
-      const isSameSession =
-        sessionValueRef.current > 0 &&
-        entry.startTime - sessionLastEntryTimeRef.current < CLS_SESSION_GAP_LIMIT &&
-        entry.startTime - sessionStartTimeRef.current < CLS_SESSION_WINDOW_LIMIT;
+    const isSameSession =
+      sessionValueRef.current > 0 &&
+      entry.startTime - sessionLastEntryTimeRef.current < CLS_SESSION_GAP_LIMIT &&
+      entry.startTime - sessionStartTimeRef.current < CLS_SESSION_WINDOW_LIMIT;
 
-      if (isSameSession) {
-        sessionValueRef.current += shiftValue;
-      } else {
-        sessionValueRef.current = shiftValue;
-        sessionStartTimeRef.current = entry.startTime;
-      }
+    if (isSameSession) {
+      sessionValueRef.current += shiftValue;
+    } else {
+      sessionValueRef.current = shiftValue;
+      sessionStartTimeRef.current = entry.startTime;
+    }
 
-      sessionLastEntryTimeRef.current = entry.startTime;
+    sessionLastEntryTimeRef.current = entry.startTime;
 
-      const previousValue = currentValueRef.current;
-      currentValueRef.current = Math.max(currentValueRef.current, sessionValueRef.current);
-      const nextMetric = createCLSMetric(entry, shiftValue, currentValueRef.current, matchingSources);
+    const previousValue = currentValueRef.current;
+    currentValueRef.current = Math.max(currentValueRef.current, sessionValueRef.current);
+    const nextMetric = createCLSMetric(entry, shiftValue, currentValueRef.current, matchingSources);
 
-      setMetric(nextMetric);
-      setEntries((previous) => [...previous, nextMetric].slice(-maxEntriesRef.current));
-      if (currentValueRef.current > previousValue) {
-        onMetricRef.current?.(nextMetric);
-      }
-    },
-    []
-  );
+    setMetric(nextMetric);
+    setEntries((previous) => [...previous, nextMetric].slice(-maxEntriesRef.current));
+    if (currentValueRef.current > previousValue) {
+      onMetricRef.current?.(nextMetric);
+    }
+  }, []);
 
   useEffect(() => {
     if (!enabled || !isSupported || !target) return;
