@@ -83,7 +83,7 @@ describe('useCLS', () => {
     });
   });
 
-  it('accumulates CLS for the observed element', () => {
+  it('accumulates CLS inside one session window for the observed element', () => {
     const target = document.createElement('div');
     const { result } = renderHook(() => useCLS<HTMLDivElement>());
     attachRef(result.current.ref, target);
@@ -113,6 +113,64 @@ describe('useCLS', () => {
     });
     expect(result.current.value).toBe(0.1);
     expect(result.current.entries).toHaveLength(2);
+  });
+
+  it('reports the largest CLS session window instead of a lifetime sum', () => {
+    const target = document.createElement('div');
+    const onMetric = vi.fn();
+    const { result } = renderHook(() => useCLS<HTMLDivElement>({ onMetric }));
+    attachRef(result.current.ref, target);
+
+    emitEntry({
+      name: 'layout-shift',
+      value: 0.08,
+      startTime: 100,
+      hadRecentInput: false,
+      sources: [{ node: target }],
+    });
+    emitEntry({
+      name: 'layout-shift',
+      value: 0.07,
+      startTime: 2200,
+      hadRecentInput: false,
+      sources: [{ node: target }],
+    });
+    emitEntry({
+      name: 'layout-shift',
+      value: 0.06,
+      startTime: 2600,
+      hadRecentInput: false,
+      sources: [{ node: target }],
+    });
+
+    expect(result.current.metric).toMatchObject({
+      value: 0.13,
+      delta: 0.06,
+      rating: 'needs-improvement',
+      startTime: 2600,
+    });
+    expect(result.current.value).toBe(0.13);
+    expect(result.current.entries.map((entry) => entry.value)).toEqual([0.08, 0.08, 0.13]);
+    expect(onMetric).toHaveBeenCalledTimes(2);
+    expect(onMetric).toHaveBeenLastCalledWith(expect.objectContaining({ value: 0.13 }));
+  });
+
+  it('starts a new CLS session after a five second window', () => {
+    const target = document.createElement('div');
+    const { result } = renderHook(() => useCLS<HTMLDivElement>());
+    attachRef(result.current.ref, target);
+
+    emitEntry({ value: 0.04, startTime: 100, hadRecentInput: false, sources: [{ node: target }] });
+    emitEntry({ value: 0.05, startTime: 900, hadRecentInput: false, sources: [{ node: target }] });
+    emitEntry({ value: 0.06, startTime: 5200, hadRecentInput: false, sources: [{ node: target }] });
+
+    expect(result.current.value).toBe(0.09);
+    expect(result.current.metric).toMatchObject({
+      value: 0.09,
+      delta: 0.06,
+      rating: 'good',
+      startTime: 5200,
+    });
   });
 
   it('tracks layout shifts attributed to descendants by default', () => {
@@ -157,6 +215,41 @@ describe('useCLS', () => {
     expect(result.current.entries).toHaveLength(1);
   });
 
+  it('does not resubscribe or recount buffered entries when options change', () => {
+    const target = document.createElement('div');
+    const onMetric = vi.fn();
+    const entry = {
+      value: 0.08,
+      startTime: 20,
+      hadRecentInput: false,
+      sources: [{ node: target }],
+    };
+    const { result, rerender } = renderHook(
+      ({ maxEntries, includeDescendants }) =>
+        useCLS<HTMLDivElement>({
+          maxEntries,
+          includeDescendants,
+          onMetric,
+        }),
+      {
+        initialProps: {
+          maxEntries: 50,
+          includeDescendants: true,
+        },
+      }
+    );
+    attachRef(result.current.ref, target);
+
+    emitEntry(entry);
+    rerender({ maxEntries: 2, includeDescendants: false });
+    emitEntry(entry);
+
+    expect(MockPerformanceObserver.observe).toHaveBeenCalledTimes(1);
+    expect(result.current.value).toBe(0.08);
+    expect(result.current.entries).toHaveLength(1);
+    expect(onMetric).toHaveBeenCalledTimes(1);
+  });
+
   it('ignores layout shifts caused by recent input by default', () => {
     const target = document.createElement('div');
     const onMetric = vi.fn();
@@ -193,7 +286,7 @@ describe('useCLS', () => {
     });
   });
 
-  it('calls onMetric with the cumulative component CLS metric', () => {
+  it('calls onMetric when the largest component CLS session value changes', () => {
     const target = document.createElement('div');
     const onMetric = vi.fn();
     const { result } = renderHook(() => useCLS<HTMLDivElement>({ onMetric }));
@@ -201,6 +294,8 @@ describe('useCLS', () => {
 
     emitEntry({ value: 0.12, startTime: 1, hadRecentInput: false, sources: [{ node: target }] });
     emitEntry({ value: 0.14, startTime: 2, hadRecentInput: false, sources: [{ node: target }] });
+
+    emitEntry({ value: 0.1, startTime: 3000, hadRecentInput: false, sources: [{ node: target }] });
 
     expect(onMetric).toHaveBeenCalledTimes(2);
     expect(onMetric).toHaveBeenLastCalledWith(expect.objectContaining({ value: 0.26, rating: 'poor' }));

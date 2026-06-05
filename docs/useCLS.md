@@ -1,6 +1,6 @@
 # useCLS
 
-Tracks **Cumulative Layout Shift (CLS)** for a specific component root. Attach the returned `ref` to the DOM node you want to inspect; the hook accumulates layout-shift entries attributed to that element or, by default, its descendants.
+Tracks **Cumulative Layout Shift (CLS)** for a specific component root. Attach the returned `ref` to the DOM node you want to inspect; the hook reports the largest CLS session window for layout-shift entries attributed to that element or, by default, its descendants.
 
 ## Why use it?
 
@@ -49,8 +49,8 @@ function useCLS<T extends Element = HTMLElement>(options?: UseCLSOptions): UseCL
 | Field | Type | Description |
 |-------|------|-------------|
 | `ref` | `(node: T \| null) => void` | Attach to the component root you want to inspect. |
-| `metric` | `CLSMetric \| null` | Latest cumulative CLS metric for the observed element. |
-| `value` | `number` | Current cumulative CLS value. Starts at `0`. |
+| `metric` | `CLSMetric \| null` | Latest CLS metric for the observed element, scored by largest session window. |
+| `value` | `number` | Current largest CLS session-window value. Starts at `0`. |
 | `rating` | `CLSRating \| null` | `"good"`, `"needs-improvement"`, or `"poor"`. |
 | `entries` | `CLSMetric[]` | Matching layout-shift metrics retained for debugging. |
 | `isSupported` | `boolean` | Whether the browser supports Layout Instability entries. |
@@ -146,3 +146,4 @@ function Shell() {
 - `useCLS` relies on layout-shift attribution sources. Entries with no matching source are ignored.
 - By default, descendant attribution is included because the browser often reports the shifted child node rather than the component root.
 - `ignoreRecentInput` defaults to `true` so the value follows Core Web Vitals CLS semantics.
+- The reported value uses CLS session windows rather than summing every matching shift across the whole page view.

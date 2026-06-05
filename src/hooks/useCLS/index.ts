@@ -14,7 +14,7 @@ export interface CLSAttribution {
 export interface CLSMetric {
   /** Always `CLS` for easy analytics payloads. */
   name: 'CLS';
-  /** Cumulative Layout Shift score accumulated for the observed element. */
+  /** Largest CLS session-window score for the observed element. */
   value: number;
   /** Delta contributed by the latest matching layout-shift entry. */
   delta: number;
@@ -61,7 +61,7 @@ export interface UseCLSOptions {
 export interface UseCLSReturn<T extends Element = HTMLElement> {
   /** Attach this ref to the component root you want to inspect. */
   ref: (node: T | null) => void;
-  /** Latest cumulative CLS metric for the observed element. */
+  /** Latest CLS metric for the observed element, scored by largest session window. */
   metric: CLSMetric | null;
   /** Convenience value from `metric.value`. */
   value: number;
@@ -99,6 +99,8 @@ type PerformanceObserverConstructorLike = {
 const DEFAULT_MAX_ENTRIES = 50;
 const CLS_GOOD_THRESHOLD = 0.1;
 const CLS_POOR_THRESHOLD = 0.25;
+const CLS_SESSION_GAP_LIMIT = 1000;
+const CLS_SESSION_WINDOW_LIMIT = 5000;
 
 function getCLSRating(value: number): CLSRating {
   if (value < CLS_GOOD_THRESHOLD) return 'good';
@@ -162,10 +164,27 @@ function createCLSMetric(
   };
 }
 
+function getRectKey(rect?: DOMRectReadOnly): string {
+  if (!rect) return '';
+
+  return `${rect.x}:${rect.y}:${rect.width}:${rect.height}`;
+}
+
+function getLayoutShiftEntryKey(entry: LayoutShiftEntryLike): string {
+  const sourceKeys = (entry.sources ?? [])
+    .map((source) => {
+      const nodeName = source.node instanceof Element ? source.node.tagName : source.node?.nodeName;
+      return `${nodeName ?? 'unknown'}:${getRectKey(source.previousRect)}:${getRectKey(source.currentRect)}`;
+    })
+    .join('|');
+
+  return `${entry.startTime}:${entry.value ?? 0}:${Boolean(entry.hadRecentInput)}:${sourceKeys}`;
+}
+
 /**
  * Tracks Cumulative Layout Shift (CLS) for a specific component root.
  * Attach the returned `ref` to the element you want to inspect; the hook
- * accumulates layout-shift entries attributed to that node or its descendants.
+ * reports the largest CLS session window attributed to that node or its descendants.
  *
  * @example
  * function ProductCard() {
@@ -189,19 +208,42 @@ export function useCLS<T extends Element = HTMLElement>(options: UseCLSOptions =
   const [target, setTarget] = useState<T | null>(null);
   const [metric, setMetric] = useState<CLSMetric | null>(null);
   const [entries, setEntries] = useState<CLSMetric[]>([]);
-  const cumulativeValueRef = useRef(0);
+  const currentValueRef = useRef(0);
+  const sessionValueRef = useRef(0);
+  const sessionStartTimeRef = useRef(0);
+  const sessionLastEntryTimeRef = useRef(0);
+  const processedEntryKeysRef = useRef<Set<string>>(new Set());
   const targetRef = useRef<T | null>(null);
   const onMetricRef = useRef(onMetric);
+  const includeDescendantsRef = useRef(includeDescendants);
+  const ignoreRecentInputRef = useRef(ignoreRecentInput);
+  const maxEntriesRef = useRef(maxEntries);
   const isSupported = supportsLayoutShift();
 
   useEffect(() => {
     onMetricRef.current = onMetric;
   }, [onMetric]);
 
+  useEffect(() => {
+    includeDescendantsRef.current = includeDescendants;
+  }, [includeDescendants]);
+
+  useEffect(() => {
+    ignoreRecentInputRef.current = ignoreRecentInput;
+  }, [ignoreRecentInput]);
+
+  useEffect(() => {
+    maxEntriesRef.current = maxEntries;
+  }, [maxEntries]);
+
   const ref = useCallback((node: T | null) => {
     if (node !== targetRef.current) {
       targetRef.current = node;
-      cumulativeValueRef.current = 0;
+      currentValueRef.current = 0;
+      sessionValueRef.current = 0;
+      sessionStartTimeRef.current = 0;
+      sessionLastEntryTimeRef.current = 0;
+      processedEntryKeysRef.current.clear();
       setMetric(null);
       setEntries([]);
     }
@@ -214,14 +256,31 @@ export function useCLS<T extends Element = HTMLElement>(options: UseCLSOptions =
       const shiftValue = typeof entry.value === 'number' ? entry.value : 0;
       if (shiftValue <= 0) return;
 
-      cumulativeValueRef.current += shiftValue;
-      const nextMetric = createCLSMetric(entry, shiftValue, cumulativeValueRef.current, matchingSources);
+      const isSameSession =
+        sessionValueRef.current > 0 &&
+        entry.startTime - sessionLastEntryTimeRef.current < CLS_SESSION_GAP_LIMIT &&
+        entry.startTime - sessionStartTimeRef.current < CLS_SESSION_WINDOW_LIMIT;
+
+      if (isSameSession) {
+        sessionValueRef.current += shiftValue;
+      } else {
+        sessionValueRef.current = shiftValue;
+        sessionStartTimeRef.current = entry.startTime;
+      }
+
+      sessionLastEntryTimeRef.current = entry.startTime;
+
+      const previousValue = currentValueRef.current;
+      currentValueRef.current = Math.max(currentValueRef.current, sessionValueRef.current);
+      const nextMetric = createCLSMetric(entry, shiftValue, currentValueRef.current, matchingSources);
 
       setMetric(nextMetric);
-      setEntries((previous) => [...previous, nextMetric].slice(-maxEntries));
-      onMetricRef.current?.(nextMetric);
+      setEntries((previous) => [...previous, nextMetric].slice(-maxEntriesRef.current));
+      if (currentValueRef.current > previousValue) {
+        onMetricRef.current?.(nextMetric);
+      }
     },
-    [maxEntries]
+    []
   );
 
   useEffect(() => {
@@ -231,11 +290,15 @@ export function useCLS<T extends Element = HTMLElement>(options: UseCLSOptions =
     const observer = new Observer((list) => {
       for (const entry of list.getEntries()) {
         const layoutShiftEntry = entry as LayoutShiftEntryLike;
-        if (ignoreRecentInput && layoutShiftEntry.hadRecentInput) continue;
+        const entryKey = getLayoutShiftEntryKey(layoutShiftEntry);
+        if (processedEntryKeysRef.current.has(entryKey)) continue;
 
-        const matchingSources = getMatchingSources(layoutShiftEntry, target, includeDescendants);
+        if (ignoreRecentInputRef.current && layoutShiftEntry.hadRecentInput) continue;
+
+        const matchingSources = getMatchingSources(layoutShiftEntry, target, includeDescendantsRef.current);
         if (matchingSources.length === 0) continue;
 
+        processedEntryKeysRef.current.add(entryKey);
         updateMetric(layoutShiftEntry, matchingSources);
       }
     });
@@ -246,7 +309,7 @@ export function useCLS<T extends Element = HTMLElement>(options: UseCLSOptions =
     });
 
     return () => observer.disconnect();
-  }, [enabled, ignoreRecentInput, includeDescendants, isSupported, target, updateMetric]);
+  }, [enabled, isSupported, target, updateMetric]);
 
   return {
     ref,

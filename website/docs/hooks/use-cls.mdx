@@ -7,7 +7,7 @@ import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
 
 ## Description and use case
 
-`useCLS` tracks Cumulative Layout Shift for one DOM node. Attach the returned `ref` to a component root and the hook accumulates layout-shift entries attributed to that element or its descendants.
+`useCLS` tracks Cumulative Layout Shift for one DOM node. Attach the returned `ref` to a component root and the hook reports the largest CLS session window for layout-shift entries attributed to that element or its descendants.
 
 This is useful when page-level CLS tells you that something moved, but you need to identify the component that jumped while dynamic content loaded.
 
@@ -32,8 +32,8 @@ function useCLS<T extends Element = HTMLElement>(options?: UseCLSOptions): UseCL
 | Field | Type | Description |
 | --- | --- | --- |
 | `ref` | `(node: T \| null) => void` | Attach to the component root you want to inspect. |
-| `metric` | `CLSMetric \| null` | Latest cumulative CLS metric for the observed element. |
-| `value` | `number` | Current cumulative CLS value. Starts at `0`. |
+| `metric` | `CLSMetric \| null` | Latest CLS metric for the observed element, scored by largest session window. |
+| `value` | `number` | Current largest CLS session-window value. Starts at `0`. |
 | `rating` | `CLSRating \| null` | `good`, `needs-improvement`, or `poor`. |
 | `entries` | `CLSMetric[]` | Matching layout-shift metrics retained for debugging. |
 | `isSupported` | `boolean` | Whether this browser supports Layout Instability entries. |
