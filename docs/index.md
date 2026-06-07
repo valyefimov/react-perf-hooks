@@ -14,6 +14,7 @@ A focused collection of React hooks for **performance monitoring, profiling, and
 | [useWebVitals](./useWebVitals.md) | Subscribe to all five Core Web Vitals as reactive React state |
 | [useINP](./useINP.md) | Track Interaction to Next Paint from native Event Timing entries |
 | [useCLS](./useCLS.md) | Track Cumulative Layout Shift for one component root |
+| [useLongTasks](./useLongTasks.md) | Track main-thread tasks over 50 ms and attach freezes to screens |
 | [useDebouncedState](./useDebouncedState.md) | Debounced `useState` replacement with skipped-render profiling |
 | [useThrottledState](./useThrottledState.md) | Throttled `useState` replacement with dropped-update profiling |
 | [useIntersectionObserver](./useIntersectionObserver.md) | Observe element visibility and collect first-visible and total-visible metrics |
@@ -44,6 +45,7 @@ import {
   useWebVitals,
   useINP,
   useCLS,
+  useLongTasks,
   useDebouncedState,
   useThrottledState,
   useIntersectionObserver,
@@ -78,6 +80,10 @@ import type {
   CLSRating,
   UseCLSOptions,
   UseCLSReturn,
+  LongTaskAttribution,
+  LongTaskMetric,
+  UseLongTasksOptions,
+  UseLongTasksReturn,
   DebouncedStateStats,
   UseDebouncedStateReturn,
   ThrottledStateStats,

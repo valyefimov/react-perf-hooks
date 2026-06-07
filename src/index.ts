@@ -22,6 +22,14 @@ export type { INPMetric, INPRating, UseINPOptions, UseINPReturn } from './hooks/
 export { useCLS } from './hooks/useCLS';
 export type { CLSAttribution, CLSMetric, CLSRating, UseCLSOptions, UseCLSReturn } from './hooks/useCLS';
 
+export { useLongTasks } from './hooks/useLongTasks';
+export type {
+  LongTaskAttribution,
+  LongTaskMetric,
+  UseLongTasksOptions,
+  UseLongTasksReturn,
+} from './hooks/useLongTasks';
+
 export { useDebouncedState } from './hooks/useDebouncedState';
 export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDebouncedState';
 

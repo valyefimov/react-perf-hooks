@@ -16,6 +16,7 @@ const sidebars: SidebarsConfig = {
         'hooks/use-web-vitals',
         'hooks/use-inp',
         'hooks/use-cls',
+        'hooks/use-long-tasks',
         'hooks/use-debounced-state',
         'hooks/use-throttled-state',
         'hooks/use-intersection-observer',

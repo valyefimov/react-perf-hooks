@@ -10,6 +10,7 @@ import {UseThrottledStateDemo} from './demos/useThrottledStateDemo';
 import {UseWebVitalsDemo} from './demos/useWebVitalsDemo';
 import {UseINPDemo} from './demos/useINPDemo';
 import {UseCLSDemo} from './demos/useCLSDemo';
+import {UseLongTasksDemo} from './demos/useLongTasksDemo';
 
 type DemoKey =
   | 'useRenderTracker'
@@ -20,6 +21,7 @@ type DemoKey =
   | 'useWebVitals'
   | 'useINP'
   | 'useCLS'
+  | 'useLongTasks'
   | 'useDebouncedState'
   | 'useThrottledState'
   | 'useIntersectionObserver';
@@ -33,6 +35,7 @@ const demos: Record<DemoKey, {label: string; Component: () => JSX.Element}> = {
   useWebVitals: {label: 'useWebVitals', Component: UseWebVitalsDemo},
   useINP: {label: 'useINP', Component: UseINPDemo},
   useCLS: {label: 'useCLS', Component: UseCLSDemo},
+  useLongTasks: {label: 'useLongTasks', Component: UseLongTasksDemo},
   useDebouncedState: {label: 'useDebouncedState', Component: UseDebouncedStateDemo},
   useThrottledState: {label: 'useThrottledState', Component: UseThrottledStateDemo},
   useIntersectionObserver: {label: 'useIntersectionObserver', Component: UseIntersectionObserverDemo},
