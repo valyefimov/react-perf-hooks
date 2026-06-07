@@ -19,6 +19,9 @@ export type { WebVitalMetric, WebVitalsState, UseWebVitalsOptions, VitalRating }
 export { useINP } from './hooks/useINP';
 export type { INPMetric, INPRating, UseINPOptions, UseINPReturn } from './hooks/useINP';
 
+export { useCLS } from './hooks/useCLS';
+export type { CLSAttribution, CLSMetric, CLSRating, UseCLSOptions, UseCLSReturn } from './hooks/useCLS';
+
 export { useDebouncedState } from './hooks/useDebouncedState';
 export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDebouncedState';
 
