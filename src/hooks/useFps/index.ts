@@ -33,6 +33,7 @@ export interface UseFpsReturn {
 
 const DEFAULT_THRESHOLD = 30;
 const DEFAULT_WINDOW_SIZE = 10;
+const DEFAULT_MAX_FRAME_DELTA_MS = 1000;
 
 function supportsAnimationFrames(): boolean {
   return (
@@ -92,13 +93,28 @@ export function useFps(options: UseFpsOptions = {}): UseFpsReturn {
     let isDisposed = false;
     const frameDurations: number[] = [];
 
+    const resetWindow = () => {
+      previousFrameTime = null;
+      frameTotal = 0;
+      wasLowPerformance = false;
+      frameDurations.length = 0;
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        resetWindow();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     const tick: FrameRequestCallback = (timestamp) => {
       if (isDisposed) return;
 
       if (previousFrameTime !== null) {
         const frameDuration = timestamp - previousFrameTime;
 
-        if (Number.isFinite(frameDuration) && frameDuration > 0) {
+        if (Number.isFinite(frameDuration) && frameDuration > 0 && frameDuration <= DEFAULT_MAX_FRAME_DELTA_MS) {
           frameDurations.push(frameDuration);
           frameTotal += frameDuration;
 
@@ -136,6 +152,7 @@ export function useFps(options: UseFpsOptions = {}): UseFpsReturn {
 
     return () => {
       isDisposed = true;
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
 
       if (animationFrameId !== null) {
         window.cancelAnimationFrame(animationFrameId);

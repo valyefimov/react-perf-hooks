@@ -1,4 +1,4 @@
-import type {ReactNode} from 'react';
+import type { ReactNode } from 'react';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
@@ -24,7 +24,8 @@ export default function Home(): ReactNode {
   return (
     <Layout
       title="react-perf-hooks documentation"
-      description="Interactive documentation for all react-perf-hooks APIs with demos and guides.">
+      description="Interactive documentation for all react-perf-hooks APIs with demos and guides."
+    >
       <main className={styles.page}>
         <section className={styles.hero}>
           <p className={styles.kicker}>react-perf-hooks</p>

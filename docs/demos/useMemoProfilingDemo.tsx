@@ -50,7 +50,14 @@ export function UseMemoProfilingDemo() {
         Force unrelated re-render ({uiTick})
       </button>
 
-      <div style={{ display: 'grid', gap: 4, marginBottom: 12, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
+      <div
+        style={{
+          display: 'grid',
+          gap: 4,
+          marginBottom: 12,
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+        }}
+      >
         <div>Hits: {stats.hits}</div>
         <div>Misses: {stats.misses}</div>
         <div>Avg miss cost: {stats.averageRecomputeMs.toFixed(2)} ms</div>

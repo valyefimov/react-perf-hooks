@@ -46,8 +46,8 @@ export function UseCLSDemo() {
           />
         ) : null}
         <p style={{ margin: '0 0 12px' }}>
-          This card intentionally inserts content without reserving space so supported browsers can emit
-          layout-shift entries.
+          This card intentionally inserts content without reserving space so supported browsers can emit layout-shift
+          entries.
         </p>
         {showNotice ? (
           <p style={{ margin: '0 0 12px', padding: 10, background: '#fef3c7', borderRadius: 6 }}>

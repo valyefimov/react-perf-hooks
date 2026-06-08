@@ -1,8 +1,8 @@
 import React from 'react';
-import {useLongTasks} from 'react-perf-hooks';
+import { useLongTasks } from 'react-perf-hooks';
 
 export function UseLongTasksDemo() {
-  const {latest, count, totalBlockingTime, isSupported} = useLongTasks({
+  const { latest, count, totalBlockingTime, isSupported } = useLongTasks({
     screen: 'long-tasks-demo',
     minDuration: 50,
     onLongTask: (metric) => {
@@ -11,11 +11,11 @@ export function UseLongTasksDemo() {
   });
 
   return (
-    <section style={{fontFamily: 'system-ui, sans-serif', maxWidth: 560, margin: '0 auto'}}>
+    <section style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 560, margin: '0 auto' }}>
       <h2>useLongTasks demo</h2>
       <p>Click a button to block the main thread and generate Long Tasks API entries.</p>
 
-      <div style={{display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16}}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
         <button type="button" onClick={() => expensiveWork(80)}>
           Simulate 80ms freeze
         </button>

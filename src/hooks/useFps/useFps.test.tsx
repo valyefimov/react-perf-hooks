@@ -4,6 +4,7 @@ import { useFps } from './index';
 
 const originalRequestAnimationFrame = window.requestAnimationFrame;
 const originalCancelAnimationFrame = window.cancelAnimationFrame;
+const originalVisibilityStateDescriptor = Object.getOwnPropertyDescriptor(Document.prototype, 'visibilityState');
 
 let frameCallbacks: Map<number, FrameRequestCallback>;
 let nextFrameId: number;
@@ -56,13 +57,24 @@ function emitFrame(timestamp: number): void {
   });
 }
 
+function setVisibilityState(visibilityState: DocumentVisibilityState): void {
+  Object.defineProperty(document, 'visibilityState', {
+    configurable: true,
+    value: visibilityState,
+  });
+}
+
 describe('useFps', () => {
   beforeEach(() => {
     installMockRaf();
+    setVisibilityState('visible');
   });
 
   afterEach(() => {
     restoreRaf();
+    if (originalVisibilityStateDescriptor) {
+      Object.defineProperty(Document.prototype, 'visibilityState', originalVisibilityStateDescriptor);
+    }
     vi.restoreAllMocks();
   });
 
@@ -131,6 +143,55 @@ describe('useFps', () => {
     expect(result.current.isLowPerformance).toBe(true);
     expect(onDrop).toHaveBeenCalledTimes(2);
     expect(onDrop).toHaveBeenLastCalledWith(17.24);
+  });
+
+  it('skips very large deltas so paused requestAnimationFrame gaps do not trigger onDrop', () => {
+    const onDrop = vi.fn();
+    const { result } = renderHook(() => useFps({ threshold: 30, windowSize: 2, onDrop }));
+
+    emitFrame(0);
+    emitFrame(16);
+
+    expect(result.current.fps).toBeCloseTo(62.5, 2);
+
+    emitFrame(5016);
+
+    expect(result.current.fps).toBeCloseTo(62.5, 2);
+    expect(result.current.isLowPerformance).toBe(false);
+    expect(onDrop).not.toHaveBeenCalled();
+
+    emitFrame(5032);
+
+    expect(result.current.fps).toBeCloseTo(62.5, 2);
+    expect(result.current.isLowPerformance).toBe(false);
+    expect(onDrop).not.toHaveBeenCalled();
+  });
+
+  it('resets the rolling window when the document is hidden', () => {
+    const onDrop = vi.fn();
+    const { result } = renderHook(() => useFps({ threshold: 30, windowSize: 2, onDrop }));
+
+    emitFrame(0);
+    emitFrame(16);
+
+    expect(result.current.fps).toBeCloseTo(62.5, 2);
+
+    act(() => {
+      setVisibilityState('hidden');
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+
+    emitFrame(5016);
+
+    expect(result.current.fps).toBeCloseTo(62.5, 2);
+    expect(result.current.isLowPerformance).toBe(false);
+    expect(onDrop).not.toHaveBeenCalled();
+
+    emitFrame(5032);
+
+    expect(result.current.fps).toBeCloseTo(62.5, 2);
+    expect(result.current.isLowPerformance).toBe(false);
+    expect(onDrop).not.toHaveBeenCalled();
   });
 
   it('does not subscribe when enabled=false', () => {

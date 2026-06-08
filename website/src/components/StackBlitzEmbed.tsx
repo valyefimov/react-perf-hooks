@@ -1,4 +1,4 @@
-import {useState, useSyncExternalStore} from 'react';
+import { useState, useSyncExternalStore } from 'react';
 
 import styles from './StackBlitzEmbed.module.css';
 
@@ -13,12 +13,7 @@ const subscribeToCrossOriginIsolation = () => () => {};
 const getCrossOriginIsolationSnapshot = () => window.crossOriginIsolated;
 const getServerCrossOriginIsolationSnapshot = () => false;
 
-export default function StackBlitzEmbed({
-  title,
-  src,
-  openHref,
-  height = 760,
-}: StackBlitzEmbedProps) {
+export default function StackBlitzEmbed({ title, src, openHref, height = 760 }: StackBlitzEmbedProps) {
   const [loaded, setLoaded] = useState(false);
   const canEmbedWebContainer = useSyncExternalStore(
     subscribeToCrossOriginIsolation,
@@ -31,8 +26,8 @@ export default function StackBlitzEmbed({
       {!canEmbedWebContainer ? (
         <>
           <p className={styles.notice}>
-            GitHub Pages does not serve the isolation headers required for embedded StackBlitz WebContainers.
-            Open the demo in StackBlitz to run it interactively.
+            GitHub Pages does not serve the isolation headers required for embedded StackBlitz WebContainers. Open the
+            demo in StackBlitz to run it interactively.
           </p>
           <div className={styles.actionRow}>
             <a href={openHref} target="_blank" rel="noreferrer" className={styles.primaryAction}>
@@ -42,9 +37,7 @@ export default function StackBlitzEmbed({
         </>
       ) : !loaded ? (
         <>
-          <p>
-            This demo uses an embedded StackBlitz sandbox. Load it inline or open it in a new tab.
-          </p>
+          <p>This demo uses an embedded StackBlitz sandbox. Load it inline or open it in a new tab.</p>
           <div className={styles.actionRow}>
             <button className={styles.primaryAction} type="button" onClick={() => setLoaded(true)}>
               Load interactive demo

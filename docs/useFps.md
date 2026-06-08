@@ -125,4 +125,5 @@ function BackgroundEffects() {
 - The first animation frame establishes the baseline timestamp; `fps` updates after the next frame.
 - `windowSize` is normalized to at least `1`, so fractional values still produce a valid rolling average.
 - `onDrop` fires on transitions into low-performance mode, not on every low-FPS frame.
+- Background-tab rAF pauses are excluded by resetting on `visibilitychange` and skipping very large frame gaps.
 - The hook cancels the active `requestAnimationFrame` loop immediately on unmount.

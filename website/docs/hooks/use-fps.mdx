@@ -70,4 +70,5 @@ export function AdaptiveMedia() {
 ## Notes
 
 - `onDrop` fires on transitions into low-performance mode, not on every low-FPS frame.
+- Background-tab rAF pauses are excluded from the rolling average.
 - The hook cancels the active animation frame loop when the component unmounts.
