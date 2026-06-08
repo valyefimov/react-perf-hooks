@@ -97,6 +97,10 @@ type PerformanceObserverConstructorLike = {
 const DEFAULT_MIN_DURATION = 50;
 const DEFAULT_MAX_ENTRIES = 50;
 const LONG_TASK_BUDGET = 50;
+const MAX_PROCESSED_ENTRY_KEYS = 1000;
+
+const processedEntryKeys = new Set<string>();
+const processedEntryKeyQueue: string[] = [];
 
 function getNow(): number {
   return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
@@ -119,6 +123,38 @@ function normalizeAttribution(entry: LongTaskEntryLike): LongTaskAttribution[] {
     containerId: item.containerId ?? '',
     containerName: item.containerName ?? '',
   }));
+}
+
+function getAttributionKey(entry: LongTaskEntryLike): string {
+  return (entry.attribution ?? [])
+    .map(
+      (item) =>
+        `${item.name ?? ''}:${item.containerType ?? ''}:${item.containerSrc ?? ''}:${item.containerId ?? ''}:${
+          item.containerName ?? ''
+        }`
+    )
+    .join('|');
+}
+
+function getLongTaskEntryKey(entry: LongTaskEntryLike): string {
+  return `${entry.name}:${entry.startTime}:${entry.duration}:${getAttributionKey(entry)}`;
+}
+
+function markEntryProcessed(entry: LongTaskEntryLike): boolean {
+  const key = getLongTaskEntryKey(entry);
+  if (processedEntryKeys.has(key)) return false;
+
+  processedEntryKeys.add(key);
+  processedEntryKeyQueue.push(key);
+
+  while (processedEntryKeyQueue.length > MAX_PROCESSED_ENTRY_KEYS) {
+    const oldestKey = processedEntryKeyQueue.shift();
+    if (oldestKey) {
+      processedEntryKeys.delete(oldestKey);
+    }
+  }
+
+  return true;
 }
 
 function resolveScreen(screen: UseLongTasksOptions['screen']): string | null {
@@ -185,6 +221,7 @@ export function useLongTasks(options: UseLongTasksOptions = {}): UseLongTasksRet
 
   const handleEntry = useCallback((entry: LongTaskEntryLike) => {
     if (entry.duration < minDurationRef.current) return;
+    if (!markEntryProcessed(entry)) return;
 
     const metric = toLongTaskMetric(entry, resolveScreen(screenRef.current));
 

@@ -160,9 +160,41 @@ describe('useLongTasks', () => {
   it('falls back to default retention for non-finite maxEntries values', () => {
     const { result } = renderHook(() => useLongTasks({ maxEntries: Number.NaN }));
 
-    emitEntry({ name: 'self', duration: 90, startTime: 1 });
+    emitEntry({ name: 'self', duration: 91, startTime: 11 });
 
     expect(result.current.entries).toHaveLength(1);
+  });
+
+  it('does not report the same buffered entry again after enabled toggles back on', () => {
+    const onLongTask = vi.fn();
+    const entry = { name: 'self', duration: 123, startTime: 456 };
+    const { result, rerender } = renderHook(({ enabled, screen }) => useLongTasks({ enabled, screen, onLongTask }), {
+      initialProps: { enabled: true, screen: 'catalog' },
+    });
+
+    emitEntry(entry);
+    rerender({ enabled: false, screen: 'details' });
+    rerender({ enabled: true, screen: 'details' });
+    emitEntry(entry);
+
+    expect(result.current.entries).toHaveLength(1);
+    expect(result.current.latest?.screen).toBe('catalog');
+    expect(onLongTask).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not report the same buffered entry again after remounting', () => {
+    const onLongTask = vi.fn();
+    const entry = { name: 'self', duration: 124, startTime: 457 };
+    const firstRender = renderHook(() => useLongTasks({ screen: 'catalog', onLongTask }));
+
+    emitEntry(entry);
+    firstRender.unmount();
+
+    const secondRender = renderHook(() => useLongTasks({ screen: 'details', onLongTask }));
+    emitEntry(entry);
+
+    expect(secondRender.result.current.entries).toEqual([]);
+    expect(onLongTask).toHaveBeenCalledTimes(1);
   });
 
   it('does not subscribe when enabled=false', () => {
