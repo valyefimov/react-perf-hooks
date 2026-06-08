@@ -47,6 +47,7 @@ npm install web-vitals
 | `useWebVitals` | Live Core Web Vitals (LCP, CLS, INP, FCP, TTFB) as React state | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-web-vitals) |
 | `useINP` | Native Interaction to Next Paint tracking with PerformanceObserver event entries | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-inp) |
 | `useCLS` | Component-scoped Cumulative Layout Shift tracking for a specific DOM node | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-cls) |
+| `useLongTasks` | Log main-thread freezes over 50ms and attach them to the current screen | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-long-tasks) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-debounced-state) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-throttled-state) |
 | `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-intersection-observer) |
@@ -67,6 +68,7 @@ import {
   useWebVitals,
   useINP,
   useCLS,
+  useLongTasks,
   useDebouncedState,
   useThrottledState,
   useIntersectionObserver,
@@ -103,6 +105,12 @@ function App() {
     onMetric: (m) => navigator.sendBeacon('/analytics/cls/component', JSON.stringify(m)),
   });
 
+  // Log main-thread freezes and attach them to the current screen
+  useLongTasks({
+    screen: () => location.pathname,
+    onLongTask: (m) => navigator.sendBeacon('/analytics/long-tasks', JSON.stringify(m)),
+  });
+
   // Debounce state updates and inspect profiling counters
   const [query, setQuery, stats] = useDebouncedState('', 250);
 
@@ -132,6 +140,8 @@ function App() {
 
 `useCLS` demo: [docs/demos/useCLSDemo.tsx](./docs/demos/useCLSDemo.tsx)
 
+`useLongTasks` demo: [docs/demos/useLongTasksDemo.tsx](./docs/demos/useLongTasksDemo.tsx)
+
 ---
 
 ## TypeScript
@@ -160,6 +170,10 @@ import type {
   CLSRating,
   UseCLSOptions,
   UseCLSReturn,
+  LongTaskAttribution,
+  LongTaskMetric,
+  UseLongTasksOptions,
+  UseLongTasksReturn,
   DebouncedStateStats,
   UseDebouncedStateReturn,
   ThrottledStateStats,

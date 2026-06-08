@@ -13,6 +13,8 @@ const hooks = [
   'useMemoProfiling',
   'useWebVitals',
   'useINP',
+  'useCLS',
+  'useLongTasks',
   'useDebouncedState',
   'useThrottledState',
   'useIntersectionObserver',
@@ -52,7 +54,7 @@ export default function Home(): ReactNode {
           <Heading as="h2">What this docs site includes</Heading>
           <div className={styles.cardGrid}>
             <article className={styles.card}>
-              <h3>10 hook references</h3>
+              <h3>12 hook references</h3>
               <p>Every hook has signature details, parameter and return tables, and copy-ready usage examples.</p>
             </article>
             <article className={styles.card}>
