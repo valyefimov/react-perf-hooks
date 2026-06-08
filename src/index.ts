@@ -30,6 +30,9 @@ export type {
   UseLongTasksReturn,
 } from './hooks/useLongTasks';
 
+export { useFps } from './hooks/useFps';
+export type { UseFpsOptions, UseFpsReturn } from './hooks/useFps';
+
 export { useDebouncedState } from './hooks/useDebouncedState';
 export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDebouncedState';
 
