@@ -4,7 +4,10 @@ import { useFps } from './index';
 
 const originalRequestAnimationFrame = window.requestAnimationFrame;
 const originalCancelAnimationFrame = window.cancelAnimationFrame;
-const originalVisibilityStateDescriptor = Object.getOwnPropertyDescriptor(Document.prototype, 'visibilityState');
+const originalVisibilityStateDescriptor = Object.getOwnPropertyDescriptor(
+  Document.prototype,
+  'visibilityState',
+);
 
 let frameCallbacks: Map<number, FrameRequestCallback>;
 let nextFrameId: number;
@@ -73,7 +76,11 @@ describe('useFps', () => {
   afterEach(() => {
     restoreRaf();
     if (originalVisibilityStateDescriptor) {
-      Object.defineProperty(Document.prototype, 'visibilityState', originalVisibilityStateDescriptor);
+      Object.defineProperty(
+        Document.prototype,
+        'visibilityState',
+        originalVisibilityStateDescriptor,
+      );
     }
     vi.restoreAllMocks();
   });

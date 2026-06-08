@@ -28,7 +28,9 @@ export function App() {
   const [showCard, setShowCard] = useState(true);
 
   return (
-    <section style={{ fontFamily: 'system-ui', maxWidth: 560, margin: '24px auto', padding: '0 12px' }}>
+    <section
+      style={{ fontFamily: 'system-ui', maxWidth: 560, margin: '24px auto', padding: '0 12px' }}
+    >
       <h1 style={{ marginTop: 0 }}>useComponentLifecycle Demo</h1>
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         <button type="button" onClick={() => setRenderTick((value) => value + 1)}>
@@ -42,7 +44,9 @@ export function App() {
       {showCard ? (
         <LifecycleCard renderTick={renderTick} />
       ) : (
-        <p style={{ margin: 0, color: '#52525b' }}>Card is unmounted. Check the dev console for lifecycle logs.</p>
+        <p style={{ margin: 0, color: '#52525b' }}>
+          Card is unmounted. Check the dev console for lifecycle logs.
+        </p>
       )}
     </section>
   );

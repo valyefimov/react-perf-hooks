@@ -2,7 +2,10 @@ import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useCLS } from './index';
 
-type ObserverCallback = (list: { getEntries: () => PerformanceEntry[] }, observer: PerformanceObserver) => void;
+type ObserverCallback = (
+  list: { getEntries: () => PerformanceEntry[] },
+  observer: PerformanceObserver,
+) => void;
 
 const originalPerformanceObserver = globalThis.PerformanceObserver;
 
@@ -37,14 +40,18 @@ function attachRef<T extends Element>(ref: (node: T | null) => void, node: T): v
 }
 
 function emitEntry(
-  entry: Partial<PerformanceEntry> & { value?: number; hadRecentInput?: boolean; sources?: unknown[] }
+  entry: Partial<PerformanceEntry> & {
+    value?: number;
+    hadRecentInput?: boolean;
+    sources?: unknown[];
+  },
 ): void {
   act(() => {
     MockPerformanceObserver.callback?.(
       {
         getEntries: () => [entry as PerformanceEntry],
       },
-      {} as PerformanceObserver
+      {} as PerformanceObserver,
     );
   });
 }
@@ -236,7 +243,7 @@ describe('useCLS', () => {
           maxEntries: 50,
           includeDescendants: true,
         },
-      }
+      },
     );
     attachRef(result.current.ref, target);
 
@@ -298,7 +305,9 @@ describe('useCLS', () => {
     emitEntry({ value: 0.1, startTime: 3000, hadRecentInput: false, sources: [{ node: target }] });
 
     expect(onMetric).toHaveBeenCalledTimes(2);
-    expect(onMetric).toHaveBeenLastCalledWith(expect.objectContaining({ value: 0.26, rating: 'poor' }));
+    expect(onMetric).toHaveBeenLastCalledWith(
+      expect.objectContaining({ value: 0.26, rating: 'poor' }),
+    );
   });
 
   it('limits retained entries with maxEntries', () => {
@@ -320,7 +329,12 @@ describe('useCLS', () => {
     const { result } = renderHook(() => useCLS<HTMLDivElement>());
     attachRef(result.current.ref, firstTarget);
 
-    emitEntry({ value: 0.12, startTime: 1, hadRecentInput: false, sources: [{ node: firstTarget }] });
+    emitEntry({
+      value: 0.12,
+      startTime: 1,
+      hadRecentInput: false,
+      sources: [{ node: firstTarget }],
+    });
 
     expect(result.current.value).toBe(0.12);
 
@@ -330,7 +344,12 @@ describe('useCLS', () => {
     expect(result.current.value).toBe(0);
     expect(result.current.entries).toEqual([]);
 
-    emitEntry({ value: 0.04, startTime: 2, hadRecentInput: false, sources: [{ node: secondTarget }] });
+    emitEntry({
+      value: 0.04,
+      startTime: 2,
+      hadRecentInput: false,
+      sources: [{ node: secondTarget }],
+    });
 
     expect(result.current.value).toBe(0.04);
   });

@@ -37,12 +37,19 @@ export function UseRenderBudgetDemo() {
   return (
     <section style={{ fontFamily: 'system-ui', maxWidth: 520 }}>
       <p style={{ marginTop: 0 }}>
-        Move either slider to trigger re-renders. Open the console to see warnings when render time exceeds budget.
+        Move either slider to trigger re-renders. Open the console to see warnings when render time
+        exceeds budget.
       </p>
 
       <label style={{ display: 'grid', gap: 6, marginBottom: 12 }}>
         <span>Workload size: {size}</span>
-        <input type="range" min={20} max={140} value={size} onChange={(event) => setSize(Number(event.target.value))} />
+        <input
+          type="range"
+          min={20}
+          max={140}
+          value={size}
+          onChange={(event) => setSize(Number(event.target.value))}
+        />
       </label>
 
       <label style={{ display: 'grid', gap: 6, marginBottom: 12 }}>

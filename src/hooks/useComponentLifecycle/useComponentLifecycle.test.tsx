@@ -55,7 +55,9 @@ describe('useComponentLifecycle', () => {
     unmount();
 
     expect(console.log).toHaveBeenCalledWith('[useComponentLifecycle] mounted at 100.00 ms');
-    expect(console.log).toHaveBeenCalledWith('[useComponentLifecycle] unmounted at 250.00 ms (alive 150.00 ms)');
+    expect(console.log).toHaveBeenCalledWith(
+      '[useComponentLifecycle] unmounted at 250.00 ms (alive 150.00 ms)',
+    );
   });
 
   it('includes componentName in log output when provided', () => {
@@ -66,9 +68,11 @@ describe('useComponentLifecycle', () => {
     nowSpy.mockReturnValue(260);
     unmount();
 
-    expect(console.log).toHaveBeenCalledWith('[useComponentLifecycle:ChartPanel] mounted at 200.00 ms');
     expect(console.log).toHaveBeenCalledWith(
-      '[useComponentLifecycle:ChartPanel] unmounted at 260.00 ms (alive 60.00 ms)'
+      '[useComponentLifecycle:ChartPanel] mounted at 200.00 ms',
+    );
+    expect(console.log).toHaveBeenCalledWith(
+      '[useComponentLifecycle:ChartPanel] unmounted at 260.00 ms (alive 60.00 ms)',
     );
   });
 

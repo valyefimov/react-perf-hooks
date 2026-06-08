@@ -14,7 +14,10 @@ export function UseFpsDemo() {
   return (
     <section style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 560, margin: '0 auto' }}>
       <h2>useFps demo</h2>
-      <p>Monitor rolling-averaged FPS and switch to a lighter UI when the frame rate falls below 30 FPS.</p>
+      <p>
+        Monitor rolling-averaged FPS and switch to a lighter UI when the frame rate falls below 30
+        FPS.
+      </p>
 
       {!isSupported ? (
         <p>requestAnimationFrame is not available in this browser.</p>
@@ -37,7 +40,9 @@ export function UseFpsDemo() {
               background: isLowPerformance ? '#fff7ed' : '#ecfdf5',
             }}
           >
-            <strong>{isLowPerformance ? 'Static fallback enabled' : 'Animated experience enabled'}</strong>
+            <strong>
+              {isLowPerformance ? 'Static fallback enabled' : 'Animated experience enabled'}
+            </strong>
             <div style={{ marginTop: 8 }}>FPS: {fps === 0 ? 'measuring...' : fps.toFixed(0)}</div>
           </div>
 

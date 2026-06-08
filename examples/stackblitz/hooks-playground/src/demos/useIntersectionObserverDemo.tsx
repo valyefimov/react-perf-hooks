@@ -7,7 +7,9 @@ export function UseIntersectionObserverDemo() {
 
   return (
     <section style={{ fontFamily: 'system-ui', maxWidth: 480 }}>
-      <p style={{ marginTop: 0 }}>Scroll the panel until the highlighted card is at least 50% visible.</p>
+      <p style={{ marginTop: 0 }}>
+        Scroll the panel until the highlighted card is at least 50% visible.
+      </p>
 
       <div
         style={{
@@ -19,7 +21,9 @@ export function UseIntersectionObserverDemo() {
           background: 'linear-gradient(180deg, #fafaf9, #f4f4f5)',
         }}
       >
-        <div style={{ height: 180, display: 'grid', placeItems: 'center', color: '#71717a' }}>Scroll down</div>
+        <div style={{ height: 180, display: 'grid', placeItems: 'center', color: '#71717a' }}>
+          Scroll down
+        </div>
 
         <div
           ref={ref}
@@ -35,10 +39,14 @@ export function UseIntersectionObserverDemo() {
           }}
         >
           <strong>Observed card</strong>
-          <div style={{ marginTop: 8 }}>{isVisible ? 'Visible now' : 'Below the visibility threshold'}</div>
+          <div style={{ marginTop: 8 }}>
+            {isVisible ? 'Visible now' : 'Below the visibility threshold'}
+          </div>
         </div>
 
-        <div style={{ height: 220, display: 'grid', placeItems: 'center', color: '#71717a' }}>Keep scrolling</div>
+        <div style={{ height: 220, display: 'grid', placeItems: 'center', color: '#71717a' }}>
+          Keep scrolling
+        </div>
       </div>
 
       <div

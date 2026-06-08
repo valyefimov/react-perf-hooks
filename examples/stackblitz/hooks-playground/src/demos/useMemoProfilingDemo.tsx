@@ -27,7 +27,7 @@ export function UseMemoProfilingDemo() {
       return items.filter((item) => item.toLowerCase().includes(lowered));
     },
     [query],
-    label
+    label,
   );
 
   const stats = getStats(label);
@@ -46,7 +46,11 @@ export function UseMemoProfilingDemo() {
         style={{ width: '100%', padding: '8px 10px', marginBottom: 10 }}
       />
 
-      <button type="button" onClick={() => setUiTick((value) => value + 1)} style={{ marginBottom: 12 }}>
+      <button
+        type="button"
+        onClick={() => setUiTick((value) => value + 1)}
+        style={{ marginBottom: 12 }}
+      >
         Force unrelated re-render ({uiTick})
       </button>
 

@@ -1,8 +1,11 @@
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useINP } from './index';
 
-type ObserverCallback = (list: { getEntries: () => PerformanceEntry[] }, observer: PerformanceObserver) => void;
+type ObserverCallback = (
+  list: { getEntries: () => PerformanceEntry[] },
+  observer: PerformanceObserver,
+) => void;
 
 const originalPerformanceObserver = globalThis.PerformanceObserver;
 
@@ -36,7 +39,7 @@ function emitEntry(entry: Partial<PerformanceEntry> & { interactionId?: number }
       {
         getEntries: () => [entry as PerformanceEntry],
       },
-      {} as PerformanceObserver
+      {} as PerformanceObserver,
     );
   });
 }
@@ -77,7 +80,7 @@ describe('useINP', () => {
     expect(MockPerformanceObserver.observe).toHaveBeenCalledWith(
       expect.objectContaining({
         durationThreshold: 16,
-      })
+      }),
     );
   });
 

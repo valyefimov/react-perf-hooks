@@ -1,8 +1,11 @@
-import { renderHook, act } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useLongTasks } from './index';
 
-type ObserverCallback = (list: { getEntries: () => PerformanceEntry[] }, observer: PerformanceObserver) => void;
+type ObserverCallback = (
+  list: { getEntries: () => PerformanceEntry[] },
+  observer: PerformanceObserver,
+) => void;
 
 const originalPerformanceObserver = globalThis.PerformanceObserver;
 
@@ -36,7 +39,7 @@ function emitEntry(entry: Partial<PerformanceEntry> & { attribution?: unknown[] 
       {
         getEntries: () => [entry as PerformanceEntry],
       },
-      {} as PerformanceObserver
+      {} as PerformanceObserver,
     );
   });
 }
@@ -108,7 +111,9 @@ describe('useLongTasks', () => {
     });
     expect(result.current.count).toBe(1);
     expect(result.current.totalBlockingTime).toBe(70);
-    expect(onLongTask).toHaveBeenCalledWith(expect.objectContaining({ duration: 120, screen: 'checkout' }));
+    expect(onLongTask).toHaveBeenCalledWith(
+      expect.objectContaining({ duration: 120, screen: 'checkout' }),
+    );
   });
 
   it('resolves screen lazily from a function', () => {
@@ -168,9 +173,12 @@ describe('useLongTasks', () => {
   it('does not report the same buffered entry again after enabled toggles back on', () => {
     const onLongTask = vi.fn();
     const entry = { name: 'self', duration: 123, startTime: 456 };
-    const { result, rerender } = renderHook(({ enabled, screen }) => useLongTasks({ enabled, screen, onLongTask }), {
-      initialProps: { enabled: true, screen: 'catalog' },
-    });
+    const { result, rerender } = renderHook(
+      ({ enabled, screen }) => useLongTasks({ enabled, screen, onLongTask }),
+      {
+        initialProps: { enabled: true, screen: 'catalog' },
+      },
+    );
 
     emitEntry(entry);
     rerender({ enabled: false, screen: 'details' });

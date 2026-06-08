@@ -5,7 +5,10 @@ export function UseRenderTrackerDemo() {
   const [count, setCount] = useState(0);
   const [label, setLabel] = useState('Demo');
 
-  const renderInfo = useRenderTracker({ count, label }, { name: 'UseRenderTrackerDemo', warnAt: 8 });
+  const renderInfo = useRenderTracker(
+    { count, label },
+    { name: 'UseRenderTrackerDemo', warnAt: 8 },
+  );
 
   return (
     <section style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 520, margin: '0 auto' }}>

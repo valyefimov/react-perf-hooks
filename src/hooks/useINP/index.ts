@@ -56,7 +56,10 @@ interface PerformanceObserverEntryListLike {
   getEntries: () => PerformanceEntry[];
 }
 
-type PerformanceObserverCallbackLike = (list: PerformanceObserverEntryListLike, observer: PerformanceObserver) => void;
+type PerformanceObserverCallbackLike = (
+  list: PerformanceObserverEntryListLike,
+  observer: PerformanceObserver,
+) => void;
 
 type PerformanceObserverConstructorLike = {
   new (callback: PerformanceObserverCallbackLike): PerformanceObserver;
@@ -74,7 +77,9 @@ function getINPRating(value: number): INPRating {
 }
 
 function getNow(): number {
-  return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  return typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
 }
 
 function supportsEventTiming(): boolean {
@@ -83,7 +88,9 @@ function supportsEventTiming(): boolean {
   }
 
   const Observer = PerformanceObserver as PerformanceObserverConstructorLike;
-  return Array.isArray(Observer.supportedEntryTypes) && Observer.supportedEntryTypes.includes('event');
+  return (
+    Array.isArray(Observer.supportedEntryTypes) && Observer.supportedEntryTypes.includes('event')
+  );
 }
 
 function toINPMetric(entry: PerformanceEventTimingLike): INPMetric {
@@ -93,7 +100,10 @@ function toINPMetric(entry: PerformanceEventTimingLike): INPMetric {
     rating: getINPRating(entry.duration),
     eventType: entry.name,
     startTime: entry.startTime,
-    interactionId: typeof entry.interactionId === 'number' && entry.interactionId > 0 ? entry.interactionId : null,
+    interactionId:
+      typeof entry.interactionId === 'number' && entry.interactionId > 0
+        ? entry.interactionId
+        : null,
     timestamp: getNow(),
   };
 }

@@ -55,9 +55,13 @@ describe('useMemoProfiling', () => {
     const calls = vi.mocked(console.log).mock.calls.map((entry) => entry[0]);
 
     expect(calls).toHaveLength(3);
-    expect(calls[0]).toMatch(new RegExp(`^\\[useMemoProfiling:${label}\\] MISS \\(recomputed in \\d+\\.\\d{2}ms\\)$`));
+    expect(calls[0]).toMatch(
+      new RegExp(`^\\[useMemoProfiling:${label}\\] MISS \\(recomputed in \\d+\\.\\d{2}ms\\)$`),
+    );
     expect(calls[1]).toBe(`[useMemoProfiling:${label}] HIT`);
-    expect(calls[2]).toMatch(new RegExp(`^\\[useMemoProfiling:${label}\\] MISS \\(recomputed in \\d+\\.\\d{2}ms\\)$`));
+    expect(calls[2]).toMatch(
+      new RegExp(`^\\[useMemoProfiling:${label}\\] MISS \\(recomputed in \\d+\\.\\d{2}ms\\)$`),
+    );
   });
 
   it('exposes accumulated stats via getStats(label)', () => {

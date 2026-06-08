@@ -89,7 +89,10 @@ interface PerformanceObserverEntryListLike {
   getEntries: () => PerformanceEntry[];
 }
 
-type PerformanceObserverCallbackLike = (list: PerformanceObserverEntryListLike, observer: PerformanceObserver) => void;
+type PerformanceObserverCallbackLike = (
+  list: PerformanceObserverEntryListLike,
+  observer: PerformanceObserver,
+) => void;
 
 type PerformanceObserverConstructorLike = {
   new (callback: PerformanceObserverCallbackLike): PerformanceObserver;
@@ -109,7 +112,9 @@ function getCLSRating(value: number): CLSRating {
 }
 
 function getNow(): number {
-  return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  return typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
 }
 
 function supportsLayoutShift(): boolean {
@@ -118,13 +123,16 @@ function supportsLayoutShift(): boolean {
   }
 
   const Observer = PerformanceObserver as PerformanceObserverConstructorLike;
-  return Array.isArray(Observer.supportedEntryTypes) && Observer.supportedEntryTypes.includes('layout-shift');
+  return (
+    Array.isArray(Observer.supportedEntryTypes) &&
+    Observer.supportedEntryTypes.includes('layout-shift')
+  );
 }
 
 function sourceMatchesTarget(
   source: LayoutShiftAttributionLike,
   target: Element,
-  includeDescendants: boolean
+  includeDescendants: boolean,
 ): boolean {
   if (!source.node) return false;
   if (source.node === target) return true;
@@ -135,7 +143,7 @@ function sourceMatchesTarget(
 function getMatchingSources(
   entry: LayoutShiftEntryLike,
   target: Element,
-  includeDescendants: boolean
+  includeDescendants: boolean,
 ): CLSAttribution[] {
   return (entry.sources ?? [])
     .filter((source) => sourceMatchesTarget(source, target, includeDescendants))
@@ -150,7 +158,7 @@ function createCLSMetric(
   entry: LayoutShiftEntryLike,
   value: number,
   cumulativeValue: number,
-  sources: CLSAttribution[]
+  sources: CLSAttribution[],
 ): CLSMetric {
   return {
     name: 'CLS',
@@ -197,7 +205,9 @@ function getLayoutShiftEntryKey(entry: LayoutShiftEntryLike): string {
  *   );
  * }
  */
-export function useCLS<T extends Element = HTMLElement>(options: UseCLSOptions = {}): UseCLSReturn<T> {
+export function useCLS<T extends Element = HTMLElement>(
+  options: UseCLSOptions = {},
+): UseCLSReturn<T> {
   const {
     onMetric,
     includeDescendants = true,
@@ -251,34 +261,42 @@ export function useCLS<T extends Element = HTMLElement>(options: UseCLSOptions =
     setTarget(node);
   }, []);
 
-  const updateMetric = useCallback((entry: LayoutShiftEntryLike, matchingSources: CLSAttribution[]) => {
-    const shiftValue = typeof entry.value === 'number' ? entry.value : 0;
-    if (shiftValue <= 0) return;
+  const updateMetric = useCallback(
+    (entry: LayoutShiftEntryLike, matchingSources: CLSAttribution[]) => {
+      const shiftValue = typeof entry.value === 'number' ? entry.value : 0;
+      if (shiftValue <= 0) return;
 
-    const isSameSession =
-      sessionValueRef.current > 0 &&
-      entry.startTime - sessionLastEntryTimeRef.current < CLS_SESSION_GAP_LIMIT &&
-      entry.startTime - sessionStartTimeRef.current < CLS_SESSION_WINDOW_LIMIT;
+      const isSameSession =
+        sessionValueRef.current > 0 &&
+        entry.startTime - sessionLastEntryTimeRef.current < CLS_SESSION_GAP_LIMIT &&
+        entry.startTime - sessionStartTimeRef.current < CLS_SESSION_WINDOW_LIMIT;
 
-    if (isSameSession) {
-      sessionValueRef.current += shiftValue;
-    } else {
-      sessionValueRef.current = shiftValue;
-      sessionStartTimeRef.current = entry.startTime;
-    }
+      if (isSameSession) {
+        sessionValueRef.current += shiftValue;
+      } else {
+        sessionValueRef.current = shiftValue;
+        sessionStartTimeRef.current = entry.startTime;
+      }
 
-    sessionLastEntryTimeRef.current = entry.startTime;
+      sessionLastEntryTimeRef.current = entry.startTime;
 
-    const previousValue = currentValueRef.current;
-    currentValueRef.current = Math.max(currentValueRef.current, sessionValueRef.current);
-    const nextMetric = createCLSMetric(entry, shiftValue, currentValueRef.current, matchingSources);
+      const previousValue = currentValueRef.current;
+      currentValueRef.current = Math.max(currentValueRef.current, sessionValueRef.current);
+      const nextMetric = createCLSMetric(
+        entry,
+        shiftValue,
+        currentValueRef.current,
+        matchingSources,
+      );
 
-    setMetric(nextMetric);
-    setEntries((previous) => [...previous, nextMetric].slice(-maxEntriesRef.current));
-    if (currentValueRef.current > previousValue) {
-      onMetricRef.current?.(nextMetric);
-    }
-  }, []);
+      setMetric(nextMetric);
+      setEntries((previous) => [...previous, nextMetric].slice(-maxEntriesRef.current));
+      if (currentValueRef.current > previousValue) {
+        onMetricRef.current?.(nextMetric);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!enabled || !isSupported || !target) return;
@@ -292,7 +310,11 @@ export function useCLS<T extends Element = HTMLElement>(options: UseCLSOptions =
 
         if (ignoreRecentInputRef.current && layoutShiftEntry.hadRecentInput) continue;
 
-        const matchingSources = getMatchingSources(layoutShiftEntry, target, includeDescendantsRef.current);
+        const matchingSources = getMatchingSources(
+          layoutShiftEntry,
+          target,
+          includeDescendantsRef.current,
+        );
         if (matchingSources.length === 0) continue;
 
         processedEntryKeysRef.current.add(entryKey);

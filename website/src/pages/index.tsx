@@ -1,8 +1,7 @@
-import type { ReactNode } from 'react';
 import Link from '@docusaurus/Link';
-import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
-
+import Layout from '@theme/Layout';
+import type { ReactNode } from 'react';
 import styles from './index.module.css';
 
 const hooks = [
@@ -33,13 +32,17 @@ export default function Home(): ReactNode {
             Measure React performance without slowing your workflow
           </Heading>
           <p className={styles.subtitle}>
-            Explore all hooks with API references, interactive demos, and practical guidance before you install.
+            Explore all hooks with API references, interactive demos, and practical guidance before
+            you install.
           </p>
           <div className={styles.ctaRow}>
             <Link className="button button--primary button--lg" to="/docs/getting-started">
               Open Getting Started
             </Link>
-            <Link className="button button--secondary button--lg" to="/docs/hooks/use-render-tracker">
+            <Link
+              className="button button--secondary button--lg"
+              to="/docs/hooks/use-render-tracker"
+            >
               Browse Hooks
             </Link>
           </div>
@@ -56,15 +59,23 @@ export default function Home(): ReactNode {
           <div className={styles.cardGrid}>
             <article className={styles.card}>
               <h3>12 hook references</h3>
-              <p>Every hook has signature details, parameter and return tables, and copy-ready usage examples.</p>
+              <p>
+                Every hook has signature details, parameter and return tables, and copy-ready usage
+                examples.
+              </p>
             </article>
             <article className={styles.card}>
               <h3>Interactive demos</h3>
-              <p>Each hook page links to a StackBlitz workspace so developers can test behavior interactively.</p>
+              <p>
+                Each hook page links to a StackBlitz workspace so developers can test behavior
+                interactively.
+              </p>
             </article>
             <article className={styles.card}>
               <h3>Performance guide</h3>
-              <p>Best-practice checklist linked to companion long-form articles for deeper dives.</p>
+              <p>
+                Best-practice checklist linked to companion long-form articles for deeper dives.
+              </p>
             </article>
           </div>
         </section>

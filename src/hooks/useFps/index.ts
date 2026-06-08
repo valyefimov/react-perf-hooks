@@ -48,7 +48,9 @@ function normalizeThreshold(threshold: number): number {
 }
 
 function normalizeWindowSize(windowSize: number): number {
-  return Number.isFinite(windowSize) && windowSize > 0 ? Math.max(1, Math.floor(windowSize)) : DEFAULT_WINDOW_SIZE;
+  return Number.isFinite(windowSize) && windowSize > 0
+    ? Math.max(1, Math.floor(windowSize))
+    : DEFAULT_WINDOW_SIZE;
 }
 
 function toRoundedFps(averageFrameMs: number): number {
@@ -69,7 +71,12 @@ function toRoundedFps(averageFrameMs: number): number {
  * }
  */
 export function useFps(options: UseFpsOptions = {}): UseFpsReturn {
-  const { threshold = DEFAULT_THRESHOLD, windowSize = DEFAULT_WINDOW_SIZE, onDrop, enabled = true } = options;
+  const {
+    threshold = DEFAULT_THRESHOLD,
+    windowSize = DEFAULT_WINDOW_SIZE,
+    onDrop,
+    enabled = true,
+  } = options;
   const [state, setState] = useState({
     fps: 0,
     isLowPerformance: false,
@@ -114,7 +121,11 @@ export function useFps(options: UseFpsOptions = {}): UseFpsReturn {
       if (previousFrameTime !== null) {
         const frameDuration = timestamp - previousFrameTime;
 
-        if (Number.isFinite(frameDuration) && frameDuration > 0 && frameDuration <= DEFAULT_MAX_FRAME_DELTA_MS) {
+        if (
+          Number.isFinite(frameDuration) &&
+          frameDuration > 0 &&
+          frameDuration <= DEFAULT_MAX_FRAME_DELTA_MS
+        ) {
           frameDurations.push(frameDuration);
           frameTotal += frameDuration;
 

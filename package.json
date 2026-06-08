@@ -51,9 +51,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
-    "@types/node": "^25.5.0",
+    "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.3.0",
+    "@types/node": "^25.5.0",
     "@types/react": "^19.2.0",
     "@vitest/coverage-v8": "^4.1.0",
     "eslint": "^9.39.0",

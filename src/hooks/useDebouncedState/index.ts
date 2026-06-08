@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 
 export interface DebouncedStateStats {
   /** Number of pending debounced updates replaced before they could trigger a render */
@@ -22,7 +29,10 @@ function resolveStateAction<T>(next: SetStateAction<T>, previousValue: T): T {
  * Each incoming update resets the timer; if a pending update is replaced,
  * `stats.skippedRenders` is incremented.
  */
-export function useDebouncedState<T>(initialState: T | (() => T), delay = 300): UseDebouncedStateReturn<T> {
+export function useDebouncedState<T>(
+  initialState: T | (() => T),
+  delay = 300,
+): UseDebouncedStateReturn<T> {
   const [state, setState] = useState<T>(initialState);
   const stateRef = useRef(state);
   const queuedValueRef = useRef(state);

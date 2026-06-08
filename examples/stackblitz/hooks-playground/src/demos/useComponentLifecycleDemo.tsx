@@ -41,7 +41,9 @@ export function UseComponentLifecycleDemo() {
       {showCard ? (
         <LifecycleCard renderTick={renderTick} />
       ) : (
-        <p style={{ margin: 0, color: '#52525b' }}>Card is unmounted. Check the dev console for lifecycle logs.</p>
+        <p style={{ margin: 0, color: '#52525b' }}>
+          Card is unmounted. Check the dev console for lifecycle logs.
+        </p>
       )}
     </section>
   );

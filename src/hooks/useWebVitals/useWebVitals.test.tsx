@@ -1,5 +1,5 @@
-import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { act, renderHook } from '@testing-library/react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { WebVitalMetric } from './index';
 
 // Mock web-vitals BEFORE importing the hook so the dynamic import resolves to the mock
@@ -13,7 +13,11 @@ vi.mock('web-vitals', () => ({
 
 const { useWebVitals } = await import('./index');
 
-function makeMetric(name: string, value: number, rating: WebVitalMetric['rating'] = 'good'): WebVitalMetric {
+function makeMetric(
+  name: string,
+  value: number,
+  rating: WebVitalMetric['rating'] = 'good',
+): WebVitalMetric {
   return { name, value, rating, delta: value, id: `v3-${name}-${value}` };
 }
 
@@ -28,7 +32,9 @@ async function flushEffects(): Promise<void> {
 type VitalsModule = typeof import('web-vitals');
 type OnMetricFn = (cb: (m: WebVitalMetric) => void) => void;
 
-async function captureCallbacks(keys: Array<keyof VitalsModule>): Promise<Record<string, (m: WebVitalMetric) => void>> {
+async function captureCallbacks(
+  keys: Array<keyof VitalsModule>,
+): Promise<Record<string, (m: WebVitalMetric) => void>> {
   const webVitals = await import('web-vitals');
   const captured: Record<string, (m: WebVitalMetric) => void> = {};
 

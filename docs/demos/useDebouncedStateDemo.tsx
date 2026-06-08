@@ -5,7 +5,10 @@ export function UseDebouncedStateDemo() {
 
   return (
     <section style={{ fontFamily: 'system-ui', maxWidth: 420 }}>
-      <label htmlFor="debounced-search" style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>
+      <label
+        htmlFor="debounced-search"
+        style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}
+      >
         Debounced search input
       </label>
 
@@ -17,7 +20,13 @@ export function UseDebouncedStateDemo() {
         style={{ width: '100%', padding: '8px 10px', marginBottom: 12 }}
       />
 
-      <div style={{ display: 'grid', gap: 4, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
+      <div
+        style={{
+          display: 'grid',
+          gap: 4,
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+        }}
+      >
         <div>Committed value: {query || '(empty)'}</div>
         <div>Total updates: {stats.totalUpdates}</div>
         <div>Skipped renders: {stats.skippedRenders}</div>

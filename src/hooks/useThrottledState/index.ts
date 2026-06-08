@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 
 export interface UseThrottledStateOptions {
   /** Apply the first update in a throttle window immediately. Default: true */
@@ -32,7 +39,7 @@ function resolveStateAction<T>(next: SetStateAction<T>, previousValue: T): T {
 export function useThrottledState<T>(
   initialState: T | (() => T),
   interval = 100,
-  options: UseThrottledStateOptions = {}
+  options: UseThrottledStateOptions = {},
 ): UseThrottledStateReturn<T> {
   const leading = options.leading ?? true;
   const trailing = options.trailing ?? true;
@@ -109,7 +116,7 @@ export function useThrottledState<T>(
 
       flushStats();
     },
-    [flushStats]
+    [flushStats],
   );
 
   const scheduleWindow = useCallback(
@@ -127,7 +134,7 @@ export function useThrottledState<T>(
         flushStats();
       }, delay);
     },
-    [commitValue, flushStats]
+    [commitValue, flushStats],
   );
 
   const setThrottledState: Dispatch<SetStateAction<T>> = useCallback(
@@ -174,7 +181,7 @@ export function useThrottledState<T>(
       queuedValueRef.current = resolvedValue;
       hasQueuedValueRef.current = true;
     },
-    [commitValue, scheduleWindow]
+    [commitValue, scheduleWindow],
   );
 
   return [state, setThrottledState, stats];

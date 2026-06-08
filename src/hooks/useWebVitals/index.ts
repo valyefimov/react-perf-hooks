@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export type VitalRating = 'good' | 'needs-improvement' | 'poor';
 
@@ -82,7 +82,7 @@ export function useWebVitals(options: UseWebVitalsOptions = {}): WebVitalsState 
       setVitals((prev) => ({ ...prev, [metric.name]: metric }));
       onMetric?.(metric);
     },
-    [onMetric]
+    [onMetric],
   );
 
   useEffect(() => {
@@ -97,7 +97,10 @@ export function useWebVitals(options: UseWebVitalsOptions = {}): WebVitalsState 
         onTTFB(handleMetric);
       })
       .catch(() => {
-        console.warn('[useWebVitals] The "web-vitals" package is not installed. ' + 'Run: npm install web-vitals');
+        console.warn(
+          '[useWebVitals] The "web-vitals" package is not installed. ' +
+            'Run: npm install web-vitals',
+        );
       });
   }, [enabled, handleMetric]);
 
