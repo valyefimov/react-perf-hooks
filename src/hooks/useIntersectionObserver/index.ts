@@ -53,7 +53,7 @@ function isEntryVisible(entry: IntersectionObserverEntry, visibilityThreshold: n
  * lazy loading, LCP analysis, and engagement reporting.
  */
 export function useIntersectionObserver<T extends Element = Element>(
-  options: IntersectionObserverInit = {}
+  options: IntersectionObserverInit = {},
 ): UseIntersectionObserverReturn<T> {
   const { root = null, rootMargin, threshold } = options;
   const [target, setTarget] = useState<T | null>(null);
@@ -82,7 +82,12 @@ export function useIntersectionObserver<T extends Element = Element>(
   }, []);
 
   useEffect(() => {
-    if (typeof window === 'undefined' || typeof IntersectionObserver === 'undefined' || target === null) return;
+    if (
+      typeof window === 'undefined' ||
+      typeof IntersectionObserver === 'undefined' ||
+      target === null
+    )
+      return;
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -111,7 +116,7 @@ export function useIntersectionObserver<T extends Element = Element>(
         setIsVisible(false);
         commitVisibleDuration(entry.time);
       },
-      { root, rootMargin, threshold }
+      { root, rootMargin, threshold },
     );
 
     observer.observe(target);

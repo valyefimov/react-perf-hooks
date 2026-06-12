@@ -60,7 +60,7 @@ describe('useRenderBudget', () => {
       renderHook(() => {
         useRenderBudget(1, 'StrictComponent', { strict: true });
         burnCpu(8);
-      })
+      }),
     ).toThrow('[useRenderBudget] StrictComponent exceeded budget');
     expect(console.warn).not.toHaveBeenCalled();
   });
@@ -72,7 +72,7 @@ describe('useRenderBudget', () => {
       renderHook(() => {
         useRenderBudget(1, 'ProductionComponent', { strict: true });
         burnCpu(8);
-      })
+      }),
     ).not.toThrow();
     expect(console.warn).not.toHaveBeenCalled();
   });
@@ -95,6 +95,8 @@ describe('useRenderBudget', () => {
       burnCpu(8);
     });
 
-    expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('[useRenderBudget] Component exceeded budget'));
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining('[useRenderBudget] Component exceeded budget'),
+    );
   });
 });

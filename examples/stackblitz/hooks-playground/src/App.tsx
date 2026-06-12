@@ -1,16 +1,17 @@
-import {useMemo, useState} from 'react';
-import {UseComponentLifecycleDemo} from './demos/useComponentLifecycleDemo';
-import {UseDebouncedStateDemo} from './demos/useDebouncedStateDemo';
-import {UseIntersectionObserverDemo} from './demos/useIntersectionObserverDemo';
-import {UseMemoProfilingDemo} from './demos/useMemoProfilingDemo';
-import {UsePerformanceMarkDemo} from './demos/usePerformanceMarkDemo';
-import {UseRenderBudgetDemo} from './demos/useRenderBudgetDemo';
-import {UseRenderTrackerDemo} from './demos/useRenderTrackerDemo';
-import {UseThrottledStateDemo} from './demos/useThrottledStateDemo';
-import {UseWebVitalsDemo} from './demos/useWebVitalsDemo';
-import {UseINPDemo} from './demos/useINPDemo';
-import {UseCLSDemo} from './demos/useCLSDemo';
-import {UseLongTasksDemo} from './demos/useLongTasksDemo';
+import { useMemo, useState } from 'react';
+import { UseCLSDemo } from './demos/useCLSDemo';
+import { UseComponentLifecycleDemo } from './demos/useComponentLifecycleDemo';
+import { UseDebouncedStateDemo } from './demos/useDebouncedStateDemo';
+import { UseFpsDemo } from './demos/useFpsDemo';
+import { UseINPDemo } from './demos/useINPDemo';
+import { UseIntersectionObserverDemo } from './demos/useIntersectionObserverDemo';
+import { UseLongTasksDemo } from './demos/useLongTasksDemo';
+import { UseMemoProfilingDemo } from './demos/useMemoProfilingDemo';
+import { UsePerformanceMarkDemo } from './demos/usePerformanceMarkDemo';
+import { UseRenderBudgetDemo } from './demos/useRenderBudgetDemo';
+import { UseRenderTrackerDemo } from './demos/useRenderTrackerDemo';
+import { UseThrottledStateDemo } from './demos/useThrottledStateDemo';
+import { UseWebVitalsDemo } from './demos/useWebVitalsDemo';
 
 type DemoKey =
   | 'useRenderTracker'
@@ -22,23 +23,28 @@ type DemoKey =
   | 'useINP'
   | 'useCLS'
   | 'useLongTasks'
+  | 'useFps'
   | 'useDebouncedState'
   | 'useThrottledState'
   | 'useIntersectionObserver';
 
-const demos: Record<DemoKey, {label: string; Component: () => JSX.Element}> = {
-  useRenderTracker: {label: 'useRenderTracker', Component: UseRenderTrackerDemo},
-  useRenderBudget: {label: 'useRenderBudget', Component: UseRenderBudgetDemo},
-  usePerformanceMark: {label: 'usePerformanceMark', Component: UsePerformanceMarkDemo},
-  useComponentLifecycle: {label: 'useComponentLifecycle', Component: UseComponentLifecycleDemo},
-  useMemoProfiling: {label: 'useMemoProfiling', Component: UseMemoProfilingDemo},
-  useWebVitals: {label: 'useWebVitals', Component: UseWebVitalsDemo},
-  useINP: {label: 'useINP', Component: UseINPDemo},
-  useCLS: {label: 'useCLS', Component: UseCLSDemo},
-  useLongTasks: {label: 'useLongTasks', Component: UseLongTasksDemo},
-  useDebouncedState: {label: 'useDebouncedState', Component: UseDebouncedStateDemo},
-  useThrottledState: {label: 'useThrottledState', Component: UseThrottledStateDemo},
-  useIntersectionObserver: {label: 'useIntersectionObserver', Component: UseIntersectionObserverDemo},
+const demos: Record<DemoKey, { label: string; Component: () => JSX.Element }> = {
+  useRenderTracker: { label: 'useRenderTracker', Component: UseRenderTrackerDemo },
+  useRenderBudget: { label: 'useRenderBudget', Component: UseRenderBudgetDemo },
+  usePerformanceMark: { label: 'usePerformanceMark', Component: UsePerformanceMarkDemo },
+  useComponentLifecycle: { label: 'useComponentLifecycle', Component: UseComponentLifecycleDemo },
+  useMemoProfiling: { label: 'useMemoProfiling', Component: UseMemoProfilingDemo },
+  useWebVitals: { label: 'useWebVitals', Component: UseWebVitalsDemo },
+  useINP: { label: 'useINP', Component: UseINPDemo },
+  useCLS: { label: 'useCLS', Component: UseCLSDemo },
+  useLongTasks: { label: 'useLongTasks', Component: UseLongTasksDemo },
+  useFps: { label: 'useFps', Component: UseFpsDemo },
+  useDebouncedState: { label: 'useDebouncedState', Component: UseDebouncedStateDemo },
+  useThrottledState: { label: 'useThrottledState', Component: UseThrottledStateDemo },
+  useIntersectionObserver: {
+    label: 'useIntersectionObserver',
+    Component: UseIntersectionObserverDemo,
+  },
 };
 
 const fallback: DemoKey = 'useComponentLifecycle';
@@ -64,11 +70,15 @@ export function App() {
   };
 
   return (
-    <main style={{fontFamily: 'system-ui', maxWidth: 920, margin: '24px auto', padding: '0 12px'}}>
-      <h1 style={{margin: 0}}>react-perf-hooks interactive demos</h1>
-      <p style={{color: '#334155'}}>Choose a hook demo and interact with the rendered component.</p>
+    <main
+      style={{ fontFamily: 'system-ui', maxWidth: 920, margin: '24px auto', padding: '0 12px' }}
+    >
+      <h1 style={{ margin: 0 }}>react-perf-hooks interactive demos</h1>
+      <p style={{ color: '#334155' }}>
+        Choose a hook demo and interact with the rendered component.
+      </p>
 
-      <div style={{display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16}}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16 }}>
         {(Object.keys(demos) as DemoKey[]).map((demoKey) => (
           <button
             key={demoKey}

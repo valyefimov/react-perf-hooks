@@ -87,7 +87,10 @@ interface PerformanceObserverEntryListLike {
   getEntries: () => PerformanceEntry[];
 }
 
-type PerformanceObserverCallbackLike = (list: PerformanceObserverEntryListLike, observer: PerformanceObserver) => void;
+type PerformanceObserverCallbackLike = (
+  list: PerformanceObserverEntryListLike,
+  observer: PerformanceObserver,
+) => void;
 
 type PerformanceObserverConstructorLike = {
   new (callback: PerformanceObserverCallbackLike): PerformanceObserver;
@@ -103,7 +106,9 @@ const processedEntryKeys = new Set<string>();
 const processedEntryKeyQueue: string[] = [];
 
 function getNow(): number {
-  return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  return typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
 }
 
 function supportsLongTasks(): boolean {
@@ -112,7 +117,9 @@ function supportsLongTasks(): boolean {
   }
 
   const Observer = PerformanceObserver as PerformanceObserverConstructorLike;
-  return Array.isArray(Observer.supportedEntryTypes) && Observer.supportedEntryTypes.includes('longtask');
+  return (
+    Array.isArray(Observer.supportedEntryTypes) && Observer.supportedEntryTypes.includes('longtask')
+  );
 }
 
 function normalizeAttribution(entry: LongTaskEntryLike): LongTaskAttribution[] {
@@ -131,7 +138,7 @@ function getAttributionKey(entry: LongTaskEntryLike): string {
       (item) =>
         `${item.name ?? ''}:${item.containerType ?? ''}:${item.containerSrc ?? ''}:${item.containerId ?? ''}:${
           item.containerName ?? ''
-        }`
+        }`,
     )
     .join('|');
 }
@@ -174,8 +181,14 @@ function toLongTaskMetric(entry: LongTaskEntryLike, screen: string | null): Long
   };
 }
 
-function retainLatestEntries(current: LongTaskMetric[], metric: LongTaskMetric, maxEntries: number): LongTaskMetric[] {
-  const normalizedMaxEntries = Number.isFinite(maxEntries) ? Math.floor(maxEntries) : DEFAULT_MAX_ENTRIES;
+function retainLatestEntries(
+  current: LongTaskMetric[],
+  metric: LongTaskMetric,
+  maxEntries: number,
+): LongTaskMetric[] {
+  const normalizedMaxEntries = Number.isFinite(maxEntries)
+    ? Math.floor(maxEntries)
+    : DEFAULT_MAX_ENTRIES;
   const maxRetainedEntries = Math.max(0, normalizedMaxEntries);
   if (maxRetainedEntries === 0) return [];
 

@@ -1,8 +1,8 @@
-import {useState} from 'react';
-import {useComponentLifecycle} from 'react-perf-hooks';
+import { useState } from 'react';
+import { useComponentLifecycle } from 'react-perf-hooks';
 
-function LifecycleCard({renderTick}) {
-  const {mountedAt, aliveMs} = useComponentLifecycle('LifecycleCard');
+function LifecycleCard({ renderTick }) {
+  const { mountedAt, aliveMs } = useComponentLifecycle('LifecycleCard');
 
   return (
     <div
@@ -14,7 +14,7 @@ function LifecycleCard({renderTick}) {
       }}
     >
       <strong>LifecycleCard</strong>
-      <div style={{marginTop: 8, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace'}}>
+      <div style={{ marginTop: 8, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
         <div>Parent render tick: {renderTick}</div>
         <div>Mounted at: {mountedAt.toFixed(1)} ms</div>
         <div>Alive: {aliveMs.toFixed(1)} ms</div>
@@ -28,9 +28,11 @@ export function App() {
   const [showCard, setShowCard] = useState(true);
 
   return (
-    <section style={{fontFamily: 'system-ui', maxWidth: 560, margin: '24px auto', padding: '0 12px'}}>
-      <h1 style={{marginTop: 0}}>useComponentLifecycle Demo</h1>
-      <div style={{display: 'flex', gap: 8, marginBottom: 12}}>
+    <section
+      style={{ fontFamily: 'system-ui', maxWidth: 560, margin: '24px auto', padding: '0 12px' }}
+    >
+      <h1 style={{ marginTop: 0 }}>useComponentLifecycle Demo</h1>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         <button type="button" onClick={() => setRenderTick((value) => value + 1)}>
           Re-render card
         </button>
@@ -42,7 +44,9 @@ export function App() {
       {showCard ? (
         <LifecycleCard renderTick={renderTick} />
       ) : (
-        <p style={{margin: 0, color: '#52525b'}}>Card is unmounted. Check the dev console for lifecycle logs.</p>
+        <p style={{ margin: 0, color: '#52525b' }}>
+          Card is unmounted. Check the dev console for lifecycle logs.
+        </p>
       )}
     </section>
   );

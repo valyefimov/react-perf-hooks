@@ -28,7 +28,7 @@ function formatMs(value: number): string {
 export function useRenderBudget(
   budgetMs = DEFAULT_BUDGET_MS,
   componentName = DEFAULT_COMPONENT_NAME,
-  options: UseRenderBudgetOptions = {}
+  options: UseRenderBudgetOptions = {},
 ): void {
   const { strict = false, enabled = process.env.NODE_ENV !== 'production' } = options;
 

@@ -24,7 +24,7 @@ const getNow = (): number => {
 export function useComponentLifecycle(componentName?: string): ComponentLifecycleInfo {
   const [mountedAt] = useState<number>(() => getNow());
   const [label] = useState<string>(() =>
-    componentName ? `[useComponentLifecycle:${componentName}]` : '[useComponentLifecycle]'
+    componentName ? `[useComponentLifecycle:${componentName}]` : '[useComponentLifecycle]',
   );
 
   const aliveMs = Math.max(0, getNow() - mountedAt);
@@ -38,7 +38,9 @@ export function useComponentLifecycle(componentName?: string): ComponentLifecycl
       const unmountedAt = getNow();
       const totalAliveMs = Math.max(0, unmountedAt - mountedAt);
 
-      console.log(`${label} unmounted at ${unmountedAt.toFixed(2)} ms (alive ${totalAliveMs.toFixed(2)} ms)`);
+      console.log(
+        `${label} unmounted at ${unmountedAt.toFixed(2)} ms (alive ${totalAliveMs.toFixed(2)} ms)`,
+      );
     };
   }, [label, mountedAt]);
 

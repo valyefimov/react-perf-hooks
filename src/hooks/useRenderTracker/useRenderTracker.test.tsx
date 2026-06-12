@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRenderTracker } from './index';
 
 describe('useRenderTracker', () => {
@@ -51,7 +51,7 @@ describe('useRenderTracker', () => {
 
     expect(console.log).toHaveBeenCalledWith(
       expect.stringContaining('TestComponent'),
-      expect.arrayContaining(['name'])
+      expect.arrayContaining(['name']),
     );
   });
 
@@ -62,7 +62,10 @@ describe('useRenderTracker', () => {
     props = { a: 2, b: 'y', c: true };
     rerender();
 
-    expect(console.log).toHaveBeenCalledWith(expect.any(String), expect.arrayContaining(['a', 'b']));
+    expect(console.log).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.arrayContaining(['a', 'b']),
+    );
   });
 
   it('notes no prop changes when parent forces re-render', () => {
@@ -99,7 +102,9 @@ describe('useRenderTracker', () => {
   });
 
   it('warns when render count reaches warnAt', () => {
-    const { rerender } = renderHook(() => useRenderTracker(undefined, { name: 'Spammy', warnAt: 3 }));
+    const { rerender } = renderHook(() =>
+      useRenderTracker(undefined, { name: 'Spammy', warnAt: 3 }),
+    );
     rerender(); // 2
     rerender(); // 3 — warn fires
 

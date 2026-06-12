@@ -1,15 +1,15 @@
 import React from 'react';
-import {useINP} from 'react-perf-hooks';
+import { useINP } from 'react-perf-hooks';
 
 export function UseINPDemo() {
-  const {metric, value, rating, isSupported} = useINP({durationThreshold: 16});
+  const { metric, value, rating, isSupported } = useINP({ durationThreshold: 16 });
 
   return (
-    <section style={{fontFamily: 'system-ui, sans-serif', maxWidth: 560, margin: '0 auto'}}>
+    <section style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 560, margin: '0 auto' }}>
       <h2>useINP demo</h2>
       <p>Click the buttons or type in the input to generate Event Timing entries.</p>
 
-      <div style={{display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16}}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
         <button type="button" onClick={() => expensiveWork(80)}>
           Simulate 80ms click
         </button>

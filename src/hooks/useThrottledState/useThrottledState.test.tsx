@@ -116,14 +116,16 @@ describe('useThrottledState', () => {
   });
 
   it('throws when both leading and trailing are disabled', () => {
-    expect(() => renderHook(() => useThrottledState(0, 100, { leading: false, trailing: false }))).toThrow(
-      '[useThrottledState] At least one of `leading` or `trailing` must be true.'
-    );
+    expect(() =>
+      renderHook(() => useThrottledState(0, 100, { leading: false, trailing: false })),
+    ).toThrow('[useThrottledState] At least one of `leading` or `trailing` must be true.');
   });
 
   it('clears pending timers on unmount', () => {
     const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
-    const { result, unmount } = renderHook(() => useThrottledState('initial', 100, { leading: false }));
+    const { result, unmount } = renderHook(() =>
+      useThrottledState('initial', 100, { leading: false }),
+    );
 
     act(() => {
       result.current[1]('next');

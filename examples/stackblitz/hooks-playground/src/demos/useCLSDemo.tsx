@@ -1,21 +1,24 @@
-import React, {useState} from 'react';
-import {useCLS} from 'react-perf-hooks';
+import React, { useState } from 'react';
+import { useCLS } from 'react-perf-hooks';
 
 export function UseCLSDemo() {
   const [showHero, setShowHero] = useState(false);
   const [showNotice, setShowNotice] = useState(false);
-  const {ref, value, rating, entries, isSupported} = useCLS<HTMLDivElement>({
+  const { ref, value, rating, entries, isSupported } = useCLS<HTMLDivElement>({
     onMetric: (metric) => {
       console.info('[useCLS demo]', metric);
     },
   });
 
   return (
-    <section style={{fontFamily: 'system-ui, sans-serif', maxWidth: 640, margin: '0 auto'}}>
+    <section style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 640, margin: '0 auto' }}>
       <h2>useCLS demo</h2>
-      <p>Toggle delayed content inside the observed card to see component-level layout shift attribution.</p>
+      <p>
+        Toggle delayed content inside the observed card to see component-level layout shift
+        attribution.
+      </p>
 
-      <div style={{display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16}}>
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
         <button type="button" onClick={() => setShowHero((current) => !current)}>
           Toggle unreserved media
         </button>
@@ -34,7 +37,7 @@ export function UseCLSDemo() {
           boxShadow: '0 1px 3px rgba(15, 23, 42, 0.12)',
         }}
       >
-        <h3 style={{marginTop: 0}}>Observed product card</h3>
+        <h3 style={{ marginTop: 0 }}>Observed product card</h3>
         {showHero ? (
           <div
             style={{
@@ -45,12 +48,12 @@ export function UseCLSDemo() {
             }}
           />
         ) : null}
-        <p style={{margin: '0 0 12px'}}>
-          This card intentionally inserts content without reserving space so supported browsers can emit
-          layout-shift entries.
+        <p style={{ margin: '0 0 12px' }}>
+          This card intentionally inserts content without reserving space so supported browsers can
+          emit layout-shift entries.
         </p>
         {showNotice ? (
-          <p style={{margin: '0 0 12px', padding: 10, background: '#fef3c7', borderRadius: 6}}>
+          <p style={{ margin: '0 0 12px', padding: 10, background: '#fef3c7', borderRadius: 6 }}>
             Dynamic notice loaded after initial content.
           </p>
         ) : null}

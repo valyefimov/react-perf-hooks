@@ -1,4 +1,4 @@
-import { type DependencyList, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, type DependencyList } from 'react';
 
 export interface MemoProfilingStats {
   /** Label associated with the profiled memoized value */
@@ -42,7 +42,10 @@ const normalizeLabel = (label?: string): string => {
   return trimmed && trimmed.length > 0 ? trimmed : DEFAULT_LABEL;
 };
 
-const toPublicStats = (label: string, mutableStats?: MutableMemoProfilingStats): MemoProfilingStats => {
+const toPublicStats = (
+  label: string,
+  mutableStats?: MutableMemoProfilingStats,
+): MemoProfilingStats => {
   const hits = mutableStats?.hits ?? 0;
   const misses = mutableStats?.misses ?? 0;
   const totalRecomputeMs = mutableStats?.totalRecomputeMs ?? 0;
@@ -128,7 +131,7 @@ export function useMemoProfiling<T>(factory: () => T, deps: DependencyList, labe
       stats.misses += 1;
       stats.totalRecomputeMs += currentSnapshot.recomputeMs;
       console.log(
-        `[useMemoProfiling:${resolvedLabel}] MISS (recomputed in ${currentSnapshot.recomputeMs.toFixed(2)}ms)`
+        `[useMemoProfiling:${resolvedLabel}] MISS (recomputed in ${currentSnapshot.recomputeMs.toFixed(2)}ms)`,
       );
     }
 

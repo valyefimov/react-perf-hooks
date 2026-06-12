@@ -31,7 +31,10 @@ export interface UseRenderTrackerOptions {
  *   return <div>{name}</div>;
  * }
  */
-export function useRenderTracker(props?: Record<string, unknown>, options: UseRenderTrackerOptions = {}): RenderInfo {
+export function useRenderTracker(
+  props?: Record<string, unknown>,
+  options: UseRenderTrackerOptions = {},
+): RenderInfo {
   const { name = 'Component', enabled = process.env.NODE_ENV !== 'production', warnAt } = options;
 
   const renderCount = useRef(0);
@@ -43,13 +46,18 @@ export function useRenderTracker(props?: Record<string, unknown>, options: UseRe
     lastRenderTime.current = performance.now();
 
     if (props && prevProps.current) {
-      const changedKeys = Object.keys(props).filter((key) => !Object.is(props[key], prevProps.current![key]));
+      const changedKeys = Object.keys(props).filter(
+        (key) => !Object.is(props[key], prevProps.current![key]),
+      );
 
       if (changedKeys.length > 0) {
-        console.log(`[useRenderTracker] "${name}" re-rendered (×${renderCount.current}). Changed props:`, changedKeys);
+        console.log(
+          `[useRenderTracker] "${name}" re-rendered (×${renderCount.current}). Changed props:`,
+          changedKeys,
+        );
       } else {
         console.log(
-          `[useRenderTracker] "${name}" re-rendered (×${renderCount.current}). No prop changes detected (parent re-render or context/state update).`
+          `[useRenderTracker] "${name}" re-rendered (×${renderCount.current}). No prop changes detected (parent re-render or context/state update).`,
         );
       }
     }
@@ -59,7 +67,7 @@ export function useRenderTracker(props?: Record<string, unknown>, options: UseRe
     if (warnAt != null && Number.isFinite(warnAt) && warnAt > 0 && renderCount.current >= warnAt) {
       console.warn(
         `[useRenderTracker] "${name}" has rendered ${renderCount.current} times! ` +
-          `Consider wrapping it in React.memo() or optimising its dependencies.`
+          `Consider wrapping it in React.memo() or optimising its dependencies.`,
       );
     }
 

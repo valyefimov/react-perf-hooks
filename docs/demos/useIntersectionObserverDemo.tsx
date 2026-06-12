@@ -31,7 +31,9 @@ export function UseIntersectionObserverDemo() {
             minHeight: 140,
             borderRadius: 12,
             padding: 16,
-            background: isVisible ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)' : 'linear-gradient(135deg, #e2e8f0, #cbd5e1)',
+            background: isVisible
+              ? 'linear-gradient(135deg, #dcfce7, #bbf7d0)'
+              : 'linear-gradient(135deg, #e2e8f0, #cbd5e1)',
             border: '1px solid rgba(15, 23, 42, 0.08)',
             boxShadow: '0 10px 30px rgba(15, 23, 42, 0.08)',
           }}

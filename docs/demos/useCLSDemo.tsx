@@ -13,7 +13,10 @@ export function UseCLSDemo() {
   return (
     <section style={{ fontFamily: 'system-ui, sans-serif', maxWidth: 640, margin: '0 auto' }}>
       <h2>useCLS demo</h2>
-      <p>Toggle delayed content inside the observed card to see component-level layout shift attribution.</p>
+      <p>
+        Toggle delayed content inside the observed card to see component-level layout shift
+        attribution.
+      </p>
 
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 16 }}>
         <button type="button" onClick={() => setShowHero((current) => !current)}>
@@ -46,8 +49,8 @@ export function UseCLSDemo() {
           />
         ) : null}
         <p style={{ margin: '0 0 12px' }}>
-          This card intentionally inserts content without reserving space so supported browsers can emit
-          layout-shift entries.
+          This card intentionally inserts content without reserving space so supported browsers can
+          emit layout-shift entries.
         </p>
         {showNotice ? (
           <p style={{ margin: '0 0 12px', padding: 10, background: '#fef3c7', borderRadius: 6 }}>

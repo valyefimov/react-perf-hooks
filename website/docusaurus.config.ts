@@ -1,11 +1,10 @@
-import {themes as prismThemes} from 'prism-react-renderer';
-import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import type { Config } from '@docusaurus/types';
+import { themes as prismThemes } from 'prism-react-renderer';
 
 const config: Config = {
   title: 'react-perf-hooks',
-  tagline:
-    'Performance-focused React hooks with TypeScript-first APIs and interactive docs',
+  tagline: 'Performance-focused React hooks with TypeScript-first APIs and interactive docs',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -33,8 +32,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl:
-            'https://github.com/valyefimov/react-perf-hooks/tree/main/website/',
+          editUrl: 'https://github.com/valyefimov/react-perf-hooks/tree/main/website/',
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
         },

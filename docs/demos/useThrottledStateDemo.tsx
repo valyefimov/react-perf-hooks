@@ -31,7 +31,9 @@ export function UseThrottledStateDemo() {
       </div>
 
       <div
-        onPointerMove={(event) => setPoint({ x: Math.round(event.clientX), y: Math.round(event.clientY) })}
+        onPointerMove={(event) =>
+          setPoint({ x: Math.round(event.clientX), y: Math.round(event.clientY) })
+        }
         style={{
           height: 180,
           border: '1px solid #d4d4d8',
@@ -44,7 +46,13 @@ export function UseThrottledStateDemo() {
         Move your pointer around this box quickly.
       </div>
 
-      <div style={{ display: 'grid', gap: 4, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
+      <div
+        style={{
+          display: 'grid',
+          gap: 4,
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+        }}
+      >
         <div>
           Committed point: {point.x}, {point.y}
         </div>

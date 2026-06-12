@@ -1,5 +1,5 @@
-import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { usePerformanceMark } from './index';
 
 describe('usePerformanceMark', () => {
@@ -90,7 +90,10 @@ describe('usePerformanceMark', () => {
     });
 
     expect(measurement).toBeNull();
-    expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining('[usePerformanceMark]'), expect.any(Error));
+    expect(consoleSpy).toHaveBeenCalledWith(
+      expect.stringContaining('[usePerformanceMark]'),
+      expect.any(Error),
+    );
   });
 
   it('accumulates entries from multiple measure() calls', () => {

@@ -27,7 +27,7 @@ export function UseMemoProfilingDemo() {
       return items.filter((item) => item.toLowerCase().includes(lowered));
     },
     [query],
-    label
+    label,
   );
 
   const stats = getStats(label);
@@ -46,11 +46,22 @@ export function UseMemoProfilingDemo() {
         style={{ width: '100%', padding: '8px 10px', marginBottom: 10 }}
       />
 
-      <button type="button" onClick={() => setUiTick((value) => value + 1)} style={{ marginBottom: 12 }}>
+      <button
+        type="button"
+        onClick={() => setUiTick((value) => value + 1)}
+        style={{ marginBottom: 12 }}
+      >
         Force unrelated re-render ({uiTick})
       </button>
 
-      <div style={{ display: 'grid', gap: 4, marginBottom: 12, fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace' }}>
+      <div
+        style={{
+          display: 'grid',
+          gap: 4,
+          marginBottom: 12,
+          fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+        }}
+      >
         <div>Hits: {stats.hits}</div>
         <div>Misses: {stats.misses}</div>
         <div>Avg miss cost: {stats.averageRecomputeMs.toFixed(2)} ms</div>

@@ -20,7 +20,11 @@ export interface UsePerformanceMarkReturn {
    * the result. Returns `null` if the Performance API is unsupported or if
    * the marks cannot be found.
    */
-  measure: (measureName: string, startMark: string, endMark?: string) => PerformanceMeasureResult | null;
+  measure: (
+    measureName: string,
+    startMark: string,
+    endMark?: string,
+  ) => PerformanceMeasureResult | null;
   /** Clears a specific mark (or all marks when no name is given). */
   clearMarks: (markName?: string) => void;
   /** Clears a specific measure entry (or all measures when no name is given). */
@@ -68,7 +72,7 @@ export function usePerformanceMark(namespace?: string): UsePerformanceMarkReturn
       if (!isSupported) return;
       performance.mark(`${prefix}${markName}`);
     },
-    [prefix]
+    [prefix],
   );
 
   const measure = useCallback(
@@ -100,7 +104,7 @@ export function usePerformanceMark(namespace?: string): UsePerformanceMarkReturn
         return null;
       }
     },
-    [prefix]
+    [prefix],
   );
 
   const clearMarks = useCallback(
@@ -112,7 +116,7 @@ export function usePerformanceMark(namespace?: string): UsePerformanceMarkReturn
         performance.clearMarks();
       }
     },
-    [prefix]
+    [prefix],
   );
 
   const clearMeasures = useCallback(
@@ -124,7 +128,7 @@ export function usePerformanceMark(namespace?: string): UsePerformanceMarkReturn
         performance.clearMeasures();
       }
     },
-    [prefix]
+    [prefix],
   );
 
   const getEntries = useCallback((): PerformanceMeasureResult[] => {
