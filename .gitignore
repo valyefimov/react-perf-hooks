@@ -5,7 +5,6 @@ docs-build/
 build/
 .docusaurus/
 .cache-loader/
-.lighthouseci/
 coverage/
 .DS_Store
 *.log
