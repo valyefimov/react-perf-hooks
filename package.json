@@ -18,25 +18,30 @@
     "LICENSE"
   ],
   "sideEffects": false,
+  "packageManager": "pnpm@10.33.3",
   "scripts": {
+    "docusaurus": "docusaurus",
     "build": "tsup",
-    "docs:dev": "npm run start --prefix website",
-    "docs:build": "npm run build --prefix website",
+    "docs:dev": "docusaurus start",
+    "docs:build": "docusaurus build",
+    "docs:serve": "docusaurus serve",
+    "docs:clear": "docusaurus clear",
+    "docs:type-check": "tsc -p tsconfig.docs.json",
     "build:watch": "tsup --watch",
-    "build:check": "tsc --noEmit && tsup",
+    "build:check": "pnpm type-check && pnpm build",
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "type-check": "tsc --noEmit",
-    "lint": "eslint src",
-    "lint:fix": "eslint src --fix",
-    "format": "prettier --write \"{src,docs,examples,website}/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}\"",
-    "format:check": "prettier --check \"{src,docs,examples,website}/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts}\"",
-    "ci": "npm run type-check && npm run lint && npm run format:check && npm run test:run && npm run build",
-    "prepublishOnly": "npm run ci",
-    "release:patch": "npm version patch && npm publish --access public",
-    "release:minor": "npm version minor && npm publish --access public",
-    "release:major": "npm version major && npm publish --access public"
+    "lint": "eslint src/index.ts src/hooks src/test-setup.ts",
+    "lint:fix": "eslint src/index.ts src/hooks src/test-setup.ts --fix",
+    "format": "prettier --write \"{src,docs,examples}/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,md,mdx}\" \"*.{ts,js,mjs,json,md}\"",
+    "format:check": "prettier --check \"{src,docs,examples}/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,md,mdx}\" \"*.{ts,js,mjs,json,md}\"",
+    "ci": "pnpm type-check && pnpm lint && pnpm format:check && pnpm test:run && pnpm build",
+    "prepublishOnly": "pnpm run ci",
+    "release:patch": "pnpm version patch && pnpm publish --access public",
+    "release:minor": "pnpm version minor && pnpm publish --access public",
+    "release:major": "pnpm version major && pnpm publish --access public"
   },
   "peerDependencies": {
     "react": ">=16.8.0"
@@ -50,17 +55,26 @@
     "web-vitals": "^5.2.0"
   },
   "devDependencies": {
+    "@docusaurus/core": "3.10.0",
+    "@docusaurus/faster": "3.10.0",
+    "@docusaurus/module-type-aliases": "3.10.0",
+    "@docusaurus/preset-classic": "3.10.0",
+    "@docusaurus/tsconfig": "3.10.0",
+    "@docusaurus/types": "3.10.0",
     "@eslint/js": "^9.39.0",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
+    "@mdx-js/react": "^3.0.0",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/react": "^16.3.0",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.0",
     "@vitest/coverage-v8": "^4.1.0",
+    "clsx": "^2.0.0",
     "eslint": "^9.39.0",
-    "eslint-plugin-react-hooks": "^7.0.0",
+    "eslint-plugin-react-hooks": "7.0.1",
     "jsdom": "^29.0.0",
     "prettier": "^3.3.3",
+    "prism-react-renderer": "^2.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tsup": "^8.0.2",
@@ -95,5 +109,22 @@
   "homepage": "https://github.com/valyefimov/react-perf-hooks#readme",
   "engines": {
     "node": ">=20"
+  },
+  "browserslist": {
+    "production": [
+      ">0.5%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 3 chrome version",
+      "last 3 firefox version",
+      "last 5 safari version"
+    ]
+  },
+  "pnpm": {
+    "overrides": {
+      "serialize-javascript": "7.0.5"
+    }
   }
 }

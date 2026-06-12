@@ -1,0 +1,76 @@
+---
+title: useLongTasks
+description: Track browser long tasks and log which screen froze.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useLongTasks` wraps `PerformanceObserver` for the `longtask` entry type. It records main-thread tasks over 50 ms, keeps a bounded history, and attaches each freeze to a screen, route, or view name.
+
+## API signature
+
+```ts
+function useLongTasks(options?: UseLongTasksOptions): UseLongTasksReturn;
+```
+
+## Parameters
+
+| Name                  | Type                                                    | Required | Description                                                   |
+| --------------------- | ------------------------------------------------------- | -------- | ------------------------------------------------------------- |
+| `options.onLongTask`  | `(metric: LongTaskMetric) => void`                      | No       | Callback fired for each retained long task.                   |
+| `options.screen`      | `string \| (() => string \| null \| undefined) \| null` | No       | Screen, route, or view attached to each metric.               |
+| `options.minDuration` | `number`                                                | No       | Minimum task duration retained by the hook. Defaults to `50`. |
+| `options.maxEntries`  | `number`                                                | No       | Maximum metrics retained in state. Defaults to `50`.          |
+| `options.enabled`     | `boolean`                                               | No       | Set `false` to disable the observer.                          |
+
+## Return value
+
+| Field               | Type                     | Description                                            |
+| ------------------- | ------------------------ | ------------------------------------------------------ |
+| `latest`            | `LongTaskMetric \| null` | Latest retained long task.                             |
+| `entries`           | `LongTaskMetric[]`       | Retained long-task metrics for debugging and overlays. |
+| `count`             | `number`                 | Number of retained long tasks.                         |
+| `totalBlockingTime` | `number`                 | Sum of retained `blockingTime` values.                 |
+| `isSupported`       | `boolean`                | Whether this browser supports Long Tasks entries.      |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useLongTasks demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&embed=1&view=preview&startScript=dev&demo=useLongTasks"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&startScript=dev&demo=useLongTasks"
+/>
+
+## Code example
+
+```tsx
+import { useLongTasks } from 'react-perf-hooks';
+
+export function LongTaskProbe() {
+  const { latest, count, totalBlockingTime, isSupported } = useLongTasks({
+    screen: () => location.pathname,
+    minDuration: 75,
+    onLongTask: (metric) => {
+      navigator.sendBeacon('/api/long-tasks', JSON.stringify(metric));
+    },
+  });
+
+  if (!isSupported) {
+    return <p>Long Tasks API is not available in this browser.</p>;
+  }
+
+  return (
+    <p>
+      Long tasks: {count}, total blocking: {totalBlockingTime.toFixed(0)} ms, latest:{' '}
+      {latest ? `${latest.duration.toFixed(0)} ms on ${latest.screen}` : 'waiting'}
+    </p>
+  );
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useLongTasks)
+- [Medium companion article](https://medium.com/search?q=useLongTasks)
