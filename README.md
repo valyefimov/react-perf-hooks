@@ -71,6 +71,7 @@ npm install web-vitals
 | `useINP` | Native Interaction to Next Paint tracking with PerformanceObserver event entries | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-inp) |
 | `useCLS` | Component-scoped Cumulative Layout Shift tracking for a specific DOM node | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-cls) |
 | `useLongTasks` | Log main-thread freezes over 50ms and attach them to the current screen | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-long-tasks) |
+| `useMemoryStatus` | Monitor Chromium JavaScript heap usage and flag high memory pressure | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-memory-status) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-debounced-state) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-throttled-state) |
 | `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-intersection-observer) |
@@ -92,6 +93,7 @@ import {
   useINP,
   useCLS,
   useLongTasks,
+  useMemoryStatus,
   useDebouncedState,
   useThrottledState,
   useIntersectionObserver,
@@ -133,6 +135,9 @@ function App() {
     screen: () => location.pathname,
     onLongTask: (m) => navigator.sendBeacon('/analytics/long-tasks', JSON.stringify(m)),
   });
+
+  // Monitor Chromium heap telemetry and flag high memory pressure
+  const memory = useMemoryStatus({ warningThresholdRatio: 0.8, interval: 5000 });
 
   // Debounce state updates and inspect profiling counters
   const [query, setQuery, stats] = useDebouncedState('', 250);
@@ -181,6 +186,8 @@ import type {
   LongTaskMetric,
   UseLongTasksOptions,
   UseLongTasksReturn,
+  UseMemoryStatusOptions,
+  UseMemoryStatusReturn,
   DebouncedStateStats,
   UseDebouncedStateReturn,
   ThrottledStateStats,

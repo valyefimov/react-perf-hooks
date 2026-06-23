@@ -47,6 +47,9 @@ export type {
 export { useFps } from './hooks/useFps';
 export type { UseFpsOptions, UseFpsReturn } from './hooks/useFps';
 
+export { useMemoryStatus } from './hooks/useMemoryStatus';
+export type { UseMemoryStatusOptions, UseMemoryStatusReturn } from './hooks/useMemoryStatus';
+
 export { useDebouncedState } from './hooks/useDebouncedState';
 export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDebouncedState';
 
