@@ -12,21 +12,21 @@ import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
 ## API signature
 
 ```ts
-function useComponentLifecycle(componentName?: string): ComponentLifecycleInfo
+function useComponentLifecycle(componentName?: string): ComponentLifecycleInfo;
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `componentName` | `string` | No | Optional name used in development lifecycle logs. |
+| Name            | Type     | Required | Description                                       |
+| --------------- | -------- | -------- | ------------------------------------------------- |
+| `componentName` | `string` | No       | Optional name used in development lifecycle logs. |
 
 ## Return value
 
-| Field | Type | Description |
-| --- | --- | --- |
+| Field       | Type     | Description                                                          |
+| ----------- | -------- | -------------------------------------------------------------------- |
 | `mountedAt` | `number` | Mount timestamp from `performance.now()` (or `Date.now()` fallback). |
-| `aliveMs` | `number` | Time elapsed since mount, recomputed on each render. |
+| `aliveMs`   | `number` | Time elapsed since mount, recomputed on each render.                 |
 
 ## Live interactive demo (StackBlitz)
 
@@ -39,10 +39,10 @@ function useComponentLifecycle(componentName?: string): ComponentLifecycleInfo
 ## Code example
 
 ```tsx
-import {useComponentLifecycle} from 'react-perf-hooks';
+import { useComponentLifecycle } from 'react-perf-hooks';
 
 export function LifecyclePanel() {
-  const {mountedAt, aliveMs} = useComponentLifecycle('LifecyclePanel');
+  const { mountedAt, aliveMs } = useComponentLifecycle('LifecyclePanel');
 
   return (
     <div>

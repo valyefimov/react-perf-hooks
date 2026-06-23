@@ -13,24 +13,24 @@ import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
 
 ```ts
 function useIntersectionObserver<T extends Element = Element>(
-  options?: IntersectionObserverInit
-): UseIntersectionObserverReturn<T>
+  options?: IntersectionObserverInit,
+): UseIntersectionObserverReturn<T>;
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `options` | `IntersectionObserverInit` | No | Standard `root`, `rootMargin`, and `threshold` observer options. |
+| Name      | Type                       | Required | Description                                                      |
+| --------- | -------------------------- | -------- | ---------------------------------------------------------------- |
+| `options` | `IntersectionObserverInit` | No       | Standard `root`, `rootMargin`, and `threshold` observer options. |
 
 ## Return value
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `ref` | `(node: T \| null) => void` | Callback ref to attach to target element. |
-| `isVisible` | `boolean` | Whether element currently satisfies intersection visibility threshold. |
-| `metrics.firstVisibleAt` | `number \| null` | Timestamp of first visibility event. |
-| `metrics.totalVisibleMs` | `number` | Accumulated visible duration across sessions. |
+| Field                    | Type                        | Description                                                            |
+| ------------------------ | --------------------------- | ---------------------------------------------------------------------- |
+| `ref`                    | `(node: T \| null) => void` | Callback ref to attach to target element.                              |
+| `isVisible`              | `boolean`                   | Whether element currently satisfies intersection visibility threshold. |
+| `metrics.firstVisibleAt` | `number \| null`            | Timestamp of first visibility event.                                   |
+| `metrics.totalVisibleMs` | `number`                    | Accumulated visible duration across sessions.                          |
 
 ## Live interactive demo (StackBlitz)
 
@@ -43,10 +43,10 @@ function useIntersectionObserver<T extends Element = Element>(
 ## Code example
 
 ```tsx
-import {useIntersectionObserver} from 'react-perf-hooks';
+import { useIntersectionObserver } from 'react-perf-hooks';
 
 export function HeroImage() {
-  const {ref, isVisible, metrics} = useIntersectionObserver<HTMLImageElement>({
+  const { ref, isVisible, metrics } = useIntersectionObserver<HTMLImageElement>({
     threshold: 0.25,
     rootMargin: '150px 0px',
   });

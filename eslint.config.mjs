@@ -1,6 +1,6 @@
 import js from '@eslint/js';
-import tseslint from 'typescript-eslint';
 import reactHooks from 'eslint-plugin-react-hooks';
+import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   { ignores: ['dist/**', 'coverage/**', 'node_modules/**'] },
@@ -29,5 +29,5 @@ export default tseslint.config(
       // No floating promises
       '@typescript-eslint/no-floating-promises': 'off',
     },
-  }
+  },
 );

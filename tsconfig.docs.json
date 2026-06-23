@@ -1,0 +1,15 @@
+{
+  "extends": "@docusaurus/tsconfig",
+  "compilerOptions": {
+    "strict": true,
+    "types": ["@docusaurus/module-type-aliases"]
+  },
+  "include": [
+    "docusaurus.config.ts",
+    "sidebars.ts",
+    "src/components/**/*",
+    "src/pages/**/*",
+    "docs/**/*"
+  ],
+  "exclude": ["node_modules", ".docusaurus", "docs-build", "build", "dist"]
+}

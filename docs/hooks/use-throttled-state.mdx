@@ -15,26 +15,26 @@ import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
 function useThrottledState<T>(
   initialState: T | (() => T),
   interval?: number,
-  options?: UseThrottledStateOptions
-): [T, Dispatch<SetStateAction<T>>, ThrottledStateStats]
+  options?: UseThrottledStateOptions,
+): [T, Dispatch<SetStateAction<T>>, ThrottledStateStats];
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `initialState` | `T \| (() => T)` | Yes | Initial value or lazy initializer. |
-| `interval` | `number` | No | Throttle window in ms. Defaults to `100`. |
-| `options.leading` | `boolean` | No | Commit first update in a throttle window. |
-| `options.trailing` | `boolean` | No | Commit latest queued update at window end. |
+| Name               | Type             | Required | Description                                |
+| ------------------ | ---------------- | -------- | ------------------------------------------ |
+| `initialState`     | `T \| (() => T)` | Yes      | Initial value or lazy initializer.         |
+| `interval`         | `number`         | No       | Throttle window in ms. Defaults to `100`.  |
+| `options.leading`  | `boolean`        | No       | Commit first update in a throttle window.  |
+| `options.trailing` | `boolean`        | No       | Commit latest queued update at window end. |
 
 ## Return value
 
-| Position | Type | Description |
-| --- | --- | --- |
-| `0` | `T` | Current committed value. |
-| `1` | `Dispatch<SetStateAction<T>>` | Throttled setter function. |
-| `2` | `ThrottledStateStats` | `{ droppedUpdates, totalUpdates }` counters. |
+| Position | Type                          | Description                                  |
+| -------- | ----------------------------- | -------------------------------------------- |
+| `0`      | `T`                           | Current committed value.                     |
+| `1`      | `Dispatch<SetStateAction<T>>` | Throttled setter function.                   |
+| `2`      | `ThrottledStateStats`         | `{ droppedUpdates, totalUpdates }` counters. |
 
 ## Live interactive demo (StackBlitz)
 
@@ -47,10 +47,10 @@ function useThrottledState<T>(
 ## Code example
 
 ```tsx
-import {useThrottledState} from 'react-perf-hooks';
+import { useThrottledState } from 'react-perf-hooks';
 
 export function PointerTracker() {
-  const [point, setPoint, stats] = useThrottledState({x: 0, y: 0}, 100, {
+  const [point, setPoint, stats] = useThrottledState({ x: 0, y: 0 }, 100, {
     leading: true,
     trailing: true,
   });
@@ -58,8 +58,9 @@ export function PointerTracker() {
   return (
     <div
       onPointerMove={(event) => {
-        setPoint({x: event.clientX, y: event.clientY});
-      }}>
+        setPoint({ x: event.clientX, y: event.clientY });
+      }}
+    >
       <p>
         Pointer: {point.x}, {point.y}
       </p>

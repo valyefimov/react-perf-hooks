@@ -12,28 +12,24 @@ import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
 ## API signature
 
 ```ts
-function useMemoProfiling<T>(
-  factory: () => T,
-  deps: DependencyList,
-  label?: string
-): T
+function useMemoProfiling<T>(factory: () => T, deps: DependencyList, label?: string): T;
 
-function getStats(label?: string): MemoProfilingStats
+function getStats(label?: string): MemoProfilingStats;
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `factory` | `() => T` | Yes | Computation callback, same as `useMemo`. |
-| `deps` | `DependencyList` | Yes | Dependency list controlling recomputation. |
-| `label` | `string` | No | Grouping key for logs and accumulated stats. |
+| Name      | Type             | Required | Description                                  |
+| --------- | ---------------- | -------- | -------------------------------------------- |
+| `factory` | `() => T`        | Yes      | Computation callback, same as `useMemo`.     |
+| `deps`    | `DependencyList` | Yes      | Dependency list controlling recomputation.   |
+| `label`   | `string`         | No       | Grouping key for logs and accumulated stats. |
 
 ## Return value
 
-| Field | Type | Description |
-| --- | --- | --- |
-| Hook return | `T` | Memoized value produced by `factory`. |
+| Field             | Type                 | Description                                             |
+| ----------------- | -------------------- | ------------------------------------------------------- |
+| Hook return       | `T`                  | Memoized value produced by `factory`.                   |
 | `getStats(label)` | `MemoProfilingStats` | Returns cumulative hit/miss and recompute timing stats. |
 
 ## Live interactive demo (StackBlitz)
@@ -47,15 +43,15 @@ function getStats(label?: string): MemoProfilingStats
 ## Code example
 
 ```tsx
-import {getStats, useMemoProfiling} from 'react-perf-hooks';
+import { getStats, useMemoProfiling } from 'react-perf-hooks';
 
-type Props = {items: string[]; query: string};
+type Props = { items: string[]; query: string };
 
-export function FilteredList({items, query}: Props) {
+export function FilteredList({ items, query }: Props) {
   const filtered = useMemoProfiling(
     () => items.filter((item) => item.includes(query)),
     [items, query],
-    'FilteredList'
+    'FilteredList',
   );
 
   const stats = getStats('FilteredList');

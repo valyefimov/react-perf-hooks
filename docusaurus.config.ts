@@ -32,7 +32,7 @@ const config: Config = {
       {
         docs: {
           sidebarPath: './sidebars.ts',
-          editUrl: 'https://github.com/valyefimov/react-perf-hooks/tree/main/website/',
+          editUrl: 'https://github.com/valyefimov/react-perf-hooks/tree/main/',
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
         },

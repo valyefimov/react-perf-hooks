@@ -12,25 +12,25 @@ import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
 ## API signature
 
 ```ts
-function useWebVitals(options?: UseWebVitalsOptions): WebVitalsState
+function useWebVitals(options?: UseWebVitalsOptions): WebVitalsState;
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `options.onMetric` | `(metric: WebVitalMetric) => void` | No | Callback fired whenever a metric is updated. |
-| `options.enabled` | `boolean` | No | Set `false` to disable subscriptions (useful for SSR/tests). |
+| Name               | Type                               | Required | Description                                                  |
+| ------------------ | ---------------------------------- | -------- | ------------------------------------------------------------ |
+| `options.onMetric` | `(metric: WebVitalMetric) => void` | No       | Callback fired whenever a metric is updated.                 |
+| `options.enabled`  | `boolean`                          | No       | Set `false` to disable subscriptions (useful for SSR/tests). |
 
 ## Return value
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `CLS` | `WebVitalMetric \| null` | Cumulative Layout Shift metric. |
-| `LCP` | `WebVitalMetric \| null` | Largest Contentful Paint metric. |
-| `INP` | `WebVitalMetric \| null` | Interaction to Next Paint metric. |
-| `FCP` | `WebVitalMetric \| null` | First Contentful Paint metric. |
-| `TTFB` | `WebVitalMetric \| null` | Time to First Byte metric. |
+| Field  | Type                     | Description                       |
+| ------ | ------------------------ | --------------------------------- |
+| `CLS`  | `WebVitalMetric \| null` | Cumulative Layout Shift metric.   |
+| `LCP`  | `WebVitalMetric \| null` | Largest Contentful Paint metric.  |
+| `INP`  | `WebVitalMetric \| null` | Interaction to Next Paint metric. |
+| `FCP`  | `WebVitalMetric \| null` | First Contentful Paint metric.    |
+| `TTFB` | `WebVitalMetric \| null` | Time to First Byte metric.        |
 
 ## Live interactive demo (StackBlitz)
 
@@ -43,7 +43,7 @@ function useWebVitals(options?: UseWebVitalsOptions): WebVitalsState
 ## Code example
 
 ```tsx
-import {useWebVitals} from 'react-perf-hooks';
+import { useWebVitals } from 'react-perf-hooks';
 
 export function VitalsOverlay() {
   const vitals = useWebVitals({

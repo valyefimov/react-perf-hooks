@@ -14,24 +14,24 @@ import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
 ```ts
 function useDebouncedState<T>(
   initialState: T | (() => T),
-  delay?: number
-): [T, Dispatch<SetStateAction<T>>, DebouncedStateStats]
+  delay?: number,
+): [T, Dispatch<SetStateAction<T>>, DebouncedStateStats];
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `initialState` | `T \| (() => T)` | Yes | Initial state value or lazy initializer. |
-| `delay` | `number` | No | Debounce delay in ms. Defaults to `300`. |
+| Name           | Type             | Required | Description                              |
+| -------------- | ---------------- | -------- | ---------------------------------------- |
+| `initialState` | `T \| (() => T)` | Yes      | Initial state value or lazy initializer. |
+| `delay`        | `number`         | No       | Debounce delay in ms. Defaults to `300`. |
 
 ## Return value
 
-| Position | Type | Description |
-| --- | --- | --- |
-| `0` | `T` | Current committed value. |
-| `1` | `Dispatch<SetStateAction<T>>` | Debounced setter function. |
-| `2` | `DebouncedStateStats` | `{ skippedRenders, totalUpdates }` counters. |
+| Position | Type                          | Description                                  |
+| -------- | ----------------------------- | -------------------------------------------- |
+| `0`      | `T`                           | Current committed value.                     |
+| `1`      | `Dispatch<SetStateAction<T>>` | Debounced setter function.                   |
+| `2`      | `DebouncedStateStats`         | `{ skippedRenders, totalUpdates }` counters. |
 
 ## Live interactive demo (StackBlitz)
 
@@ -44,7 +44,7 @@ function useDebouncedState<T>(
 ## Code example
 
 ```tsx
-import {useDebouncedState} from 'react-perf-hooks';
+import { useDebouncedState } from 'react-perf-hooks';
 
 export function SearchInput() {
   const [query, setQuery, stats] = useDebouncedState('', 250);

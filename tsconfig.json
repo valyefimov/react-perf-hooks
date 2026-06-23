@@ -20,6 +20,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.test.tsx"]
+  "include": ["src/index.ts", "src/hooks/**/*.ts", "src/hooks/**/*.tsx", "src/test-setup.ts"],
+  "exclude": ["node_modules", "dist", "build", ".docusaurus", "**/*.test.ts", "**/*.test.tsx"]
 }

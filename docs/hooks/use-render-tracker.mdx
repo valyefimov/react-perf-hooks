@@ -14,24 +14,24 @@ import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
 ```ts
 function useRenderTracker(
   props?: Record<string, unknown>,
-  options?: UseRenderTrackerOptions
-): RenderInfo
+  options?: UseRenderTrackerOptions,
+): RenderInfo;
 ```
 
 ## Parameters
 
-| Name | Type | Required | Description |
-| --- | --- | --- | --- |
-| `props` | `Record<string, unknown>` | No | Object to diff against previous render using `Object.is` per key. |
-| `options.name` | `string` | No | Label in console output. Defaults to `"Component"`. |
-| `options.enabled` | `boolean` | No | Enable/disable tracking (dev true, prod false by default). |
-| `options.warnAt` | `number` | No | Warn once render count reaches threshold. |
+| Name              | Type                      | Required | Description                                                       |
+| ----------------- | ------------------------- | -------- | ----------------------------------------------------------------- |
+| `props`           | `Record<string, unknown>` | No       | Object to diff against previous render using `Object.is` per key. |
+| `options.name`    | `string`                  | No       | Label in console output. Defaults to `"Component"`.               |
+| `options.enabled` | `boolean`                 | No       | Enable/disable tracking (dev true, prod false by default).        |
+| `options.warnAt`  | `number`                  | No       | Warn once render count reaches threshold.                         |
 
 ## Return value
 
-| Field | Type | Description |
-| --- | --- | --- |
-| `count` | `number` | Total render count while tracking is enabled. |
+| Field            | Type     | Description                                     |
+| ---------------- | -------- | ----------------------------------------------- |
+| `count`          | `number` | Total render count while tracking is enabled.   |
 | `lastRenderTime` | `number` | `performance.now()` timestamp of latest render. |
 
 ## Live interactive demo (StackBlitz)
@@ -45,15 +45,15 @@ function useRenderTracker(
 ## Code example
 
 ```tsx
-import {useRenderTracker} from 'react-perf-hooks';
+import { useRenderTracker } from 'react-perf-hooks';
 
 type Props = {
   userId: string;
   filters: Record<string, string>;
 };
 
-export function UserTable({userId, filters}: Props) {
-  const {count} = useRenderTracker({userId, filters}, {name: 'UserTable', warnAt: 10});
+export function UserTable({ userId, filters }: Props) {
+  const { count } = useRenderTracker({ userId, filters }, { name: 'UserTable', warnAt: 10 });
 
   return <p>Render count: {count}</p>;
 }

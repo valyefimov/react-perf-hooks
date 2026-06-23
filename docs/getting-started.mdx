@@ -23,18 +23,18 @@ Import only the hooks you need. The package is tree-shakeable.
 
 ```tsx
 import {
-  useRenderTracker,
-  useRenderBudget,
-  usePerformanceMark,
-  useComponentLifecycle,
-  useMemoProfiling,
-  useWebVitals,
-  useINP,
   useCLS,
-  useLongTasks,
+  useComponentLifecycle,
   useDebouncedState,
-  useThrottledState,
+  useINP,
   useIntersectionObserver,
+  useLongTasks,
+  useMemoProfiling,
+  usePerformanceMark,
+  useRenderBudget,
+  useRenderTracker,
+  useThrottledState,
+  useWebVitals,
 } from 'react-perf-hooks';
 ```
 
@@ -47,12 +47,12 @@ import {
 ## Quick start example
 
 ```tsx
-import {useRenderTracker, useRenderBudget, useDebouncedState} from 'react-perf-hooks';
+import { useDebouncedState, useRenderBudget, useRenderTracker } from 'react-perf-hooks';
 
 export function SearchPanel() {
   const [query, setQuery, stats] = useDebouncedState('', 250);
 
-  useRenderTracker({query}, {name: 'SearchPanel', warnAt: 12});
+  useRenderTracker({ query }, { name: 'SearchPanel', warnAt: 12 });
   useRenderBudget(16, 'SearchPanel');
 
   return (

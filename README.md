@@ -11,6 +11,29 @@
 
 ---
 
+## Repository layout
+
+This repository is a single-package library project. The npm package, Docusaurus docs, and examples
+share one root `package.json`, one `pnpm-lock.yaml`, and one `node_modules` directory.
+
+```text
+react-perf-hooks/
+├── src/            # library source plus Docusaurus UI files
+├── docs/           # Docusaurus MDX documentation
+├── examples/       # StackBlitz demos
+├── static/         # Docusaurus static assets
+├── docusaurus.config.ts
+├── sidebars.ts
+├── package.json
+├── pnpm-lock.yaml
+└── tsup.config.ts
+```
+
+Library type-checking is scoped to `src/hooks`, `src/index.ts`, and `src/test-setup.ts`.
+Docusaurus has its own `tsconfig.docs.json`.
+
+---
+
 ## Why react-perf-hooks?
 
 Most hook libraries give you `useDebounce` and `useLocalStorage`. This one does one thing: helps you **measure, diagnose, and understand performance** in React apps.
@@ -124,23 +147,7 @@ function App() {
 }
 ```
 
-`useDebouncedState` demo: [docs/demos/useDebouncedStateDemo.tsx](./docs/demos/useDebouncedStateDemo.tsx)
-
-`useThrottledState` demo: [docs/demos/useThrottledStateDemo.tsx](./docs/demos/useThrottledStateDemo.tsx)
-
-`useComponentLifecycle` demo: [docs/demos/useComponentLifecycleDemo.tsx](./docs/demos/useComponentLifecycleDemo.tsx)
-
-`useMemoProfiling` demo: [docs/demos/useMemoProfilingDemo.tsx](./docs/demos/useMemoProfilingDemo.tsx)
-
-`useIntersectionObserver` demo: [docs/demos/useIntersectionObserverDemo.tsx](./docs/demos/useIntersectionObserverDemo.tsx)
-
-`useRenderBudget` demo: [docs/demos/useRenderBudgetDemo.tsx](./docs/demos/useRenderBudgetDemo.tsx)
-
-`useINP` demo: [docs/demos/useINPDemo.tsx](./docs/demos/useINPDemo.tsx)
-
-`useCLS` demo: [docs/demos/useCLSDemo.tsx](./docs/demos/useCLSDemo.tsx)
-
-`useLongTasks` demo: [docs/demos/useLongTasksDemo.tsx](./docs/demos/useLongTasksDemo.tsx)
+Interactive demos live in [examples/stackblitz/hooks-playground](./examples/stackblitz/hooks-playground) and are embedded from the docs site.
 
 ---
 
@@ -191,13 +198,16 @@ import type {
 Contributions are welcome! Please open an issue first to discuss what you'd like to change.
 
 ```bash
-npm install          # Install dependencies
-npm test             # Run tests in watch mode
-npm run test:coverage # Run tests once with coverage
-npm run type-check   # Type-check
-npm run lint         # Lint
-npm run format       # Format with Prettier
-npm run build        # Build CJS + ESM + .d.ts
+pnpm install          # Install dependencies
+pnpm test             # Run tests in watch mode
+pnpm test:coverage    # Run tests once with coverage
+pnpm type-check       # Type-check the library
+pnpm docs:type-check  # Type-check the Docusaurus site
+pnpm lint             # Lint
+pnpm format           # Format with Prettier
+pnpm build            # Build CJS + ESM + .d.ts
+pnpm docs:build       # Build the docs site
+pnpm run ci           # Run the library CI checks locally
 ```
 
 Each hook lives in its own directory under `src/hooks/`. To add a new hook:
@@ -205,7 +215,7 @@ Each hook lives in its own directory under `src/hooks/`. To add a new hook:
 1. Create `src/hooks/useYourHook/index.ts`
 2. Add tests in `src/hooks/useYourHook/useYourHook.test.tsx`
 3. Export from `src/index.ts`
-4. Add a doc in `docs/useYourHook.md` and link it from `docs/index.md`
+4. Add a doc in `docs/hooks/use-your-hook.mdx` and link it from `sidebars.ts`
 
 ---
 
