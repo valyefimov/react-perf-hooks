@@ -1,0 +1,80 @@
+---
+title: useMemoryStatus
+description: Monitor Chromium JavaScript heap usage from React.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useMemoryStatus` wraps Chromium's non-standard `performance.memory` API. It polls JavaScript heap telemetry on an interval and flags when used heap crosses a configurable ratio of total allocated heap.
+
+This is useful for heavy dashboards, image editors, virtualized workspaces, and development overlays where memory leaks or garbage collector churn need early visibility.
+
+Browsers that do not expose `performance.memory`, including Safari and Firefox, return an unsupported state without throwing.
+
+## API signature
+
+```ts
+function useMemoryStatus(options?: UseMemoryStatusOptions): UseMemoryStatusReturn;
+```
+
+## Parameters
+
+| Name                            | Type      | Required | Description                                                             |
+| ------------------------------- | --------- | -------- | ----------------------------------------------------------------------- |
+| `options.warningThresholdRatio` | `number`  | No       | Ratio of used heap to total heap that sets `isRiskZone`. Default `0.8`. |
+| `options.interval`              | `number`  | No       | Polling interval in milliseconds. Default `5000`.                       |
+| `options.enabled`               | `boolean` | No       | Set `false` to disable polling.                                         |
+
+## Return value
+
+| Field             | Type             | Description                                                              |
+| ----------------- | ---------------- | ------------------------------------------------------------------------ |
+| `usedJSHeapSize`  | `number \| null` | Current used JavaScript heap size in bytes, or `null` when unsupported.  |
+| `totalJSHeapSize` | `number \| null` | Current total allocated JavaScript heap size in bytes, or `null`.        |
+| `jsHeapSizeLimit` | `number \| null` | Browser JavaScript heap size limit in bytes, or `null`.                  |
+| `memoryLimit`     | `number \| null` | Alias for `jsHeapSizeLimit`.                                             |
+| `isRiskZone`      | `boolean`        | Whether `usedJSHeapSize / totalJSHeapSize` reached the configured ratio. |
+| `isSupported`     | `boolean`        | Whether this browser exposes `performance.memory`.                       |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useMemoryStatus demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&embed=1&view=preview&startScript=dev&demo=useMemoryStatus"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&startScript=dev&demo=useMemoryStatus"
+/>
+
+## Code example
+
+```tsx
+import { useMemoryStatus } from 'react-perf-hooks';
+
+export function MemoryStatusBadge() {
+  const { usedJSHeapSize, totalJSHeapSize, memoryLimit, isRiskZone, isSupported } = useMemoryStatus(
+    {
+      warningThresholdRatio: 0.8,
+      interval: 5000,
+    },
+  );
+
+  if (!isSupported) {
+    return <p>Memory telemetry is not available in this browser.</p>;
+  }
+
+  return (
+    <p>
+      Heap: {formatBytes(usedJSHeapSize)} / {formatBytes(totalJSHeapSize)} used, limit{' '}
+      {formatBytes(memoryLimit)}
+      {isRiskZone ? ' (risk zone)' : ''}
+    </p>
+  );
+}
+
+function formatBytes(value: number | null) {
+  if (value === null) return 'n/a';
+
+  return `${(value / 1024 / 1024).toFixed(1)} MB`;
+}
+```
