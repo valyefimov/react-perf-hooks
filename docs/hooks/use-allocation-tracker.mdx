@@ -1,0 +1,85 @@
+---
+title: useAllocationTracker
+description: Track whether heavy objects become garbage-collectable after component unmount.
+---
+
+## Description and use case
+
+`useAllocationTracker` helps diagnose suspected memory leaks during development. Register heavy objects, caches, DOM-adjacent objects, or closure-owned allocations and the hook checks whether they still appear reachable after the component unmounts.
+
+The hook uses `FinalizationRegistry` and `WeakRef`, so it can only report a **potential** leak. JavaScript garbage collection is nondeterministic and browsers do not guarantee exactly when finalizers run.
+
+## API signature
+
+```ts
+function useAllocationTracker(options: UseAllocationTrackerOptions): TrackAllocation;
+
+type TrackAllocation = (target: object, allocationName?: string) => boolean;
+```
+
+## Parameters
+
+| Name                             | Type                            | Required | Description                                                             |
+| -------------------------------- | ------------------------------- | -------- | ----------------------------------------------------------------------- |
+| `options.componentName`          | `string`                        | Yes      | Label used in warnings and callbacks.                                   |
+| `options.enabled`                | `boolean`                       | No       | Enable/disable tracking. Defaults to dev true, production false.        |
+| `options.timeoutMs`              | `number`                        | No       | Delay after unmount before reporting a retained allocation. Default 5s. |
+| `options.onLeakDetected`         | `(componentName, info) => void` | No       | Callback for potential leaks. Defaults to `console.warn`.               |
+| `trackAllocation.target`         | `object`                        | Yes      | Object to observe through `FinalizationRegistry` and `WeakRef`.         |
+| `trackAllocation.allocationName` | `string`                        | No       | Optional label for the tracked allocation.                              |
+
+## Return value
+
+`useAllocationTracker` returns a `trackAllocation` function. It returns `true` when the object was registered and `false` when tracking is disabled or unsupported by the runtime.
+
+## Code example
+
+```tsx
+import { useEffect } from 'react';
+import { useAllocationTracker } from 'react-perf-hooks';
+
+export function HeavyEditorComponent() {
+  const trackAllocation = useAllocationTracker({
+    componentName: 'HeavyEditorComponent',
+    timeoutMs: 8000,
+    onLeakDetected: (name, info) => {
+      console.warn(`Potential memory leak detected in ${name}`, info);
+    },
+  });
+
+  useEffect(() => {
+    const heavyData = new Uint8Array(1024 * 1024 * 10);
+    const handleResize = () => {
+      heavyData[0] = heavyData[0] + 1;
+    };
+
+    window.addEventListener('resize', handleResize);
+    trackAllocation(heavyData, '10MB editor buffer');
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [trackAllocation]);
+
+  return <div>Editor</div>;
+}
+```
+
+## Testing leaks in Chrome DevTools
+
+1. Run your app in development mode with React Strict Mode behavior understood. Strict Mode intentionally mounts, unmounts, and remounts components in development.
+2. Open Chrome DevTools and go to **Memory**.
+3. Enable manual garbage collection if needed by launching Chrome with `--js-flags="--expose-gc"` or use the trash-can **Collect garbage** button in the Memory panel.
+4. Navigate to the screen that mounts the component and perform the interaction that creates the allocation.
+5. Navigate away or otherwise unmount the component.
+6. Click **Collect garbage** several times, then wait longer than `timeoutMs`.
+7. If `onLeakDetected` fires, take a heap snapshot and search for your allocation label, retained closure, event listener, cache, or object constructor.
+8. Fix the retaining reference, then repeat the same flow. A disappearing warning is useful evidence, but heap snapshots are the source of truth.
+
+## Important limitations
+
+- `FinalizationRegistry` callbacks are not guaranteed to run promptly, or before page close.
+- A warning means “still reachable after the timeout,” not mathematical proof of a leak.
+- Short timeouts produce false positives. Prefer 5-10 seconds during manual debugging.
+- Production builds default to a no-op path and register no objects.
+- The hook does not retain tracked targets strongly; it stores metadata and a `WeakRef`.
