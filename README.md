@@ -63,6 +63,7 @@ npm install web-vitals
 | Hook | What it solves | Docs |
 |------|---------------|------|
 | `useRenderTracker` | Find components that re-render too often and why | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-render-tracker) |
+| `useAllocationTracker` | Detect potentially retained heavy objects after component unmount in development | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-allocation-tracker) |
 | `useRenderBudget` | Warn when a single render commit exceeds a time budget (default: 16ms) | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-render-budget) |
 | `usePerformanceMark` | Precise timing of any code path via the Performance API | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-performance-mark) |
 | `useComponentLifecycle` | Track mount/unmount timings and live component lifetime | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-component-lifecycle) |
@@ -82,8 +83,10 @@ See the [docs overview](https://valyefimov.github.io/react-perf-hooks/docs/getti
 ## Quick start
 
 ```tsx
+import { useEffect } from 'react';
 import {
   useRenderTracker,
+  useAllocationTracker,
   useRenderBudget,
   usePerformanceMark,
   useComponentLifecycle,
@@ -100,6 +103,14 @@ import {
 function App() {
   // Track re-renders and warn if a component renders more than 10 times
   const { count } = useRenderTracker({ userId }, { name: 'App', warnAt: 10 });
+
+  // Register heavyweight allocations for post-unmount GC diagnostics in development
+  const trackAllocation = useAllocationTracker({ componentName: 'App' });
+
+  useEffect(() => {
+    const scratchBuffer = new Uint8Array(1024 * 1024 * 10);
+    trackAllocation(scratchBuffer, 'scratch buffer');
+  }, [trackAllocation]);
 
   // Warn when a render exceeds one frame budget (16ms by default)
   useRenderBudget(16, 'App');
@@ -159,6 +170,9 @@ All hooks ship with full type declarations. No `@types/*` packages needed.
 import type {
   RenderInfo,
   UseRenderTrackerOptions,
+  AllocationLeakInfo,
+  TrackAllocation,
+  UseAllocationTrackerOptions,
   UseRenderBudgetOptions,
   PerformanceMeasureResult,
   UsePerformanceMarkReturn,

@@ -9,6 +9,7 @@ const sidebars: SidebarsConfig = {
       collapsed: false,
       items: [
         'hooks/use-render-tracker',
+        'hooks/use-allocation-tracker',
         'hooks/use-render-budget',
         'hooks/use-performance-mark',
         'hooks/use-component-lifecycle',

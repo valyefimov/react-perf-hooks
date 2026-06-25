@@ -1,6 +1,13 @@
 export { useRenderTracker } from './hooks/useRenderTracker';
 export type { RenderInfo, UseRenderTrackerOptions } from './hooks/useRenderTracker';
 
+export { useAllocationTracker } from './hooks/useAllocationTracker';
+export type {
+  AllocationLeakInfo,
+  TrackAllocation,
+  UseAllocationTrackerOptions,
+} from './hooks/useAllocationTracker';
+
 export { useRenderBudget } from './hooks/useRenderBudget';
 export type { UseRenderBudgetOptions } from './hooks/useRenderBudget';
 
