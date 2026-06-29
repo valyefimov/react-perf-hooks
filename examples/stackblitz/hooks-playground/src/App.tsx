@@ -7,6 +7,7 @@ import { UseINPDemo } from './demos/useINPDemo';
 import { UseIntersectionObserverDemo } from './demos/useIntersectionObserverDemo';
 import { UseLongTasksDemo } from './demos/useLongTasksDemo';
 import { UseMemoProfilingDemo } from './demos/useMemoProfilingDemo';
+import { UseMemoryStatusDemo } from './demos/useMemoryStatusDemo';
 import { UsePerformanceMarkDemo } from './demos/usePerformanceMarkDemo';
 import { UseRenderBudgetDemo } from './demos/useRenderBudgetDemo';
 import { UseRenderTrackerDemo } from './demos/useRenderTrackerDemo';
@@ -23,6 +24,7 @@ type DemoKey =
   | 'useINP'
   | 'useCLS'
   | 'useLongTasks'
+  | 'useMemoryStatus'
   | 'useFps'
   | 'useDebouncedState'
   | 'useThrottledState'
@@ -38,6 +40,7 @@ const demos: Record<DemoKey, { label: string; Component: () => JSX.Element }> = 
   useINP: { label: 'useINP', Component: UseINPDemo },
   useCLS: { label: 'useCLS', Component: UseCLSDemo },
   useLongTasks: { label: 'useLongTasks', Component: UseLongTasksDemo },
+  useMemoryStatus: { label: 'useMemoryStatus', Component: UseMemoryStatusDemo },
   useFps: { label: 'useFps', Component: UseFpsDemo },
   useDebouncedState: { label: 'useDebouncedState', Component: UseDebouncedStateDemo },
   useThrottledState: { label: 'useThrottledState', Component: UseThrottledStateDemo },
