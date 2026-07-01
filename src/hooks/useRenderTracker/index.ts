@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useMemo } from 'react';
 
 export interface RenderInfo {
   /** Total number of times the component has rendered */
@@ -22,6 +22,16 @@ export interface UseRenderTrackerOptions {
   warnAt?: number;
 }
 
+type RenderTrackerState = {
+  renderCount: number;
+  prevProps?: Record<string, unknown>;
+  lastRenderTime: number;
+};
+
+function getNow(): number {
+  return performance.now();
+}
+
 /**
  * Tracks how many times a component renders and logs the props that changed.
  *
@@ -37,45 +47,50 @@ export function useRenderTracker(
 ): RenderInfo {
   const { name = 'Component', enabled = process.env.NODE_ENV !== 'production', warnAt } = options;
 
-  const renderCount = useRef(0);
-  const prevProps = useRef<Record<string, unknown> | undefined>(undefined);
-  const lastRenderTime = useRef(0);
+  const state = useMemo<RenderTrackerState>(
+    () => ({
+      renderCount: 0,
+      lastRenderTime: 0,
+    }),
+    [],
+  );
 
   if (enabled) {
-    renderCount.current += 1;
-    lastRenderTime.current = performance.now();
+    state.renderCount += 1;
+    state.lastRenderTime = getNow();
 
-    if (props && prevProps.current) {
+    if (props && state.prevProps) {
+      const previousProps = state.prevProps;
       const changedKeys = Object.keys(props).filter(
-        (key) => !Object.is(props[key], prevProps.current![key]),
+        (key) => !Object.is(props[key], previousProps[key]),
       );
 
       if (changedKeys.length > 0) {
         console.log(
-          `[useRenderTracker] "${name}" re-rendered (×${renderCount.current}). Changed props:`,
+          `[useRenderTracker] "${name}" re-rendered (×${state.renderCount}). Changed props:`,
           changedKeys,
         );
       } else {
         console.log(
-          `[useRenderTracker] "${name}" re-rendered (×${renderCount.current}). No prop changes detected (parent re-render or context/state update).`,
+          `[useRenderTracker] "${name}" re-rendered (×${state.renderCount}). No prop changes detected (parent re-render or context/state update).`,
         );
       }
     }
 
     // Guard against null, NaN, Infinity, 0, negative numbers, and non-numeric types
     // before relying on warnAt to trigger the warning threshold
-    if (warnAt != null && Number.isFinite(warnAt) && warnAt > 0 && renderCount.current >= warnAt) {
+    if (warnAt != null && Number.isFinite(warnAt) && warnAt > 0 && state.renderCount >= warnAt) {
       console.warn(
-        `[useRenderTracker] "${name}" has rendered ${renderCount.current} times! ` +
+        `[useRenderTracker] "${name}" has rendered ${state.renderCount} times! ` +
           `Consider wrapping it in React.memo() or optimising its dependencies.`,
       );
     }
 
-    prevProps.current = props;
+    state.prevProps = props;
   }
 
   return {
-    count: renderCount.current,
-    lastRenderTime: lastRenderTime.current,
+    count: state.renderCount,
+    lastRenderTime: state.lastRenderTime,
   };
 }

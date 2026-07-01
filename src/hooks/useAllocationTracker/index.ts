@@ -149,18 +149,8 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
   } = options;
 
   const allocationIdsRef = useRef<number[]>([]);
-  const optionsRef = useRef({
-    componentName,
-    timeoutMs: normalizeTimeout(timeoutMs),
-    onLeakDetected,
-  });
 
-  optionsRef.current = {
-    componentName,
-    timeoutMs: normalizeTimeout(timeoutMs),
-    onLeakDetected,
-  };
-
+  const normalizedTimeoutMs = normalizeTimeout(timeoutMs);
   const canTrack = enabled && hasAllocationTrackingSupport();
 
   useEffect(() => {
@@ -189,14 +179,13 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
       if (!allocationRegistry) return false;
 
       const id = nextAllocationId++;
-      const currentOptions = optionsRef.current;
       const record: AllocationRecord = {
         id,
-        componentName: currentOptions.componentName,
+        componentName,
         allocationName,
         trackedAt: getNow(),
-        timeoutMs: currentOptions.timeoutMs,
-        onLeakDetected: currentOptions.onLeakDetected,
+        timeoutMs: normalizedTimeoutMs,
+        onLeakDetected,
         weakRef: new WeakRef(target),
         collected: false,
       };
@@ -207,7 +196,7 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
 
       return true;
     },
-    [canTrack],
+    [canTrack, componentName, normalizedTimeoutMs, onLeakDetected],
   );
 }
 

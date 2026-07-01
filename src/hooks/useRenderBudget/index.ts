@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo } from 'react';
 
 export interface UseRenderBudgetOptions {
   /**
@@ -17,8 +17,16 @@ const DEFAULT_COMPONENT_NAME = 'Component';
 
 const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect;
 
+type RenderBudgetState = {
+  renderStart: number;
+};
+
 function formatMs(value: number): string {
   return Number(value.toFixed(2)).toString();
+}
+
+function getNow(): number {
+  return performance.now();
 }
 
 /**
@@ -32,19 +40,19 @@ export function useRenderBudget(
 ): void {
   const { strict = false, enabled = process.env.NODE_ENV !== 'production' } = options;
 
-  const renderStartRef = useRef(0);
+  const state = useMemo<RenderBudgetState>(() => ({ renderStart: 0 }), []);
 
   const normalizedBudget = Number.isFinite(budgetMs) && budgetMs > 0 ? budgetMs : DEFAULT_BUDGET_MS;
   const normalizedName = componentName.trim().length > 0 ? componentName : DEFAULT_COMPONENT_NAME;
 
   if (enabled) {
-    renderStartRef.current = performance.now();
+    state.renderStart = getNow();
   }
 
   useIsomorphicLayoutEffect(() => {
     if (!enabled) return;
 
-    const elapsedMs = performance.now() - renderStartRef.current;
+    const elapsedMs = getNow() - state.renderStart;
 
     if (elapsedMs <= normalizedBudget) return;
 
