@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useId } from 'react';
 
 export interface RenderInfo {
   /** Total number of times the component has rendered */
@@ -23,10 +23,12 @@ export interface UseRenderTrackerOptions {
 }
 
 type RenderTrackerState = {
-  renderCount: number;
-  prevProps?: Record<string, unknown>;
+  count: number;
   lastRenderTime: number;
+  prevProps?: Record<string, unknown>;
 };
+
+const trackerStates = new Map<string, RenderTrackerState>();
 
 function getNow(): number {
   return performance.now();
@@ -47,16 +49,19 @@ export function useRenderTracker(
 ): RenderInfo {
   const { name = 'Component', enabled = process.env.NODE_ENV !== 'production', warnAt } = options;
 
-  const state = useMemo<RenderTrackerState>(
-    () => ({
-      renderCount: 0,
+  const instanceId = useId();
+  let state = trackerStates.get(instanceId);
+
+  if (!state) {
+    state = {
+      count: 0,
       lastRenderTime: 0,
-    }),
-    [],
-  );
+    };
+    trackerStates.set(instanceId, state);
+  }
 
   if (enabled) {
-    state.renderCount += 1;
+    state.count += 1;
     state.lastRenderTime = getNow();
 
     if (props && state.prevProps) {
@@ -67,21 +72,21 @@ export function useRenderTracker(
 
       if (changedKeys.length > 0) {
         console.log(
-          `[useRenderTracker] "${name}" re-rendered (×${state.renderCount}). Changed props:`,
+          `[useRenderTracker] "${name}" re-rendered (×${state.count}). Changed props:`,
           changedKeys,
         );
       } else {
         console.log(
-          `[useRenderTracker] "${name}" re-rendered (×${state.renderCount}). No prop changes detected (parent re-render or context/state update).`,
+          `[useRenderTracker] "${name}" re-rendered (×${state.count}). No prop changes detected (parent re-render or context/state update).`,
         );
       }
     }
 
     // Guard against null, NaN, Infinity, 0, negative numbers, and non-numeric types
     // before relying on warnAt to trigger the warning threshold
-    if (warnAt != null && Number.isFinite(warnAt) && warnAt > 0 && state.renderCount >= warnAt) {
+    if (warnAt != null && Number.isFinite(warnAt) && warnAt > 0 && state.count >= warnAt) {
       console.warn(
-        `[useRenderTracker] "${name}" has rendered ${state.renderCount} times! ` +
+        `[useRenderTracker] "${name}" has rendered ${state.count} times! ` +
           `Consider wrapping it in React.memo() or optimising its dependencies.`,
       );
     }
@@ -89,8 +94,19 @@ export function useRenderTracker(
     state.prevProps = props;
   }
 
-  return {
-    count: state.renderCount,
+  const renderInfo = {
+    count: state.count,
     lastRenderTime: state.lastRenderTime,
+  };
+
+  useEffect(() => {
+    return () => {
+      trackerStates.delete(instanceId);
+    };
+  }, [instanceId]);
+
+  return {
+    count: renderInfo.count,
+    lastRenderTime: renderInfo.lastRenderTime,
   };
 }

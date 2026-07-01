@@ -154,11 +154,10 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
   const canTrack = enabled && hasAllocationTrackingSupport();
 
   useEffect(() => {
+    const allocationIds = allocationIdsRef.current;
+
     return () => {
       const unmountedAt = getNow();
-      // This ref is a mutable allocation registry, not a rendered node; cleanup needs latest IDs.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const allocationIds = allocationIdsRef.current;
 
       for (const id of allocationIds) {
         const record = records.get(id);
