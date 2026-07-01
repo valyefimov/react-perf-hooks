@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type * as WebVitalsModule from 'web-vitals';
 import type { WebVitalMetric } from './index';
 
 // Mock web-vitals BEFORE importing the hook so the dynamic import resolves to the mock
@@ -28,8 +29,7 @@ async function flushEffects(): Promise<void> {
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-type VitalsModule = typeof import('web-vitals');
+type VitalsModule = typeof WebVitalsModule;
 type OnMetricFn = (cb: (m: WebVitalMetric) => void) => void;
 
 async function captureCallbacks(

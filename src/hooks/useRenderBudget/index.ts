@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 
 export interface UseRenderBudgetOptions {
   /**
@@ -21,6 +21,10 @@ function formatMs(value: number): string {
   return Number(value.toFixed(2)).toString();
 }
 
+function getNow(): number {
+  return performance.now();
+}
+
 /**
  * Measures render start -> commit duration and warns when a component exceeds
  * a configurable frame budget.
@@ -32,19 +36,14 @@ export function useRenderBudget(
 ): void {
   const { strict = false, enabled = process.env.NODE_ENV !== 'production' } = options;
 
-  const renderStartRef = useRef(0);
-
   const normalizedBudget = Number.isFinite(budgetMs) && budgetMs > 0 ? budgetMs : DEFAULT_BUDGET_MS;
   const normalizedName = componentName.trim().length > 0 ? componentName : DEFAULT_COMPONENT_NAME;
-
-  if (enabled) {
-    renderStartRef.current = performance.now();
-  }
+  const renderStart = enabled ? getNow() : 0;
 
   useIsomorphicLayoutEffect(() => {
     if (!enabled) return;
 
-    const elapsedMs = performance.now() - renderStartRef.current;
+    const elapsedMs = getNow() - renderStart;
 
     if (elapsedMs <= normalizedBudget) return;
 

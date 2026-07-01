@@ -149,26 +149,15 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
   } = options;
 
   const allocationIdsRef = useRef<number[]>([]);
-  const optionsRef = useRef({
-    componentName,
-    timeoutMs: normalizeTimeout(timeoutMs),
-    onLeakDetected,
-  });
 
-  optionsRef.current = {
-    componentName,
-    timeoutMs: normalizeTimeout(timeoutMs),
-    onLeakDetected,
-  };
-
+  const normalizedTimeoutMs = normalizeTimeout(timeoutMs);
   const canTrack = enabled && hasAllocationTrackingSupport();
 
   useEffect(() => {
+    const allocationIds = allocationIdsRef.current;
+
     return () => {
       const unmountedAt = getNow();
-      // This ref is a mutable allocation registry, not a rendered node; cleanup needs latest IDs.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      const allocationIds = allocationIdsRef.current;
 
       for (const id of allocationIds) {
         const record = records.get(id);
@@ -189,14 +178,13 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
       if (!allocationRegistry) return false;
 
       const id = nextAllocationId++;
-      const currentOptions = optionsRef.current;
       const record: AllocationRecord = {
         id,
-        componentName: currentOptions.componentName,
+        componentName,
         allocationName,
         trackedAt: getNow(),
-        timeoutMs: currentOptions.timeoutMs,
-        onLeakDetected: currentOptions.onLeakDetected,
+        timeoutMs: normalizedTimeoutMs,
+        onLeakDetected,
         weakRef: new WeakRef(target),
         collected: false,
       };
@@ -207,7 +195,7 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
 
       return true;
     },
-    [canTrack],
+    [canTrack, componentName, normalizedTimeoutMs, onLeakDetected],
   );
 }
 
