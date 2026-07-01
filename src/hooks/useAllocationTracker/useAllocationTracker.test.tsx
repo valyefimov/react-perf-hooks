@@ -78,6 +78,47 @@ describe('useAllocationTracker', () => {
     );
   });
 
+  it('does not treat disabling tracking as an unmount', () => {
+    const onLeakDetected = vi.fn();
+    const { result, rerender, unmount } = renderHook(
+      ({ enabled }) =>
+        useAllocationTracker({
+          componentName: 'ToggleComponent',
+          enabled,
+          timeoutMs: 10,
+          onLeakDetected,
+        }),
+      {
+        initialProps: { enabled: true },
+      },
+    );
+
+    result.current({ retained: true }, 'cache');
+
+    rerender({ enabled: false });
+
+    act(() => vi.advanceTimersByTime(10));
+
+    expect(onLeakDetected).not.toHaveBeenCalled();
+
+    const [record] = __allocationTrackerInternals.records.values();
+    expect(record.unmountedAt).toBeUndefined();
+
+    unmount();
+
+    act(() => vi.advanceTimersByTime(10));
+
+    expect(onLeakDetected).toHaveBeenCalledTimes(1);
+    expect(onLeakDetected).toHaveBeenCalledWith(
+      'ToggleComponent',
+      expect.objectContaining({
+        allocationName: 'cache',
+        componentName: 'ToggleComponent',
+        timeoutMs: 10,
+      }),
+    );
+  });
+
   it('falls back to console.warn when no leak callback is provided', () => {
     const { result, unmount } = renderHook(() =>
       useAllocationTracker({

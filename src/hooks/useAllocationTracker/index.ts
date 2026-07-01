@@ -164,8 +164,6 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
   const canTrack = enabled && hasAllocationTrackingSupport();
 
   useEffect(() => {
-    if (!canTrack) return;
-
     return () => {
       const unmountedAt = getNow();
       // This ref is a mutable allocation registry, not a rendered node; cleanup needs latest IDs.
@@ -180,7 +178,7 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
         scheduleLeakCheck(record, unmountedAt);
       }
     };
-  }, [canTrack]);
+  }, []);
 
   return useCallback<TrackAllocation>(
     (target, allocationName) => {
