@@ -72,3 +72,12 @@ export type {
   IntersectionObserverMetrics,
   UseIntersectionObserverReturn,
 } from './hooks/useIntersectionObserver';
+
+export { useNetworkEfficiency } from './hooks/useNetworkEfficiency';
+export type {
+  NetworkEffectiveType,
+  NetworkEfficiencyEntry,
+  NetworkResourceFilter,
+  UseNetworkEfficiencyOptions,
+  UseNetworkEfficiencyReturn,
+} from './hooks/useNetworkEfficiency';

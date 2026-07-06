@@ -309,6 +309,17 @@ export function useNetworkEfficiency(
     return () => observer.disconnect();
   }, [enabled, handleEntry, isSupported]);
 
+  const currentLatest = useMemo<NetworkEfficiencyEntry | null>(() => {
+    if (!latest) return null;
+
+    return {
+      ...latest,
+      effectiveMaxSizeInBytes,
+      effectiveType,
+      isInefficient: latest.payloadSize > effectiveMaxSizeInBytes,
+    };
+  }, [effectiveMaxSizeInBytes, effectiveType, latest]);
+
   if (!isSupported) {
     return {
       ...unsupportedState,
@@ -318,9 +329,9 @@ export function useNetworkEfficiency(
   }
 
   return {
-    lastPayloadSize: latest?.payloadSize ?? null,
-    isInefficient: latest?.isInefficient ?? false,
-    latest,
+    lastPayloadSize: currentLatest?.payloadSize ?? null,
+    isInefficient: currentLatest?.isInefficient ?? false,
+    latest: currentLatest,
     effectiveMaxSizeInBytes,
     effectiveType,
     isSupported,

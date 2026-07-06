@@ -280,6 +280,48 @@ describe('useNetworkEfficiency', () => {
     expect(result.current.isInefficient).toBe(false);
   });
 
+  it('recalculates the latest inefficient state when the threshold changes', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/configurable-data',
+        transferSize: 400_000,
+      }),
+    ]);
+
+    const { result, rerender } = renderHook(
+      ({ maxSizeInBytes }) =>
+        useNetworkEfficiency({
+          resourceFilter: '/api/v1/configurable-data',
+          maxSizeInBytes,
+        }),
+      {
+        initialProps: {
+          maxSizeInBytes: 500_000,
+        },
+      },
+    );
+
+    expect(result.current.effectiveMaxSizeInBytes).toBe(500_000);
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 400_000,
+      effectiveMaxSizeInBytes: 500_000,
+      isInefficient: false,
+    });
+    expect(result.current.isInefficient).toBe(false);
+
+    rerender({
+      maxSizeInBytes: 300_000,
+    });
+
+    expect(result.current.effectiveMaxSizeInBytes).toBe(300_000);
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 400_000,
+      effectiveMaxSizeInBytes: 300_000,
+      isInefficient: true,
+    });
+    expect(result.current.isInefficient).toBe(true);
+  });
+
   it('does not observe or scan when disabled', () => {
     mockResourceEntries([
       createResourceEntry({
