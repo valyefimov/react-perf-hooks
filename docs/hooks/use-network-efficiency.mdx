@@ -1,0 +1,71 @@
+---
+title: useNetworkEfficiency
+description: Monitor Resource Timing payload sizes and flag bloated network responses.
+---
+
+## Description and use case
+
+`useNetworkEfficiency` reads Resource Timing entries and reports payload sizes for matching resources. It is useful for API-heavy screens where a response that feels acceptable on desktop broadband can become expensive on mobile networks.
+
+The hook prefers `transferSize`, then falls back to `encodedBodySize` and `decodedBodySize` when the browser exposes those fields. Cross-origin resources may report `0` unless the response includes the appropriate `Timing-Allow-Origin` header.
+
+When the Network Information API is available, the configured threshold is lowered for `3g`, `2g`, and `slow-2g` connections. Browsers without that API keep the configured threshold and continue to work.
+
+## API signature
+
+```ts
+function useNetworkEfficiency(options?: UseNetworkEfficiencyOptions): UseNetworkEfficiencyReturn;
+```
+
+## Parameters
+
+| Name                     | Type                                  | Required | Description                                                     |
+| ------------------------ | ------------------------------------- | -------- | --------------------------------------------------------------- |
+| `options.resourceFilter` | `string \| RegExp \| (entry) => bool` | No       | Matches resource URLs. Omit to inspect all resource entries.    |
+| `options.maxSizeInBytes` | `number`                              | No       | Base payload threshold in bytes. Default `512000` (500KB).      |
+| `options.onWarning`      | `(entry) => void`                     | No       | Called when a matching payload exceeds the effective threshold. |
+| `options.enabled`        | `boolean`                             | No       | Set `false` to disable resource scanning and observation.       |
+
+## Return value
+
+| Field                     | Type                             | Description                                                          |
+| ------------------------- | -------------------------------- | -------------------------------------------------------------------- |
+| `lastPayloadSize`         | `number \| null`                 | Latest matching payload size in bytes, or `null` before a match.     |
+| `isInefficient`           | `boolean`                        | Whether the latest matching payload exceeds the effective threshold. |
+| `latest`                  | `NetworkEfficiencyEntry \| null` | Latest matching resource summary.                                    |
+| `effectiveMaxSizeInBytes` | `number`                         | Threshold after Network Information API adjustments.                 |
+| `effectiveType`           | `string \| null`                 | Connection type such as `3g`, or `null` when unavailable.            |
+| `isSupported`             | `boolean`                        | Whether this browser exposes Resource Timing entries.                |
+
+## Code example
+
+```tsx
+import { useNetworkEfficiency } from 'react-perf-hooks';
+
+export function HeavyDataProbe() {
+  const { lastPayloadSize, isInefficient, effectiveMaxSizeInBytes, effectiveType } =
+    useNetworkEfficiency({
+      resourceFilter: '/api/v1/heavy-data',
+      maxSizeInBytes: 1024 * 500,
+      onWarning: (entry) => {
+        navigator.sendBeacon('/analytics/network-payload', JSON.stringify(entry));
+      },
+    });
+
+  return (
+    <span>
+      {isInefficient
+        ? `Payload ${formatBytes(lastPayloadSize)} exceeded ${formatBytes(effectiveMaxSizeInBytes)}${
+            effectiveType ? ` on ${effectiveType}` : ''
+          }`
+        : null}
+    </span>
+  );
+}
+
+function formatBytes(value: number | null) {
+  if (value === null) return 'n/a';
+
+  return `${(value / 1024).toFixed(0)} KB`;
+}
+```

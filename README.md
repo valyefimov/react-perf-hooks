@@ -73,6 +73,7 @@ npm install web-vitals
 | `useCLS` | Component-scoped Cumulative Layout Shift tracking for a specific DOM node | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-cls) |
 | `useLongTasks` | Log main-thread freezes over 50ms and attach them to the current screen | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-long-tasks) |
 | `useMemoryStatus` | Monitor Chromium JavaScript heap usage and flag high memory pressure | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-memory-status) |
+| `useNetworkEfficiency` | Flag oversized Resource Timing payloads, with mobile network threshold adjustments | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-network-efficiency) |
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-debounced-state) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-throttled-state) |
 | `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-intersection-observer) |
@@ -97,6 +98,7 @@ import {
   useCLS,
   useLongTasks,
   useMemoryStatus,
+  useNetworkEfficiency,
   useDebouncedState,
   useThrottledState,
   useIntersectionObserver,
@@ -150,6 +152,13 @@ function App() {
   // Monitor Chromium heap telemetry and flag high memory pressure
   const memory = useMemoryStatus({ warningThresholdRatio: 0.8, interval: 5000 });
 
+  // Warn when an API response payload is too large for current network conditions
+  const network = useNetworkEfficiency({
+    resourceFilter: '/api/v1/heavy-data',
+    maxSizeInBytes: 1024 * 500,
+    onWarning: (entry) => navigator.sendBeacon('/analytics/network-payload', JSON.stringify(entry)),
+  });
+
   // Debounce state updates and inspect profiling counters
   const [query, setQuery, stats] = useDebouncedState('', 250);
 
@@ -202,6 +211,11 @@ import type {
   UseLongTasksReturn,
   UseMemoryStatusOptions,
   UseMemoryStatusReturn,
+  NetworkEfficiencyEntry,
+  NetworkEffectiveType,
+  NetworkResourceFilter,
+  UseNetworkEfficiencyOptions,
+  UseNetworkEfficiencyReturn,
   DebouncedStateStats,
   UseDebouncedStateReturn,
   ThrottledStateStats,
