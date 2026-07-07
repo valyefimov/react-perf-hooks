@@ -51,7 +51,10 @@ function mockResourceEntries(entries: PerformanceResourceTiming[]): void {
   );
 }
 
-function mockConnection(effectiveType?: string, saveData = false): MockNetworkConnection | undefined {
+function mockConnection(
+  effectiveType?: string,
+  saveData = false,
+): MockNetworkConnection | undefined {
   const listeners = new Set<() => void>();
   const connection: MockNetworkConnection | undefined = effectiveType
     ? {
