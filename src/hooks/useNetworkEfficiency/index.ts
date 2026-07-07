@@ -103,6 +103,11 @@ interface NetworkState {
   effectiveType: NetworkEffectiveType | null;
 }
 
+interface LatestNetworkResource {
+  source: PerformanceResourceTiming;
+  metric: NetworkEfficiencyEntry;
+}
+
 const DEFAULT_MAX_SIZE_IN_BYTES = 1024 * 500;
 
 const unsupportedState: UseNetworkEfficiencyReturn = {
@@ -295,7 +300,7 @@ export function useNetworkEfficiency(
   const { effectiveMaxSizeInBytes, effectiveType } = networkState;
   const resourceFilterKey = getResourceFilterKey(resourceFilter);
   const isSupported = supportsResourceTiming();
-  const [latest, setLatest] = useState<NetworkEfficiencyEntry | null>(null);
+  const [latest, setLatest] = useState<LatestNetworkResource | null>(null);
   const processedEntryKeysRef = useRef(new Set<string>());
   const resourceFilterRef = useRef(resourceFilter);
   const effectiveMaxSizeInBytesRef = useRef(effectiveMaxSizeInBytes);
@@ -334,7 +339,14 @@ export function useNetworkEfficiency(
       effectiveTypeRef.current,
     );
 
-    setLatest((current) => (areSameNetworkEfficiencyEntry(current, metric) ? current : metric));
+    setLatest((current) =>
+      areSameNetworkEfficiencyEntry(current?.metric ?? null, metric)
+        ? current
+        : {
+            source: entry,
+            metric,
+          },
+    );
 
     if (notify && !hasProcessedEntry && metric.isInefficient) {
       processedEntryKeysRef.current.add(key);
@@ -374,15 +386,15 @@ export function useNetworkEfficiency(
 
   const currentLatest = useMemo<NetworkEfficiencyEntry | null>(() => {
     if (!latest) return null;
-    if (!matchesResourceFilter(latest as unknown as PerformanceResourceTiming, resourceFilter)) {
+    if (!matchesResourceFilter(latest.source, resourceFilter)) {
       return null;
     }
 
     return {
-      ...latest,
+      ...latest.metric,
       effectiveMaxSizeInBytes,
       effectiveType,
-      isInefficient: latest.payloadSize > effectiveMaxSizeInBytes,
+      isInefficient: latest.metric.payloadSize > effectiveMaxSizeInBytes,
     };
   }, [effectiveMaxSizeInBytes, effectiveType, latest, resourceFilter]);
 

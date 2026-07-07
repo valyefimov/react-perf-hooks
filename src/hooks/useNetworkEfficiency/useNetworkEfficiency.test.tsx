@@ -212,6 +212,29 @@ describe('useNetworkEfficiency', () => {
     expect(result.current.isInefficient).toBe(true);
   });
 
+  it('keeps callback resource filters matched against the source timing entry', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: 'https://example.com/api/v1/heavy-data',
+        transferSize: 700_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: (entry) =>
+          entry.entryType === 'resource' && entry.name.includes('/api/v1/heavy-data'),
+        maxSizeInBytes: 500_000,
+      }),
+    );
+
+    expect(result.current.latest).toMatchObject({
+      name: 'https://example.com/api/v1/heavy-data',
+      payloadSize: 700_000,
+      isInefficient: true,
+    });
+  });
+
   it('falls back from transferSize to encodedBodySize and decodedBodySize', () => {
     mockResourceEntries([
       createResourceEntry({
