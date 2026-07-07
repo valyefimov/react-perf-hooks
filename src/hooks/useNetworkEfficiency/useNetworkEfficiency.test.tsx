@@ -7,6 +7,14 @@ type ObserverCallback = (
   observer: PerformanceObserver,
 ) => void;
 
+interface MockNetworkConnection {
+  effectiveType: string;
+  saveData: boolean;
+  addEventListener: (_type: 'change', listener: () => void) => void;
+  removeEventListener: (_type: 'change', listener: () => void) => void;
+  dispatchChange: () => void;
+}
+
 const originalPerformanceObserver = globalThis.PerformanceObserver;
 const originalNavigatorConnectionDescriptor = Object.getOwnPropertyDescriptor(
   Navigator.prototype,
@@ -43,11 +51,32 @@ function mockResourceEntries(entries: PerformanceResourceTiming[]): void {
   );
 }
 
-function mockConnection(effectiveType?: string, saveData = false): void {
+function mockConnection(effectiveType?: string, saveData = false): MockNetworkConnection | undefined {
+  const listeners = new Set<() => void>();
+  const connection: MockNetworkConnection | undefined = effectiveType
+    ? {
+        effectiveType,
+        saveData,
+        addEventListener: (_type: 'change', listener: () => void) => {
+          listeners.add(listener);
+        },
+        removeEventListener: (_type: 'change', listener: () => void) => {
+          listeners.delete(listener);
+        },
+        dispatchChange: () => {
+          for (const listener of listeners) {
+            listener();
+          }
+        },
+      }
+    : undefined;
+
   Object.defineProperty(navigator, 'connection', {
     configurable: true,
-    value: effectiveType ? { effectiveType, saveData } : undefined,
+    value: connection,
   });
+
+  return connection;
 }
 
 function createResourceEntry(
@@ -320,6 +349,101 @@ describe('useNetworkEfficiency', () => {
       isInefficient: true,
     });
     expect(result.current.isInefficient).toBe(true);
+  });
+
+  it('rescans existing entries and clears stale metrics when the resource filter changes', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/accounts',
+        transferSize: 200_000,
+      }),
+      createResourceEntry({
+        name: '/api/v1/orders',
+        transferSize: 600_000,
+        startTime: 10,
+      }),
+    ]);
+
+    const { result, rerender } = renderHook(
+      ({ resourceFilter }) =>
+        useNetworkEfficiency({
+          resourceFilter,
+          maxSizeInBytes: 500_000,
+        }),
+      {
+        initialProps: {
+          resourceFilter: '/api/v1/accounts',
+        },
+      },
+    );
+
+    expect(result.current.latest).toMatchObject({
+      name: '/api/v1/accounts',
+      payloadSize: 200_000,
+      isInefficient: false,
+    });
+
+    rerender({
+      resourceFilter: '/api/v1/orders',
+    });
+
+    expect(result.current.latest).toMatchObject({
+      name: '/api/v1/orders',
+      payloadSize: 600_000,
+      isInefficient: true,
+    });
+
+    rerender({
+      resourceFilter: '/api/v1/missing',
+    });
+
+    expect(result.current.latest).toBeNull();
+    expect(result.current.lastPayloadSize).toBeNull();
+    expect(result.current.isInefficient).toBe(false);
+  });
+
+  it('updates thresholds for resources observed after the network changes', () => {
+    const connection = mockConnection('4g');
+    const onWarning = vi.fn();
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/mobile-data',
+        maxSizeInBytes: 500_000,
+        onWarning,
+      }),
+    );
+
+    expect(result.current.effectiveType).toBe('4g');
+    expect(result.current.effectiveMaxSizeInBytes).toBe(500_000);
+
+    act(() => {
+      connection!.effectiveType = '3g';
+      connection!.dispatchChange();
+    });
+
+    expect(result.current.effectiveType).toBe('3g');
+    expect(result.current.effectiveMaxSizeInBytes).toBe(250_000);
+
+    emitResource(
+      createResourceEntry({
+        name: '/api/v1/mobile-data',
+        transferSize: 300_000,
+      }),
+    );
+
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 300_000,
+      effectiveType: '3g',
+      effectiveMaxSizeInBytes: 250_000,
+      isInefficient: true,
+    });
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effectiveType: '3g',
+        effectiveMaxSizeInBytes: 250_000,
+        isInefficient: true,
+      }),
+    );
   });
 
   it('does not observe or scan when disabled', () => {

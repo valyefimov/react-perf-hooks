@@ -74,6 +74,8 @@ export interface UseNetworkEfficiencyReturn {
 interface NetworkInformationLike {
   effectiveType?: NetworkEffectiveType;
   saveData?: boolean;
+  addEventListener?: (type: 'change', listener: () => void) => void;
+  removeEventListener?: (type: 'change', listener: () => void) => void;
 }
 
 interface NavigatorWithConnection extends Navigator {
@@ -95,6 +97,11 @@ type PerformanceObserverConstructorLike = {
   new (callback: PerformanceObserverCallbackLike): PerformanceObserver;
   supportedEntryTypes?: readonly string[];
 };
+
+interface NetworkState {
+  effectiveMaxSizeInBytes: number;
+  effectiveType: NetworkEffectiveType | null;
+}
 
 const DEFAULT_MAX_SIZE_IN_BYTES = 1024 * 500;
 
@@ -126,12 +133,10 @@ function getConnection(): NetworkInformationLike | null {
   return nav.connection ?? nav.mozConnection ?? nav.webkitConnection ?? null;
 }
 
-function getEffectiveType(): NetworkEffectiveType | null {
-  return getConnection()?.effectiveType ?? null;
-}
-
-function getEffectiveMaxSizeInBytes(maxSizeInBytes: number): number {
-  const connection = getConnection();
+function getEffectiveMaxSizeInBytes(
+  maxSizeInBytes: number,
+  connection: NetworkInformationLike | null = getConnection(),
+): number {
   const effectiveType = connection?.effectiveType;
 
   if (effectiveType === 'slow-2g' || effectiveType === '2g') {
@@ -147,6 +152,15 @@ function getEffectiveMaxSizeInBytes(maxSizeInBytes: number): number {
   }
 
   return maxSizeInBytes;
+}
+
+function getNetworkState(maxSizeInBytes: number): NetworkState {
+  const connection = getConnection();
+
+  return {
+    effectiveMaxSizeInBytes: getEffectiveMaxSizeInBytes(maxSizeInBytes, connection),
+    effectiveType: connection?.effectiveType ?? null,
+  };
 }
 
 function isResourceTiming(entry: PerformanceEntry): entry is PerformanceResourceTiming {
@@ -190,6 +204,14 @@ function matchesResourceFilter(
   return resourceFilter(entry);
 }
 
+function getResourceFilterKey(resourceFilter: NetworkResourceFilter | undefined): unknown {
+  if (resourceFilter instanceof RegExp) {
+    return `regexp:${resourceFilter.source}/${resourceFilter.flags}`;
+  }
+
+  return resourceFilter;
+}
+
 function getPayloadSize(entry: PerformanceResourceTiming): number {
   const sizes = [entry.transferSize, entry.encodedBodySize, entry.decodedBodySize];
   const size = sizes.find((value) => Number.isFinite(value) && value > 0);
@@ -203,6 +225,7 @@ function getResourceEntryKey(entry: PerformanceResourceTiming): string {
 function toNetworkEfficiencyEntry(
   entry: PerformanceResourceTiming,
   effectiveMaxSizeInBytes: number,
+  effectiveType: NetworkEffectiveType | null,
 ): NetworkEfficiencyEntry {
   const payloadSize = getPayloadSize(entry);
 
@@ -214,12 +237,31 @@ function toNetworkEfficiencyEntry(
     encodedBodySize: entry.encodedBodySize,
     decodedBodySize: entry.decodedBodySize,
     effectiveMaxSizeInBytes,
-    effectiveType: getEffectiveType(),
+    effectiveType,
     isInefficient: payloadSize > effectiveMaxSizeInBytes,
     startTime: entry.startTime,
     duration: entry.duration,
     timestamp: getNow(),
   };
+}
+
+function areSameNetworkEfficiencyEntry(
+  current: NetworkEfficiencyEntry | null,
+  next: NetworkEfficiencyEntry,
+): boolean {
+  return (
+    current?.name === next.name &&
+    current.initiatorType === next.initiatorType &&
+    current.payloadSize === next.payloadSize &&
+    current.transferSize === next.transferSize &&
+    current.encodedBodySize === next.encodedBodySize &&
+    current.decodedBodySize === next.decodedBodySize &&
+    current.effectiveMaxSizeInBytes === next.effectiveMaxSizeInBytes &&
+    current.effectiveType === next.effectiveType &&
+    current.isInefficient === next.isInefficient &&
+    current.startTime === next.startTime &&
+    current.duration === next.duration
+  );
 }
 
 /**
@@ -247,37 +289,58 @@ export function useNetworkEfficiency(
     enabled = true,
   } = options;
   const normalizedMaxSizeInBytes = normalizeMaxSizeInBytes(maxSizeInBytes);
-  const effectiveMaxSizeInBytes = useMemo(
-    () => getEffectiveMaxSizeInBytes(normalizedMaxSizeInBytes),
-    [normalizedMaxSizeInBytes],
+  const [networkState, setNetworkState] = useState<NetworkState>(() =>
+    getNetworkState(normalizedMaxSizeInBytes),
   );
-  const effectiveType = useMemo(() => getEffectiveType(), []);
+  const { effectiveMaxSizeInBytes, effectiveType } = networkState;
+  const resourceFilterKey = getResourceFilterKey(resourceFilter);
   const isSupported = supportsResourceTiming();
   const [latest, setLatest] = useState<NetworkEfficiencyEntry | null>(null);
   const processedEntryKeysRef = useRef(new Set<string>());
   const resourceFilterRef = useRef(resourceFilter);
   const effectiveMaxSizeInBytesRef = useRef(effectiveMaxSizeInBytes);
+  const effectiveTypeRef = useRef(effectiveType);
   const onWarningRef = useRef(onWarning);
+
+  useEffect(() => {
+    const updateNetworkState = () => {
+      setNetworkState(getNetworkState(normalizedMaxSizeInBytes));
+    };
+    const connection = getConnection();
+
+    updateNetworkState();
+    connection?.addEventListener?.('change', updateNetworkState);
+
+    return () => {
+      connection?.removeEventListener?.('change', updateNetworkState);
+    };
+  }, [normalizedMaxSizeInBytes]);
 
   useEffect(() => {
     resourceFilterRef.current = resourceFilter;
     effectiveMaxSizeInBytesRef.current = effectiveMaxSizeInBytes;
+    effectiveTypeRef.current = effectiveType;
     onWarningRef.current = onWarning;
-  }, [effectiveMaxSizeInBytes, onWarning, resourceFilter]);
+  }, [effectiveMaxSizeInBytes, effectiveType, onWarning, resourceFilter]);
 
-  const handleEntry = useCallback((entry: PerformanceResourceTiming) => {
+  const handleEntry = useCallback((entry: PerformanceResourceTiming, notify = true) => {
     if (!matchesResourceFilter(entry, resourceFilterRef.current)) return;
 
     const key = getResourceEntryKey(entry);
-    if (processedEntryKeysRef.current.has(key)) return;
+    const hasProcessedEntry = processedEntryKeysRef.current.has(key);
+    const metric = toNetworkEfficiencyEntry(
+      entry,
+      effectiveMaxSizeInBytesRef.current,
+      effectiveTypeRef.current,
+    );
 
-    processedEntryKeysRef.current.add(key);
-    const metric = toNetworkEfficiencyEntry(entry, effectiveMaxSizeInBytesRef.current);
+    setLatest((current) => (areSameNetworkEfficiencyEntry(current, metric) ? current : metric));
 
-    setLatest(metric);
-
-    if (metric.isInefficient) {
+    if (notify && !hasProcessedEntry && metric.isInefficient) {
+      processedEntryKeysRef.current.add(key);
       onWarningRef.current?.(metric);
+    } else if (!hasProcessedEntry) {
+      processedEntryKeysRef.current.add(key);
     }
   }, []);
 
@@ -307,10 +370,13 @@ export function useNetworkEfficiency(
     } as PerformanceObserverInit);
 
     return () => observer.disconnect();
-  }, [enabled, handleEntry, isSupported]);
+  }, [enabled, handleEntry, isSupported, resourceFilterKey]);
 
   const currentLatest = useMemo<NetworkEfficiencyEntry | null>(() => {
     if (!latest) return null;
+    if (!matchesResourceFilter(latest as unknown as PerformanceResourceTiming, resourceFilter)) {
+      return null;
+    }
 
     return {
       ...latest,
@@ -318,7 +384,7 @@ export function useNetworkEfficiency(
       effectiveType,
       isInefficient: latest.payloadSize > effectiveMaxSizeInBytes,
     };
-  }, [effectiveMaxSizeInBytes, effectiveType, latest]);
+  }, [effectiveMaxSizeInBytes, effectiveType, latest, resourceFilter]);
 
   if (!isSupported) {
     return {
