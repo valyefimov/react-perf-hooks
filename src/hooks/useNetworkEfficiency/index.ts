@@ -301,7 +301,8 @@ export function useNetworkEfficiency(
   const resourceFilterKey = getResourceFilterKey(resourceFilter);
   const isSupported = supportsResourceTiming();
   const [latest, setLatest] = useState<LatestNetworkResource | null>(null);
-  const processedEntryKeysRef = useRef(new Set<string>());
+  const processedEntriesRef = useRef(new Map<string, PerformanceResourceTiming>());
+  const entryInefficientStateRef = useRef(new Map<string, boolean>());
   const resourceFilterRef = useRef(resourceFilter);
   const effectiveMaxSizeInBytesRef = useRef(effectiveMaxSizeInBytes);
   const effectiveTypeRef = useRef(effectiveType);
@@ -332,7 +333,6 @@ export function useNetworkEfficiency(
     if (!matchesResourceFilter(entry, resourceFilterRef.current)) return;
 
     const key = getResourceEntryKey(entry);
-    const hasProcessedEntry = processedEntryKeysRef.current.has(key);
     const metric = toNetworkEfficiencyEntry(
       entry,
       effectiveMaxSizeInBytesRef.current,
@@ -348,11 +348,13 @@ export function useNetworkEfficiency(
           },
     );
 
-    if (notify && !hasProcessedEntry && metric.isInefficient) {
-      processedEntryKeysRef.current.add(key);
+    processedEntriesRef.current.set(key, entry);
+
+    const wasInefficient = entryInefficientStateRef.current.get(key) === true;
+    entryInefficientStateRef.current.set(key, metric.isInefficient);
+
+    if (notify && metric.isInefficient && !wasInefficient) {
       onWarningRef.current?.(metric);
-    } else if (!hasProcessedEntry) {
-      processedEntryKeysRef.current.add(key);
     }
   }, []);
 
@@ -383,6 +385,21 @@ export function useNetworkEfficiency(
 
     return () => observer.disconnect();
   }, [enabled, handleEntry, isSupported, resourceFilterKey]);
+
+  useEffect(() => {
+    if (!enabled || !isSupported) return;
+
+    for (const entry of processedEntriesRef.current.values()) {
+      handleEntry(entry);
+    }
+  }, [
+    effectiveMaxSizeInBytes,
+    effectiveType,
+    enabled,
+    handleEntry,
+    isSupported,
+    resourceFilterKey,
+  ]);
 
   const currentLatest = useMemo<NetworkEfficiencyEntry | null>(() => {
     if (!latest) return null;

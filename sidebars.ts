@@ -18,6 +18,7 @@ const sidebars: SidebarsConfig = {
         'hooks/use-inp',
         'hooks/use-cls',
         'hooks/use-long-tasks',
+        'hooks/use-fps',
         'hooks/use-memory-status',
         'hooks/use-network-efficiency',
         'hooks/use-debounced-state',

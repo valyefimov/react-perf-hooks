@@ -336,6 +336,7 @@ describe('useNetworkEfficiency', () => {
   });
 
   it('recalculates the latest inefficient state when the threshold changes', () => {
+    const onWarning = vi.fn();
     mockResourceEntries([
       createResourceEntry({
         name: '/api/v1/configurable-data',
@@ -348,6 +349,7 @@ describe('useNetworkEfficiency', () => {
         useNetworkEfficiency({
           resourceFilter: '/api/v1/configurable-data',
           maxSizeInBytes,
+          onWarning,
         }),
       {
         initialProps: {
@@ -363,6 +365,7 @@ describe('useNetworkEfficiency', () => {
       isInefficient: false,
     });
     expect(result.current.isInefficient).toBe(false);
+    expect(onWarning).not.toHaveBeenCalled();
 
     rerender({
       maxSizeInBytes: 300_000,
@@ -375,6 +378,15 @@ describe('useNetworkEfficiency', () => {
       isInefficient: true,
     });
     expect(result.current.isInefficient).toBe(true);
+    expect(onWarning).toHaveBeenCalledTimes(1);
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: '/api/v1/configurable-data',
+        payloadSize: 400_000,
+        effectiveMaxSizeInBytes: 300_000,
+        isInefficient: true,
+      }),
+    );
   });
 
   it('rescans existing entries and clears stale metrics when the resource filter changes', () => {
@@ -463,6 +475,53 @@ describe('useNetworkEfficiency', () => {
       effectiveMaxSizeInBytes: 250_000,
       isInefficient: true,
     });
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effectiveType: '3g',
+        effectiveMaxSizeInBytes: 250_000,
+        isInefficient: true,
+      }),
+    );
+  });
+
+  it('notifies when a network change makes a processed resource inefficient', () => {
+    const connection = mockConnection('4g');
+    const onWarning = vi.fn();
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/mobile-data',
+        transferSize: 300_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/mobile-data',
+        maxSizeInBytes: 500_000,
+        onWarning,
+      }),
+    );
+
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 300_000,
+      effectiveType: '4g',
+      effectiveMaxSizeInBytes: 500_000,
+      isInefficient: false,
+    });
+    expect(onWarning).not.toHaveBeenCalled();
+
+    act(() => {
+      connection!.effectiveType = '3g';
+      connection!.dispatchChange();
+    });
+
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 300_000,
+      effectiveType: '3g',
+      effectiveMaxSizeInBytes: 250_000,
+      isInefficient: true,
+    });
+    expect(onWarning).toHaveBeenCalledTimes(1);
     expect(onWarning).toHaveBeenCalledWith(
       expect.objectContaining({
         effectiveType: '3g',
