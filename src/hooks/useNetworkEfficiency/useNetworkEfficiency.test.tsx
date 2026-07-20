@@ -531,6 +531,48 @@ describe('useNetworkEfficiency', () => {
     );
   });
 
+  it('retains only the most recent resources for threshold re-evaluation', () => {
+    const onWarning = vi.fn();
+    const { rerender } = renderHook(
+      ({ maxSizeInBytes }) =>
+        useNetworkEfficiency({
+          maxSizeInBytes,
+          onWarning,
+        }),
+      {
+        initialProps: {
+          maxSizeInBytes: 500_000,
+        },
+      },
+    );
+
+    for (let index = 0; index < 101; index += 1) {
+      emitResource(
+        createResourceEntry({
+          name: `/api/v1/resource-${index}`,
+          startTime: index,
+          transferSize: 300_000,
+        }),
+      );
+    }
+
+    rerender({
+      maxSizeInBytes: 250_000,
+    });
+
+    expect(onWarning).toHaveBeenCalledTimes(100);
+    expect(onWarning).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: '/api/v1/resource-0',
+      }),
+    );
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: '/api/v1/resource-100',
+      }),
+    );
+  });
+
   it('does not observe or scan when disabled', () => {
     mockResourceEntries([
       createResourceEntry({

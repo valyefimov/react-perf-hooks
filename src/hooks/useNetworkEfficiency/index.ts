@@ -109,6 +109,7 @@ interface LatestNetworkResource {
 }
 
 const DEFAULT_MAX_SIZE_IN_BYTES = 1024 * 500;
+const MAX_TRACKED_RESOURCE_ENTRIES = 100;
 
 const unsupportedState: UseNetworkEfficiencyReturn = {
   lastPayloadSize: null,
@@ -225,6 +226,25 @@ function getPayloadSize(entry: PerformanceResourceTiming): number {
 
 function getResourceEntryKey(entry: PerformanceResourceTiming): string {
   return `${entry.name}:${entry.startTime}:${entry.duration}:${entry.transferSize}:${entry.encodedBodySize}:${entry.decodedBodySize}`;
+}
+
+function retainResourceEntry(
+  entries: Map<string, PerformanceResourceTiming>,
+  inefficientStates: Map<string, boolean>,
+  key: string,
+  entry: PerformanceResourceTiming,
+): void {
+  entries.delete(key);
+  entries.set(key, entry);
+
+  while (entries.size > MAX_TRACKED_RESOURCE_ENTRIES) {
+    const oldestKey = entries.keys().next().value;
+
+    if (oldestKey === undefined) return;
+
+    entries.delete(oldestKey);
+    inefficientStates.delete(oldestKey);
+  }
 }
 
 function toNetworkEfficiencyEntry(
@@ -348,7 +368,7 @@ export function useNetworkEfficiency(
           },
     );
 
-    processedEntriesRef.current.set(key, entry);
+    retainResourceEntry(processedEntriesRef.current, entryInefficientStateRef.current, key, entry);
 
     const wasInefficient = entryInefficientStateRef.current.get(key) === true;
     entryInefficientStateRef.current.set(key, metric.isInefficient);
