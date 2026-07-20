@@ -1,0 +1,606 @@
+import { act, renderHook } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { useNetworkEfficiency } from './index';
+
+type ObserverCallback = (
+  list: { getEntries: () => PerformanceEntry[] },
+  observer: PerformanceObserver,
+) => void;
+
+interface MockNetworkConnection {
+  effectiveType: string;
+  saveData: boolean;
+  addEventListener: (_type: 'change', listener: () => void) => void;
+  removeEventListener: (_type: 'change', listener: () => void) => void;
+  dispatchChange: () => void;
+}
+
+const originalPerformanceObserver = globalThis.PerformanceObserver;
+const originalNavigatorConnectionDescriptor = Object.getOwnPropertyDescriptor(
+  Navigator.prototype,
+  'connection',
+);
+
+class MockPerformanceObserver {
+  static supportedEntryTypes = ['resource'];
+  static callback: ObserverCallback | null = null;
+  static observe = vi.fn();
+  static disconnect = vi.fn();
+
+  constructor(callback: ObserverCallback) {
+    MockPerformanceObserver.callback = callback;
+  }
+
+  observe(options: PerformanceObserverInit): void {
+    MockPerformanceObserver.observe(options);
+  }
+
+  disconnect(): void {
+    MockPerformanceObserver.disconnect();
+  }
+}
+
+function mockPerformanceObserver(entryTypes: string[] = ['resource']): void {
+  MockPerformanceObserver.supportedEntryTypes = entryTypes;
+  globalThis.PerformanceObserver = MockPerformanceObserver as unknown as typeof PerformanceObserver;
+}
+
+function mockResourceEntries(entries: PerformanceResourceTiming[]): void {
+  vi.spyOn(performance, 'getEntriesByType').mockImplementation((type: string) =>
+    type === 'resource' ? entries : [],
+  );
+}
+
+function mockConnection(
+  effectiveType?: string,
+  saveData = false,
+): MockNetworkConnection | undefined {
+  const listeners = new Set<() => void>();
+  const connection: MockNetworkConnection | undefined = effectiveType
+    ? {
+        effectiveType,
+        saveData,
+        addEventListener: (_type: 'change', listener: () => void) => {
+          listeners.add(listener);
+        },
+        removeEventListener: (_type: 'change', listener: () => void) => {
+          listeners.delete(listener);
+        },
+        dispatchChange: () => {
+          for (const listener of listeners) {
+            listener();
+          }
+        },
+      }
+    : undefined;
+
+  Object.defineProperty(navigator, 'connection', {
+    configurable: true,
+    value: connection,
+  });
+
+  return connection;
+}
+
+function createResourceEntry(
+  overrides: Partial<PerformanceResourceTiming> & { name: string },
+): PerformanceResourceTiming {
+  return {
+    name: overrides.name,
+    entryType: 'resource',
+    startTime: overrides.startTime ?? 0,
+    duration: overrides.duration ?? 20,
+    initiatorType: overrides.initiatorType ?? 'fetch',
+    nextHopProtocol: '',
+    workerStart: 0,
+    redirectStart: 0,
+    redirectEnd: 0,
+    fetchStart: 0,
+    domainLookupStart: 0,
+    domainLookupEnd: 0,
+    connectStart: 0,
+    connectEnd: 0,
+    secureConnectionStart: 0,
+    requestStart: 0,
+    responseStart: 0,
+    firstInterimResponseStart: 0,
+    finalResponseHeadersStart: 0,
+    responseEnd: 0,
+    transferSize: overrides.transferSize ?? 0,
+    encodedBodySize: overrides.encodedBodySize ?? 0,
+    decodedBodySize: overrides.decodedBodySize ?? 0,
+    responseStatus: 200,
+    renderBlockingStatus: 'non-blocking',
+    serverTiming: [],
+    contentType: '',
+    deliveryType: '',
+    toJSON: () => ({}),
+  } as PerformanceResourceTiming;
+}
+
+function emitResource(entry: PerformanceResourceTiming): void {
+  act(() => {
+    MockPerformanceObserver.callback?.(
+      {
+        getEntries: () => [entry],
+      },
+      {} as PerformanceObserver,
+    );
+  });
+}
+
+describe('useNetworkEfficiency', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+    vi.clearAllMocks();
+    MockPerformanceObserver.callback = null;
+    mockPerformanceObserver();
+    mockResourceEntries([]);
+    mockConnection(undefined);
+  });
+
+  afterEach(() => {
+    globalThis.PerformanceObserver = originalPerformanceObserver;
+    vi.unstubAllGlobals();
+
+    if (originalNavigatorConnectionDescriptor) {
+      Object.defineProperty(navigator, 'connection', originalNavigatorConnectionDescriptor);
+    } else {
+      Reflect.deleteProperty(navigator, 'connection');
+    }
+  });
+
+  it('reads existing resource entries and matches a string resource filter', () => {
+    const onWarning = vi.fn();
+    mockResourceEntries([
+      createResourceEntry({
+        name: 'https://example.com/api/v1/light-data',
+        transferSize: 128_000,
+      }),
+      createResourceEntry({
+        name: 'https://example.com/api/v1/heavy-data',
+        transferSize: 700_000,
+        startTime: 10,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/heavy-data',
+        maxSizeInBytes: 500_000,
+        onWarning,
+      }),
+    );
+
+    expect(result.current.lastPayloadSize).toBe(700_000);
+    expect(result.current.isInefficient).toBe(true);
+    expect(result.current.latest).toMatchObject({
+      name: 'https://example.com/api/v1/heavy-data',
+      transferSize: 700_000,
+      payloadSize: 700_000,
+      effectiveMaxSizeInBytes: 500_000,
+    });
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: 'https://example.com/api/v1/heavy-data',
+        isInefficient: true,
+      }),
+    );
+  });
+
+  it('matches regex resource filters from observed resource entries', () => {
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: /\/api\/v\d+\/heavy-data/,
+        maxSizeInBytes: 500_000,
+      }),
+    );
+
+    emitResource(
+      createResourceEntry({
+        name: 'https://example.com/api/v2/heavy-data?cursor=1',
+        transferSize: 550_000,
+        startTime: 20,
+      }),
+    );
+
+    expect(MockPerformanceObserver.observe).toHaveBeenCalledWith({
+      type: 'resource',
+      buffered: true,
+    });
+    expect(result.current.lastPayloadSize).toBe(550_000);
+    expect(result.current.isInefficient).toBe(true);
+  });
+
+  it('keeps callback resource filters matched against the source timing entry', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: 'https://example.com/api/v1/heavy-data',
+        transferSize: 700_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: (entry) =>
+          entry.entryType === 'resource' && entry.name.includes('/api/v1/heavy-data'),
+        maxSizeInBytes: 500_000,
+      }),
+    );
+
+    expect(result.current.latest).toMatchObject({
+      name: 'https://example.com/api/v1/heavy-data',
+      payloadSize: 700_000,
+      isInefficient: true,
+    });
+  });
+
+  it('falls back from transferSize to encodedBodySize and decodedBodySize', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/compressed',
+        transferSize: 0,
+        encodedBodySize: 300_000,
+        decodedBodySize: 900_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/compressed',
+        maxSizeInBytes: 250_000,
+      }),
+    );
+
+    expect(result.current.lastPayloadSize).toBe(300_000);
+    expect(result.current.latest).toMatchObject({
+      transferSize: 0,
+      encodedBodySize: 300_000,
+      decodedBodySize: 900_000,
+    });
+  });
+
+  it('uses decodedBodySize when other byte sizes are unavailable', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/decoded-only',
+        transferSize: 0,
+        encodedBodySize: 0,
+        decodedBodySize: 350_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/decoded-only',
+        maxSizeInBytes: 300_000,
+      }),
+    );
+
+    expect(result.current.lastPayloadSize).toBe(350_000);
+    expect(result.current.isInefficient).toBe(true);
+  });
+
+  it('lowers the threshold on 3g connections', () => {
+    mockConnection('3g');
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/mobile-data',
+        transferSize: 300_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/mobile-data',
+        maxSizeInBytes: 500_000,
+      }),
+    );
+
+    expect(result.current.effectiveType).toBe('3g');
+    expect(result.current.effectiveMaxSizeInBytes).toBe(250_000);
+    expect(result.current.isInefficient).toBe(true);
+  });
+
+  it('lowers the threshold more aggressively on slow-2g connections', () => {
+    mockConnection('slow-2g');
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        maxSizeInBytes: 400_000,
+      }),
+    );
+
+    expect(result.current.effectiveType).toBe('slow-2g');
+    expect(result.current.effectiveMaxSizeInBytes).toBe(100_000);
+  });
+
+  it('gracefully degrades when Network Information API is unavailable', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/heavy-data',
+        transferSize: 450_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/heavy-data',
+        maxSizeInBytes: 500_000,
+      }),
+    );
+
+    expect(result.current.effectiveType).toBeNull();
+    expect(result.current.effectiveMaxSizeInBytes).toBe(500_000);
+    expect(result.current.isInefficient).toBe(false);
+  });
+
+  it('recalculates the latest inefficient state when the threshold changes', () => {
+    const onWarning = vi.fn();
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/configurable-data',
+        transferSize: 400_000,
+      }),
+    ]);
+
+    const { result, rerender } = renderHook(
+      ({ maxSizeInBytes }) =>
+        useNetworkEfficiency({
+          resourceFilter: '/api/v1/configurable-data',
+          maxSizeInBytes,
+          onWarning,
+        }),
+      {
+        initialProps: {
+          maxSizeInBytes: 500_000,
+        },
+      },
+    );
+
+    expect(result.current.effectiveMaxSizeInBytes).toBe(500_000);
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 400_000,
+      effectiveMaxSizeInBytes: 500_000,
+      isInefficient: false,
+    });
+    expect(result.current.isInefficient).toBe(false);
+    expect(onWarning).not.toHaveBeenCalled();
+
+    rerender({
+      maxSizeInBytes: 300_000,
+    });
+
+    expect(result.current.effectiveMaxSizeInBytes).toBe(300_000);
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 400_000,
+      effectiveMaxSizeInBytes: 300_000,
+      isInefficient: true,
+    });
+    expect(result.current.isInefficient).toBe(true);
+    expect(onWarning).toHaveBeenCalledTimes(1);
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: '/api/v1/configurable-data',
+        payloadSize: 400_000,
+        effectiveMaxSizeInBytes: 300_000,
+        isInefficient: true,
+      }),
+    );
+  });
+
+  it('rescans existing entries and clears stale metrics when the resource filter changes', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/accounts',
+        transferSize: 200_000,
+      }),
+      createResourceEntry({
+        name: '/api/v1/orders',
+        transferSize: 600_000,
+        startTime: 10,
+      }),
+    ]);
+
+    const { result, rerender } = renderHook(
+      ({ resourceFilter }) =>
+        useNetworkEfficiency({
+          resourceFilter,
+          maxSizeInBytes: 500_000,
+        }),
+      {
+        initialProps: {
+          resourceFilter: '/api/v1/accounts',
+        },
+      },
+    );
+
+    expect(result.current.latest).toMatchObject({
+      name: '/api/v1/accounts',
+      payloadSize: 200_000,
+      isInefficient: false,
+    });
+
+    rerender({
+      resourceFilter: '/api/v1/orders',
+    });
+
+    expect(result.current.latest).toMatchObject({
+      name: '/api/v1/orders',
+      payloadSize: 600_000,
+      isInefficient: true,
+    });
+
+    rerender({
+      resourceFilter: '/api/v1/missing',
+    });
+
+    expect(result.current.latest).toBeNull();
+    expect(result.current.lastPayloadSize).toBeNull();
+    expect(result.current.isInefficient).toBe(false);
+  });
+
+  it('updates thresholds for resources observed after the network changes', () => {
+    const connection = mockConnection('4g');
+    const onWarning = vi.fn();
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/mobile-data',
+        maxSizeInBytes: 500_000,
+        onWarning,
+      }),
+    );
+
+    expect(result.current.effectiveType).toBe('4g');
+    expect(result.current.effectiveMaxSizeInBytes).toBe(500_000);
+
+    act(() => {
+      connection!.effectiveType = '3g';
+      connection!.dispatchChange();
+    });
+
+    expect(result.current.effectiveType).toBe('3g');
+    expect(result.current.effectiveMaxSizeInBytes).toBe(250_000);
+
+    emitResource(
+      createResourceEntry({
+        name: '/api/v1/mobile-data',
+        transferSize: 300_000,
+      }),
+    );
+
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 300_000,
+      effectiveType: '3g',
+      effectiveMaxSizeInBytes: 250_000,
+      isInefficient: true,
+    });
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effectiveType: '3g',
+        effectiveMaxSizeInBytes: 250_000,
+        isInefficient: true,
+      }),
+    );
+  });
+
+  it('notifies when a network change makes a processed resource inefficient', () => {
+    const connection = mockConnection('4g');
+    const onWarning = vi.fn();
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/mobile-data',
+        transferSize: 300_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        resourceFilter: '/api/v1/mobile-data',
+        maxSizeInBytes: 500_000,
+        onWarning,
+      }),
+    );
+
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 300_000,
+      effectiveType: '4g',
+      effectiveMaxSizeInBytes: 500_000,
+      isInefficient: false,
+    });
+    expect(onWarning).not.toHaveBeenCalled();
+
+    act(() => {
+      connection!.effectiveType = '3g';
+      connection!.dispatchChange();
+    });
+
+    expect(result.current.latest).toMatchObject({
+      payloadSize: 300_000,
+      effectiveType: '3g',
+      effectiveMaxSizeInBytes: 250_000,
+      isInefficient: true,
+    });
+    expect(onWarning).toHaveBeenCalledTimes(1);
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        effectiveType: '3g',
+        effectiveMaxSizeInBytes: 250_000,
+        isInefficient: true,
+      }),
+    );
+  });
+
+  it('retains only the most recent resources for threshold re-evaluation', () => {
+    const onWarning = vi.fn();
+    const { rerender } = renderHook(
+      ({ maxSizeInBytes }) =>
+        useNetworkEfficiency({
+          maxSizeInBytes,
+          onWarning,
+        }),
+      {
+        initialProps: {
+          maxSizeInBytes: 500_000,
+        },
+      },
+    );
+
+    for (let index = 0; index < 101; index += 1) {
+      emitResource(
+        createResourceEntry({
+          name: `/api/v1/resource-${index}`,
+          startTime: index,
+          transferSize: 300_000,
+        }),
+      );
+    }
+
+    rerender({
+      maxSizeInBytes: 250_000,
+    });
+
+    expect(onWarning).toHaveBeenCalledTimes(100);
+    expect(onWarning).not.toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: '/api/v1/resource-0',
+      }),
+    );
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: '/api/v1/resource-100',
+      }),
+    );
+  });
+
+  it('does not observe or scan when disabled', () => {
+    mockResourceEntries([
+      createResourceEntry({
+        name: '/api/v1/heavy-data',
+        transferSize: 700_000,
+      }),
+    ]);
+
+    const { result } = renderHook(() =>
+      useNetworkEfficiency({
+        enabled: false,
+        resourceFilter: '/api/v1/heavy-data',
+      }),
+    );
+
+    expect(result.current.lastPayloadSize).toBeNull();
+    expect(MockPerformanceObserver.observe).not.toHaveBeenCalled();
+  });
+
+  it('returns unsupported state when resource timing is unavailable', () => {
+    vi.stubGlobal('performance', {
+      now: () => 0,
+    });
+
+    const { result } = renderHook(() => useNetworkEfficiency());
+
+    expect(result.current.isSupported).toBe(false);
+    expect(result.current.lastPayloadSize).toBeNull();
+    expect(MockPerformanceObserver.observe).not.toHaveBeenCalled();
+  });
+});

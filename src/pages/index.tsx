@@ -5,19 +5,22 @@ import type { ReactNode } from 'react';
 import styles from './index.module.css';
 
 const hooks = [
-  'useRenderTracker',
-  'useRenderBudget',
-  'usePerformanceMark',
-  'useComponentLifecycle',
-  'useMemoProfiling',
-  'useWebVitals',
-  'useINP',
-  'useCLS',
-  'useLongTasks',
-  'useMemoryStatus',
-  'useDebouncedState',
-  'useThrottledState',
-  'useIntersectionObserver',
+  { name: 'useRenderTracker', to: '/docs/hooks/use-render-tracker' },
+  { name: 'useAllocationTracker', to: '/docs/hooks/use-allocation-tracker' },
+  { name: 'useRenderBudget', to: '/docs/hooks/use-render-budget' },
+  { name: 'usePerformanceMark', to: '/docs/hooks/use-performance-mark' },
+  { name: 'useComponentLifecycle', to: '/docs/hooks/use-component-lifecycle' },
+  { name: 'useMemoProfiling', to: '/docs/hooks/use-memo-profiling' },
+  { name: 'useWebVitals', to: '/docs/hooks/use-web-vitals' },
+  { name: 'useINP', to: '/docs/hooks/use-inp' },
+  { name: 'useCLS', to: '/docs/hooks/use-cls' },
+  { name: 'useLongTasks', to: '/docs/hooks/use-long-tasks' },
+  { name: 'useFps', to: '/docs/hooks/use-fps' },
+  { name: 'useMemoryStatus', to: '/docs/hooks/use-memory-status' },
+  { name: 'useNetworkEfficiency', to: '/docs/hooks/use-network-efficiency' },
+  { name: 'useDebouncedState', to: '/docs/hooks/use-debounced-state' },
+  { name: 'useThrottledState', to: '/docs/hooks/use-throttled-state' },
+  { name: 'useIntersectionObserver', to: '/docs/hooks/use-intersection-observer' },
 ];
 
 export default function Home(): ReactNode {
@@ -59,7 +62,7 @@ export default function Home(): ReactNode {
           <Heading as="h2">What this docs site includes</Heading>
           <div className={styles.cardGrid}>
             <article className={styles.card}>
-              <h3>13 hook references</h3>
+              <h3>16 hook references</h3>
               <p>
                 Every hook has signature details, parameter and return tables, and copy-ready usage
                 examples.
@@ -84,8 +87,10 @@ export default function Home(): ReactNode {
         <section className={styles.hookListSection}>
           <Heading as="h2">Hook coverage</Heading>
           <ul className={styles.hookList}>
-            {hooks.map((hookName) => (
-              <li key={hookName}>{hookName}</li>
+            {hooks.map((hook) => (
+              <li key={hook.name}>
+                <Link to={hook.to}>{hook.name}</Link>
+              </li>
             ))}
           </ul>
         </section>

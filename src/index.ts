@@ -57,6 +57,15 @@ export type { UseFpsOptions, UseFpsReturn } from './hooks/useFps';
 export { useMemoryStatus } from './hooks/useMemoryStatus';
 export type { UseMemoryStatusOptions, UseMemoryStatusReturn } from './hooks/useMemoryStatus';
 
+export { useNetworkEfficiency } from './hooks/useNetworkEfficiency';
+export type {
+  NetworkEfficiencyEntry,
+  NetworkEffectiveType,
+  NetworkResourceFilter,
+  UseNetworkEfficiencyOptions,
+  UseNetworkEfficiencyReturn,
+} from './hooks/useNetworkEfficiency';
+
 export { useDebouncedState } from './hooks/useDebouncedState';
 export type { DebouncedStateStats, UseDebouncedStateReturn } from './hooks/useDebouncedState';
 

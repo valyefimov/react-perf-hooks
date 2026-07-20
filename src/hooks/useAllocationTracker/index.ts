@@ -147,10 +147,10 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
     timeoutMs,
     onLeakDetected,
   } = options;
+  const normalizedTimeoutMs = normalizeTimeout(timeoutMs);
 
   const allocationIdsRef = useRef<number[]>([]);
 
-  const normalizedTimeoutMs = normalizeTimeout(timeoutMs);
   const canTrack = enabled && hasAllocationTrackingSupport();
 
   useEffect(() => {

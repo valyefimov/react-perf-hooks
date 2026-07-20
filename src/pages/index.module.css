@@ -121,6 +121,18 @@
   padding: 0.5rem 0.6rem;
 }
 
+.hookList a {
+  color: inherit;
+  display: block;
+  text-decoration: none;
+}
+
+.hookList a:hover,
+.hookList a:focus-visible {
+  color: var(--ifm-color-primary);
+  text-decoration: underline;
+}
+
 [data-theme='dark'] .hero {
   background:
     linear-gradient(132deg, rgba(70, 211, 178, 0.18), rgba(234, 120, 54, 0.22)),
