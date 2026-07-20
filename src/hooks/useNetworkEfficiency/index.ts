@@ -234,6 +234,8 @@ function retainResourceEntry(
   key: string,
   entry: PerformanceResourceTiming,
 ): void {
+  if (entries.get(key) === entry) return;
+
   entries.delete(key);
   entries.set(key, entry);
 
