@@ -81,3 +81,11 @@ export type {
   IntersectionObserverMetrics,
   UseIntersectionObserverReturn,
 } from './hooks/useIntersectionObserver';
+
+export { useIdleCallbackWorker } from './hooks/useIdleCallbackWorker';
+export type {
+  IdleWorkerStrategy,
+  IdleWorkerTask,
+  UseIdleCallbackWorkerOptions,
+  UseIdleCallbackWorkerReturn,
+} from './hooks/useIdleCallbackWorker';
