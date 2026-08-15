@@ -22,27 +22,27 @@ function useIdleCallbackWorker<TArgs extends unknown[], TResult>(
 
 ## Parameters
 
-| Name      | Type                             | Required | Description                                                                                                    |
-| --------- | -------------------------------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| Name      | Type                             | Required | Description                                                                                                 |
+| --------- | -------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------- |
 | `task`    | `IdleWorkerTask<TArgs, TResult>` | Yes      | The work to offload. On the worker path it is stringified, so it **must be pure** and not close over scope. |
-| `options` | `UseIdleCallbackWorkerOptions`   | No       | Strategy and timing controls (see below).                                                                     |
+| `options` | `UseIdleCallbackWorkerOptions`   | No       | Strategy and timing controls (see below).                                                                   |
 
 ### Options
 
-| Name            | Type                             | Default  | Description                                                                                          |
-| --------------- | -------------------------------- | -------- | --------------------------------------------------------------------------------------------------- |
-| `strategy`      | `'auto' \| 'worker' \| 'idle'`   | `'auto'` | `auto` prefers a Worker and falls back to idle scheduling; `worker` forces a Worker; `idle` forces the main-thread path (closures allowed). |
-| `chunkBudgetMs` | `number`                         | `8`      | Deadline for a single idle chunk before yielding.                                                   |
-| `timeoutMs`     | `number`                         | `30000`  | Rejects a pending task after this many ms.                                                          |
+| Name            | Type                           | Default  | Description                                                                                                                                 |
+| --------------- | ------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `strategy`      | `'auto' \| 'worker' \| 'idle'` | `'auto'` | `auto` prefers a Worker and falls back to idle scheduling; `worker` forces a Worker; `idle` forces the main-thread path (closures allowed). |
+| `chunkBudgetMs` | `number`                       | `8`      | Deadline for a single idle chunk before yielding.                                                                                           |
+| `timeoutMs`     | `number`                       | `30000`  | Rejects a pending task after this many ms.                                                                                                  |
 
 ## Return value
 
-| Field     | Type                            | Description                                             |
-| --------- | ------------------------------- | ------------------------------------------------------- |
+| Field     | Type                                   | Description                                                       |
+| --------- | -------------------------------------- | ----------------------------------------------------------------- |
 | `execute` | `(...args: TArgs) => Promise<TResult>` | Runs the task off the critical path and resolves with its result. |
-| `loading` | `boolean`                       | Whether a task is currently in flight.                  |
-| `result`  | `TResult \| null`               | Most recent successful result, or `null` before first run. |
-| `error`   | `Error \| null`                 | Most recent error, or `null` when the last run succeeded. |
+| `loading` | `boolean`                              | Whether a task is currently in flight.                            |
+| `result`  | `TResult \| null`                      | Most recent successful result, or `null` before first run.        |
+| `error`   | `Error \| null`                        | Most recent error, or `null` when the last run succeeded.         |
 
 ## Live interactive demo (StackBlitz)
 

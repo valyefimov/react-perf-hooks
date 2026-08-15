@@ -229,23 +229,26 @@ function runOnIdle<TArgs extends unknown[], TResult>(
       requestIdle(stepGenerator, { timeout: timeoutMs });
     };
 
-    requestIdle((deadline) => {
-      if (settled) return;
+    requestIdle(
+      (deadline) => {
+        if (settled) return;
 
-      try {
-        const outcome = task(...args);
+        try {
+          const outcome = task(...args);
 
-        if (isGenerator<TResult>(outcome)) {
-          iterator = outcome;
-          stepGenerator(deadline);
-          return;
+          if (isGenerator<TResult>(outcome)) {
+            iterator = outcome;
+            stepGenerator(deadline);
+            return;
+          }
+
+          Promise.resolve(outcome).then(finish, fail);
+        } catch (err) {
+          fail(err);
         }
-
-        Promise.resolve(outcome).then(finish, fail);
-      } catch (err) {
-        fail(err);
-      }
-    }, { timeout: timeoutMs });
+      },
+      { timeout: timeoutMs },
+    );
   });
 }
 

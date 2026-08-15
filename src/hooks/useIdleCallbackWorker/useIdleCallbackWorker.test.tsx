@@ -88,9 +88,7 @@ describe('useIdleCallbackWorker', () => {
 
   it('does not crash during SSR (no window)', () => {
     const task = (n: number): number => n;
-    expect(() =>
-      renderToString(<SsrProbe task={task} />),
-    ).not.toThrow();
+    expect(() => renderToString(<SsrProbe task={task} />)).not.toThrow();
   });
 
   it('drives a generator task across multiple idle callbacks', async () => {
