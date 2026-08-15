@@ -89,3 +89,6 @@ export type {
   UseIdleCallbackWorkerOptions,
   UseIdleCallbackWorkerReturn,
 } from './hooks/useIdleCallbackWorker';
+
+export { useWhyDidYouUpdate } from './hooks/useWhyDidYouUpdate';
+export type { UseWhyDidYouUpdateOptions, WhyDidYouUpdateChange } from './hooks/useWhyDidYouUpdate';

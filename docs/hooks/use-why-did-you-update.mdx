@@ -1,0 +1,73 @@
+---
+title: useWhyDidYouUpdate
+description: Diagnose wasted renders by diffing props between renders and flagging reference-only changes.
+---
+
+## Description and use case
+
+`useWhyDidYouUpdate` deeply compares a component's incoming props against the previous render's props and reports exactly which keys changed. Every change is classified: a real value change, or a **[Reference Changed Only]** wasted render caused by a brand-new object/array/function literal that carries the same data.
+
+Reach for it when a component re-renders more than expected and you need to find the specific prop causing it, especially unstable inline objects, arrays, or callbacks passed from a parent.
+
+## API signature
+
+```ts
+function useWhyDidYouUpdate(
+  name: string,
+  props: Record<string, unknown>,
+  options?: UseWhyDidYouUpdateOptions,
+): WhyDidYouUpdateChange[];
+```
+
+## Parameters
+
+| Name      | Type                            | Required | Description                                     |
+| --------- | -------------------------------- | -------- | ------------------------------------------------ |
+| `name`    | `string`                         | Yes      | Display name used in log messages.               |
+| `props`   | `Record<string, unknown>`        | Yes      | The current render's props to diff.              |
+| `options` | `UseWhyDidYouUpdateOptions`      | No       | Logging and comparison controls (see below).     |
+
+### Options
+
+| Name       | Type                       | Default                                  | Description                                                                          |
+| ---------- | -------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ |
+| `enabled`  | `boolean`                  | `true` in development, `false` in production | Force enable/disable. Disabled runs are a safe noop that returns `[]`.           |
+| `logType`  | `'console' \| 'object'`    | `'console'`                               | `'console'` logs changes via `console.group`; `'object'` stays silent.               |
+| `deepCheck`| `boolean`                  | `false`                                   | Structurally compare changed values to detect reference-only churn.                  |
+| `maxDepth` | `number`                   | `10`                                      | Max recursion depth for `deepCheck`, guarding against deep or circular structures.    |
+
+## Return value
+
+An array of `WhyDidYouUpdateChange`, one per changed key (empty on the first render or when nothing changed):
+
+| Field                  | Type      | Description                                                          |
+| ----------------------- | --------- | ---------------------------------------------------------------------- |
+| `key`                   | `string`  | The prop key that changed.                                             |
+| `previousValue`         | `unknown` | Value on the previous render.                                          |
+| `currentValue`          | `unknown` | Value on the current render.                                           |
+| `referenceChangedOnly`  | `boolean` | `true` when `deepCheck` found the data structurally identical.         |
+
+## Code example
+
+```tsx
+import { useWhyDidYouUpdate } from 'react-perf-hooks';
+
+function HeavyList(props: { items: Item[]; onSelect: (id: string) => void }) {
+  useWhyDidYouUpdate('HeavyList', props, { deepCheck: true });
+
+  return (
+    <ul>
+      {props.items.map((item) => (
+        <li key={item.id} onClick={() => props.onSelect(item.id)}>
+          {item.label}
+        </li>
+      ))}
+    </ul>
+  );
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useWhyDidYouUpdate)
+- [Medium companion article](https://medium.com/search?q=useWhyDidYouUpdate)
