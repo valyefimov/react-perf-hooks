@@ -92,6 +92,98 @@ describe('useIdleCallbackWorker', () => {
       renderToString(<SsrProbe task={task} />),
     ).not.toThrow();
   });
+
+  it('drives a generator task across multiple idle callbacks', async () => {
+    let idleCalls = 0;
+    vi.stubGlobal(
+      'requestIdleCallback',
+      (cb: (deadline: { didTimeout: boolean; timeRemaining: () => number }) => void): number => {
+        idleCalls += 1;
+        // Time remaining is only positive for the first read, so each idle
+        // callback advances exactly one generator step.
+        let reads = 0;
+        cb({ didTimeout: false, timeRemaining: () => (reads++ === 0 ? 1 : 0) });
+        return idleCalls;
+      },
+    );
+
+    function* task(items: number[]): Generator<void, number, void> {
+      let sum = 0;
+      for (const item of items) {
+        sum += item;
+        yield;
+      }
+      return sum;
+    }
+
+    const { result } = renderHook(() => useIdleCallbackWorker(task, { strategy: 'idle' }));
+
+    let value: number | undefined;
+    await act(async () => {
+      value = await result.current.execute([1, 2, 3, 4]);
+    });
+
+    expect(value).toBe(10);
+    expect(idleCalls).toBeGreaterThan(1);
+  });
+
+  it('falls back to the idle path when the worker fails to start', async () => {
+    class FailingWorker {
+      constructor() {
+        throw new Error('CSP blocked worker');
+      }
+    }
+    vi.stubGlobal('Worker', FailingWorker);
+    vi.stubGlobal('Blob', class {} as unknown as typeof Blob);
+    vi.stubGlobal('URL', {
+      createObjectURL: () => 'blob:mock',
+      revokeObjectURL: () => undefined,
+    });
+
+    const task = (n: number): number => n * 2;
+    const { result } = renderHook(() => useIdleCallbackWorker(task, { strategy: 'worker' }));
+
+    let value: number | undefined;
+    await act(async () => {
+      value = await result.current.execute(21);
+    });
+
+    expect(value).toBe(42);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('keeps loading true until all overlapping executions settle', async () => {
+    let resolveFirst!: () => void;
+    const first = new Promise<void>((resolve) => {
+      resolveFirst = resolve;
+    });
+
+    const task = async (id: number): Promise<number> => {
+      if (id === 1) await first;
+      return id;
+    };
+    const { result } = renderHook(() => useIdleCallbackWorker(task, { strategy: 'idle' }));
+
+    let firstDone: Promise<number>;
+    let secondDone: Promise<number>;
+    act(() => {
+      firstDone = result.current.execute(1);
+      secondDone = result.current.execute(2);
+    });
+
+    await act(async () => {
+      await secondDone;
+    });
+
+    expect(result.current.loading).toBe(true);
+
+    await act(async () => {
+      resolveFirst();
+      await firstDone;
+    });
+
+    expect(result.current.loading).toBe(false);
+  });
 });
 
 function SsrProbe({ task }: { task: (n: number) => number }): null {
