@@ -77,6 +77,7 @@ npm install web-vitals
 | `useDebouncedState` | Debounced `useState` with render-skip profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-debounced-state) |
 | `useThrottledState` | Throttled `useState` with dropped-update profiling counters | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-throttled-state) |
 | `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-intersection-observer) |
+| `useIdleCallbackWorker` | Offload heavy tasks to an inline Web Worker with `requestIdleCallback` fallback | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-idle-callback-worker) |
 
 See the [docs overview](https://valyefimov.github.io/react-perf-hooks/docs/getting-started) for a complete reference.
 

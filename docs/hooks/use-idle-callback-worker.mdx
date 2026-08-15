@@ -1,0 +1,88 @@
+---
+title: useIdleCallbackWorker
+description: Offload heavy tasks off the main thread with an inline Web Worker and requestIdleCallback fallback.
+---
+
+import StackBlitzEmbed from '@site/src/components/StackBlitzEmbed';
+
+## Description and use case
+
+`useIdleCallbackWorker` runs an expensive, synchronous task off the critical rendering path so it never freezes the UI thread or wrecks INP. It prefers an inline Web Worker (real parallelism, built from the task's source via a `Blob` URL) and transparently falls back to cooperative `requestIdleCallback` scheduling when Workers are unavailable — including during SSR.
+
+Reach for it when a handler processes 10,000+ array items, runs heavy filtering, or does math-heavy work that would otherwise block interaction.
+
+## API signature
+
+```ts
+function useIdleCallbackWorker<TArgs extends unknown[], TResult>(
+  task: IdleWorkerTask<TArgs, TResult>,
+  options?: UseIdleCallbackWorkerOptions,
+): UseIdleCallbackWorkerReturn<TArgs, TResult>;
+```
+
+## Parameters
+
+| Name      | Type                             | Required | Description                                                                                                 |
+| --------- | -------------------------------- | -------- | ----------------------------------------------------------------------------------------------------------- |
+| `task`    | `IdleWorkerTask<TArgs, TResult>` | Yes      | The work to offload. On the worker path it is stringified, so it **must be pure** and not close over scope. |
+| `options` | `UseIdleCallbackWorkerOptions`   | No       | Strategy and timing controls (see below).                                                                   |
+
+### Options
+
+| Name            | Type                           | Default  | Description                                                                                                                                 |
+| --------------- | ------------------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `strategy`      | `'auto' \| 'worker' \| 'idle'` | `'auto'` | `auto` prefers a Worker and falls back to idle scheduling; `worker` forces a Worker; `idle` forces the main-thread path (closures allowed). |
+| `chunkBudgetMs` | `number`                       | `8`      | Deadline for a single idle chunk before yielding.                                                                                           |
+| `timeoutMs`     | `number`                       | `30000`  | Rejects a pending task after this many ms.                                                                                                  |
+
+## Return value
+
+| Field     | Type                                   | Description                                                       |
+| --------- | -------------------------------------- | ----------------------------------------------------------------- |
+| `execute` | `(...args: TArgs) => Promise<TResult>` | Runs the task off the critical path and resolves with its result. |
+| `loading` | `boolean`                              | Whether a task is currently in flight.                            |
+| `result`  | `TResult \| null`                      | Most recent successful result, or `null` before first run.        |
+| `error`   | `Error \| null`                        | Most recent error, or `null` when the last run succeeded.         |
+
+## Live interactive demo (StackBlitz)
+
+<StackBlitzEmbed
+  title="useIdleCallbackWorker demo"
+  src="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&embed=1&view=preview&startScript=dev&demo=useIdleCallbackWorker"
+  openHref="https://stackblitz.com/github/valyefimov/react-perf-hooks/tree/main/examples/stackblitz/hooks-playground?file=src/App.tsx&startScript=dev&demo=useIdleCallbackWorker"
+/>
+
+## Code example
+
+```tsx
+import { useIdleCallbackWorker } from 'react-perf-hooks';
+
+// Pure task — no closures, safe to run inside a Web Worker.
+function filterLargeDataset(rows: number[], min: number): number[] {
+  return rows.filter((value) => value >= min);
+}
+
+export function SearchPanel({ rows }: { rows: number[] }) {
+  const { execute, loading, result, error } = useIdleCallbackWorker(filterLargeDataset);
+
+  const handleSearch = async () => {
+    const filtered = await execute(rows, 5000);
+    console.log(`matched ${filtered.length} rows`);
+  };
+
+  return (
+    <div>
+      <button type="button" onClick={handleSearch} disabled={loading}>
+        {loading ? 'Working…' : 'Filter'}
+      </button>
+      {error && <p role="alert">Failed: {error.message}</p>}
+      {result && <p>Matched {result.length} rows</p>}
+    </div>
+  );
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useIdleCallbackWorker)
+- [Medium companion article](https://medium.com/search?q=useIdleCallbackWorker)

@@ -3,6 +3,7 @@ import { UseCLSDemo } from './demos/useCLSDemo';
 import { UseComponentLifecycleDemo } from './demos/useComponentLifecycleDemo';
 import { UseDebouncedStateDemo } from './demos/useDebouncedStateDemo';
 import { UseFpsDemo } from './demos/useFpsDemo';
+import { UseIdleCallbackWorkerDemo } from './demos/useIdleCallbackWorkerDemo';
 import { UseINPDemo } from './demos/useINPDemo';
 import { UseIntersectionObserverDemo } from './demos/useIntersectionObserverDemo';
 import { UseLongTasksDemo } from './demos/useLongTasksDemo';
@@ -28,7 +29,8 @@ type DemoKey =
   | 'useFps'
   | 'useDebouncedState'
   | 'useThrottledState'
-  | 'useIntersectionObserver';
+  | 'useIntersectionObserver'
+  | 'useIdleCallbackWorker';
 
 const demos: Record<DemoKey, { label: string; Component: () => JSX.Element }> = {
   useRenderTracker: { label: 'useRenderTracker', Component: UseRenderTrackerDemo },
@@ -47,6 +49,10 @@ const demos: Record<DemoKey, { label: string; Component: () => JSX.Element }> = 
   useIntersectionObserver: {
     label: 'useIntersectionObserver',
     Component: UseIntersectionObserverDemo,
+  },
+  useIdleCallbackWorker: {
+    label: 'useIdleCallbackWorker',
+    Component: UseIdleCallbackWorkerDemo,
   },
 };
 

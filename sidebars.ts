@@ -24,6 +24,7 @@ const sidebars: SidebarsConfig = {
         'hooks/use-debounced-state',
         'hooks/use-throttled-state',
         'hooks/use-intersection-observer',
+        'hooks/use-idle-callback-worker',
       ],
     },
     {
