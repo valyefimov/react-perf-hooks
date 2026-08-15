@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export type NetworkResourceFilter =
-  | string
-  | RegExp
-  | ((entry: PerformanceResourceTiming) => boolean);
+  string | RegExp | ((entry: PerformanceResourceTiming) => boolean);
 
 export type NetworkEffectiveType = 'slow-2g' | '2g' | '3g' | '4g' | string;
 
