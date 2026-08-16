@@ -66,7 +66,7 @@
     }
   },
   "optionalDependencies": {
-    "web-vitals": "^5.2.0"
+    "web-vitals": "^5.3.0"
   },
   "devDependencies": {
     "@docusaurus/core": "3.10.2",
@@ -75,24 +75,24 @@
     "@docusaurus/preset-classic": "3.10.2",
     "@docusaurus/tsconfig": "3.10.2",
     "@docusaurus/types": "3.10.2",
-    "@eslint/js": "^9.39.0",
+    "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
-    "@mdx-js/react": "^3.0.0",
-    "@testing-library/jest-dom": "^6.4.2",
-    "@testing-library/react": "^16.3.0",
+    "@mdx-js/react": "^3.1.1",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^26.2.0",
     "@types/react": "^19.2.18",
     "@vitest/coverage-v8": "^4.1.10",
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.1",
     "eslint": "^10.8.1",
     "eslint-plugin-react-hooks": "7.1.1",
     "jsdom": "^30.0.1",
     "prettier": "^3.9.6",
-    "prism-react-renderer": "^2.3.0",
+    "prism-react-renderer": "^2.4.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "tsup": "^8.0.2",
-    "typescript": "^5.9.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.10",
     "web-vitals": "^5.2.0"
