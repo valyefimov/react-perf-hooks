@@ -41,10 +41,10 @@ jobs:
         with:
           run_install: false
 
-      - name: Setup Node.js 24
+      - name: Setup Node.js 26
         uses: actions/setup-node@v6.3.0
         with:
-          node-version: 24.x
+          node-version: 26.x
           cache: pnpm
 
       - name: Install dependencies
