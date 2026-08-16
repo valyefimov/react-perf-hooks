@@ -79,6 +79,7 @@ npm install web-vitals
 | `useIntersectionObserver` | Lazy-loading visibility state plus first-visible and total-visible metrics | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-intersection-observer) |
 | `useIdleCallbackWorker` | Offload heavy tasks to an inline Web Worker with `requestIdleCallback` fallback | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-idle-callback-worker) |
 | `useWhyDidYouUpdate` | Diagnose wasted renders by diffing props and flagging reference-only changes | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-why-did-you-update) |
+| `useRenderCount` | Lightweight render counter with optional console logging and a warning threshold | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-render-count) |
 
 See the [docs overview](https://valyefimov.github.io/react-perf-hooks/docs/getting-started) for a complete reference.
 

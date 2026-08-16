@@ -92,3 +92,6 @@ export type {
 
 export { useWhyDidYouUpdate } from './hooks/useWhyDidYouUpdate';
 export type { UseWhyDidYouUpdateOptions, WhyDidYouUpdateChange } from './hooks/useWhyDidYouUpdate';
+
+export { useRenderCount } from './hooks/useRenderCount';
+export type { UseRenderCountOptions } from './hooks/useRenderCount';
