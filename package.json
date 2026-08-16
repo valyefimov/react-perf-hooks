@@ -30,8 +30,7 @@
       "webpack-dev-server": "5.2.6",
       "nanoid": "3.3.16",
       "brace-expansion@1": "1.1.18",
-      "brace-expansion@5": "5.0.9",
-      "undici": "^7.29.0"
+      "brace-expansion@5": "5.0.9"
     }
   },
   "scripts": {
@@ -87,7 +86,7 @@
     "clsx": "^2.0.0",
     "eslint": "^10.8.1",
     "eslint-plugin-react-hooks": "7.1.1",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.1",
     "prettier": "^3.9.6",
     "prism-react-renderer": "^2.3.0",
     "react": "^19.2.8",
@@ -122,9 +121,6 @@
     "url": "https://github.com/valyefimov/react-perf-hooks/issues"
   },
   "homepage": "https://github.com/valyefimov/react-perf-hooks#readme",
-  "engines": {
-    "node": ">=20"
-  },
   "browserslist": {
     "production": [
       ">0.5%",
