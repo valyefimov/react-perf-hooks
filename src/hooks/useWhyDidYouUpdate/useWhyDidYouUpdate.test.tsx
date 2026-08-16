@@ -140,9 +140,7 @@ describe('useWhyDidYouUpdate', () => {
 
   it('does not log when logType is "object"', () => {
     let props = { count: 1 };
-    const { rerender } = renderHook(() =>
-      useWhyDidYouUpdate('Test', props, { logType: 'object' }),
-    );
+    const { rerender } = renderHook(() => useWhyDidYouUpdate('Test', props, { logType: 'object' }));
 
     props = { count: 2 };
     rerender();
@@ -188,7 +186,12 @@ describe('useWhyDidYouUpdate', () => {
     rerender();
 
     expect(result.current).toEqual([
-      { key: 'flag', previousValue: undefined, currentValue: undefined, referenceChangedOnly: false },
+      {
+        key: 'flag',
+        previousValue: undefined,
+        currentValue: undefined,
+        referenceChangedOnly: false,
+      },
     ]);
   });
 

@@ -21,31 +21,31 @@ function useWhyDidYouUpdate(
 
 ## Parameters
 
-| Name      | Type                            | Required | Description                                     |
-| --------- | -------------------------------- | -------- | ------------------------------------------------ |
-| `name`    | `string`                         | Yes      | Display name used in log messages.               |
-| `props`   | `Record<string, unknown>`        | Yes      | The current render's props to diff.              |
-| `options` | `UseWhyDidYouUpdateOptions`      | No       | Logging and comparison controls (see below).     |
+| Name      | Type                        | Required | Description                                  |
+| --------- | --------------------------- | -------- | -------------------------------------------- |
+| `name`    | `string`                    | Yes      | Display name used in log messages.           |
+| `props`   | `Record<string, unknown>`   | Yes      | The current render's props to diff.          |
+| `options` | `UseWhyDidYouUpdateOptions` | No       | Logging and comparison controls (see below). |
 
 ### Options
 
-| Name       | Type                       | Default                                  | Description                                                                          |
-| ---------- | -------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------ |
-| `enabled`  | `boolean`                  | `true` in development, `false` in production | Force enable/disable. Disabled runs are a safe noop that returns `[]`.           |
-| `logType`  | `'console' \| 'object'`    | `'console'`                               | `'console'` logs changes via `console.group`; `'object'` stays silent.               |
-| `deepCheck`| `boolean`                  | `false`                                   | Structurally compare changed values to detect reference-only churn.                  |
-| `maxDepth` | `number`                   | `10`                                      | Max recursion depth for `deepCheck`, guarding against deep or circular structures.    |
+| Name        | Type                    | Default                                      | Description                                                                        |
+| ----------- | ----------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `enabled`   | `boolean`               | `true` in development, `false` in production | Force enable/disable. Disabled runs are a safe noop that returns `[]`.             |
+| `logType`   | `'console' \| 'object'` | `'console'`                                  | `'console'` logs changes via `console.group`; `'object'` stays silent.             |
+| `deepCheck` | `boolean`               | `false`                                      | Structurally compare changed values to detect reference-only churn.                |
+| `maxDepth`  | `number`                | `10`                                         | Max recursion depth for `deepCheck`, guarding against deep or circular structures. |
 
 ## Return value
 
 An array of `WhyDidYouUpdateChange`, one per changed key (empty on the first render or when nothing changed):
 
-| Field                  | Type      | Description                                                          |
-| ----------------------- | --------- | ---------------------------------------------------------------------- |
-| `key`                   | `string`  | The prop key that changed.                                             |
-| `previousValue`         | `unknown` | Value on the previous render.                                          |
-| `currentValue`          | `unknown` | Value on the current render.                                           |
-| `referenceChangedOnly`  | `boolean` | `true` when `deepCheck` found the data structurally identical.         |
+| Field                  | Type      | Description                                                    |
+| ---------------------- | --------- | -------------------------------------------------------------- |
+| `key`                  | `string`  | The prop key that changed.                                     |
+| `previousValue`        | `unknown` | Value on the previous render.                                  |
+| `currentValue`         | `unknown` | Value on the current render.                                   |
+| `referenceChangedOnly` | `boolean` | `true` when `deepCheck` found the data structurally identical. |
 
 ## Code example
 

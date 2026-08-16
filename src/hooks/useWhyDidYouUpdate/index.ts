@@ -70,7 +70,9 @@ function deepEqual(
   }
 
   if (a instanceof RegExp || b instanceof RegExp) {
-    return a instanceof RegExp && b instanceof RegExp && a.source === b.source && a.flags === b.flags;
+    return (
+      a instanceof RegExp && b instanceof RegExp && a.source === b.source && a.flags === b.flags
+    );
   }
 
   if (a instanceof Map || b instanceof Map) {
