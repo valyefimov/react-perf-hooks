@@ -180,6 +180,30 @@ describe('useWhyDidYouUpdate', () => {
     expect(result.current[0].referenceChangedOnly).toBe(true);
   });
 
+  it('detects a key removed when the value is explicitly undefined', () => {
+    let props: Record<string, unknown> = { flag: undefined };
+    const { result, rerender } = renderHook(() => useWhyDidYouUpdate('Test', props));
+
+    props = {};
+    rerender();
+
+    expect(result.current).toEqual([
+      { key: 'flag', previousValue: undefined, currentValue: undefined, referenceChangedOnly: false },
+    ]);
+  });
+
+  it('does not treat structures beyond maxDepth as reference-only', () => {
+    let props: Record<string, unknown> = { data: { a: { b: { c: 1 } } } };
+    const { result, rerender } = renderHook(() =>
+      useWhyDidYouUpdate('Test', props, { deepCheck: true, maxDepth: 1 }),
+    );
+
+    props = { data: { a: { b: { c: 2 } } } };
+    rerender();
+
+    expect(result.current[0].referenceChangedOnly).toBe(false);
+  });
+
   it('each hook instance tracks its own independent previous props', () => {
     let propsA = { a: 1 };
     let propsB = { b: 1 };

@@ -1,4 +1,4 @@
-import { useEffect, useId } from 'react';
+import { useState } from 'react';
 
 export interface WhyDidYouUpdateChange {
   /** Prop key that changed */
@@ -34,20 +34,56 @@ export interface UseWhyDidYouUpdateOptions {
 
 const MAX_DEPTH_DEFAULT = 10;
 
-const previousPropsByInstance = new Map<string, Record<string, unknown>>();
+// Keyed by a per-instance identity object rather than a string id so entries
+// are garbage-collected automatically on unmount — no unmount effect needed,
+// which sidesteps React Strict Mode's mount/cleanup/mount effect replay.
+const previousPropsByInstance = new WeakMap<object, Record<string, unknown>>();
 
-function deepEqual(a: unknown, b: unknown, depth: number, maxDepth: number, seen: WeakSet<object>): boolean {
+function deepEqual(
+  a: unknown,
+  b: unknown,
+  depth: number,
+  maxDepth: number,
+  seen: WeakMap<object, Set<object>>,
+): boolean {
   if (Object.is(a, b)) return true;
 
   if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) {
     return false;
   }
 
-  // Guard against runaway recursion on deep or cyclic structures.
-  if (depth >= maxDepth || seen.has(a as object)) {
-    return true;
+  // A cycle we've already walked through is consistent so far; treat it as equal.
+  const visitedForA = seen.get(a as object);
+  if (visitedForA?.has(b as object)) return true;
+
+  // Beyond the safety limit we can no longer verify equality — be conservative.
+  if (depth >= maxDepth) return false;
+
+  if (visitedForA) {
+    visitedForA.add(b as object);
+  } else {
+    seen.set(a as object, new Set([b as object]));
   }
-  seen.add(a as object);
+
+  if (a instanceof Date || b instanceof Date) {
+    return a instanceof Date && b instanceof Date && a.getTime() === b.getTime();
+  }
+
+  if (a instanceof RegExp || b instanceof RegExp) {
+    return a instanceof RegExp && b instanceof RegExp && a.source === b.source && a.flags === b.flags;
+  }
+
+  if (a instanceof Map || b instanceof Map) {
+    if (!(a instanceof Map) || !(b instanceof Map) || a.size !== b.size) return false;
+    return Array.from(a.entries()).every(
+      ([key, value]) => b.has(key) && deepEqual(value, b.get(key), depth + 1, maxDepth, seen),
+    );
+  }
+
+  if (a instanceof Set || b instanceof Set) {
+    if (!(a instanceof Set) || !(b instanceof Set) || a.size !== b.size) return false;
+    return Array.from(a).every((value) => b.has(value));
+  }
 
   if (Array.isArray(a) || Array.isArray(b)) {
     if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
@@ -92,31 +128,27 @@ export function useWhyDidYouUpdate(
     maxDepth = MAX_DEPTH_DEFAULT,
   } = options;
 
-  const instanceId = useId();
-
-  useEffect(() => {
-    return () => {
-      previousPropsByInstance.delete(instanceId);
-    };
-  }, [instanceId]);
+  const [instanceKey] = useState<object>(() => ({}));
 
   if (!enabled) {
     return [];
   }
 
-  const previousProps = previousPropsByInstance.get(instanceId);
+  const previousProps = previousPropsByInstance.get(instanceKey);
   const changes: WhyDidYouUpdateChange[] = [];
 
   if (previousProps) {
     const allKeys = new Set([...Object.keys(previousProps), ...Object.keys(props)]);
 
     allKeys.forEach((key) => {
+      const previousHasKey = Object.prototype.hasOwnProperty.call(previousProps, key);
+      const currentHasKey = Object.prototype.hasOwnProperty.call(props, key);
       const previousValue = previousProps[key];
       const currentValue = props[key];
 
-      if (!Object.is(previousValue, currentValue)) {
+      if (previousHasKey !== currentHasKey || !Object.is(previousValue, currentValue)) {
         const referenceChangedOnly = deepCheck
-          ? deepEqual(previousValue, currentValue, 0, maxDepth, new WeakSet())
+          ? deepEqual(previousValue, currentValue, 0, maxDepth, new WeakMap())
           : false;
 
         changes.push({ key, previousValue, currentValue, referenceChangedOnly });
@@ -136,7 +168,7 @@ export function useWhyDidYouUpdate(
     }
   }
 
-  previousPropsByInstance.set(instanceId, props);
+  previousPropsByInstance.set(instanceKey, props);
 
   return changes;
 }
