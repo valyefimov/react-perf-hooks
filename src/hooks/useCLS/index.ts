@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePerfContext } from '../../components/PerfProvider';
 
 export type CLSRating = 'good' | 'needs-improvement' | 'poor';
 
@@ -229,6 +230,7 @@ export function useCLS<T extends Element = HTMLElement>(
   const ignoreRecentInputRef = useRef(ignoreRecentInput);
   const maxEntriesRef = useRef(maxEntries);
   const isSupported = supportsLayoutShift();
+  const perfContext = usePerfContext();
 
   useEffect(() => {
     onMetricRef.current = onMetric;
@@ -293,9 +295,10 @@ export function useCLS<T extends Element = HTMLElement>(
       setEntries((previous) => [...previous, nextMetric].slice(-maxEntriesRef.current));
       if (currentValueRef.current > previousValue) {
         onMetricRef.current?.(nextMetric);
+        perfContext?.reportMetric(nextMetric.name, nextMetric.value, nextMetric);
       }
     },
-    [],
+    [perfContext],
   );
 
   useEffect(() => {

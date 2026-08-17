@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { PerfProvider } from '../../components/PerfProvider';
 import { useCLS } from './index';
 
 type ObserverCallback = (
@@ -371,6 +372,30 @@ describe('useCLS', () => {
 
     expect(result.current.isSupported).toBe(false);
     expect(MockPerformanceObserver.observe).not.toHaveBeenCalled();
+  });
+
+  it('reports metrics to a wrapping PerfProvider', () => {
+    const target = document.createElement('div');
+    const onMetricsReport = vi.fn();
+    const { result } = renderHook(() => useCLS<HTMLDivElement>(), {
+      wrapper: ({ children }) => (
+        <PerfProvider onMetricsReport={onMetricsReport}>{children}</PerfProvider>
+      ),
+    });
+    attachRef(result.current.ref, target);
+
+    emitEntry({
+      value: 0.12,
+      startTime: 1,
+      hadRecentInput: false,
+      sources: [{ node: target }],
+    });
+
+    expect(onMetricsReport).toHaveBeenCalledWith(
+      'CLS',
+      0.12,
+      expect.objectContaining({ name: 'CLS', value: 0.12 }),
+    );
   });
 
   it('disconnects the observer on unmount', () => {

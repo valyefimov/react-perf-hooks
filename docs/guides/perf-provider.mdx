@@ -1,0 +1,102 @@
+---
+title: PerfProvider
+description: Centralize analytics reporting for react-perf-hooks metrics.
+---
+
+## Description and use case
+
+`PerfProvider` is a lightweight React Context that acts as a collector hub for the metrics emitted by hooks like [`useINP`](/docs/hooks/use-inp), [`useCLS`](/docs/hooks/use-cls), and [`useLongTasks`](/docs/hooks/use-long-tasks). Instead of wiring an `onMetric`/`onLongTask` callback to every hook instance, wrap your app once and every hook rendered underneath automatically bubbles its metrics to a single `onMetricsReport` handler.
+
+When no `PerfProvider` is present, hooks fall back to local-only execution, so adding it is fully opt-in and never a breaking change.
+
+## API signature
+
+```ts
+function PerfProvider(props: PerfProviderProps): JSX.Element;
+function usePerfContext(): PerfContextValue | null;
+```
+
+## Parameters
+
+| Name              | Type                                                                 | Required | Description                                                               |
+| ----------------- | -------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------- |
+| `onMetricsReport` | `(metricName: string, value: number, attribution?: unknown) => void` | Yes      | Called whenever a metric bubbles up from a hook rendered as a descendant. |
+| `children`        | `ReactNode`                                                          | No       | Application tree to instrument.                                           |
+
+## Code example
+
+```tsx
+import { PerfProvider, useINP, useLongTasks } from 'react-perf-hooks';
+
+function App() {
+  return (
+    <PerfProvider
+      onMetricsReport={(metricName, value, attribution) => {
+        navigator.sendBeacon('/analytics', JSON.stringify({ metricName, value, attribution }));
+      }}
+    >
+      <MyApplication />
+    </PerfProvider>
+  );
+}
+
+function MyApplication() {
+  // Metrics from these hooks bubble to PerfProvider's onMetricsReport automatically.
+  useINP();
+  useLongTasks({ screen: () => location.pathname });
+
+  return null;
+}
+```
+
+## Integrating with popular aggregators
+
+### Sentry
+
+```tsx
+import * as Sentry from '@sentry/react';
+
+<PerfProvider
+  onMetricsReport={(metricName, value) => {
+    Sentry.setMeasurement(metricName, value, 'millisecond');
+  }}
+>
+  <MyApplication />
+</PerfProvider>;
+```
+
+### Datadog RUM
+
+```tsx
+import { datadogRum } from '@datadog/browser-rum';
+
+<PerfProvider
+  onMetricsReport={(metricName, value, attribution) => {
+    datadogRum.addAction(metricName, { value, attribution });
+  }}
+>
+  <MyApplication />
+</PerfProvider>;
+```
+
+### Google Analytics 4
+
+```tsx
+<PerfProvider
+  onMetricsReport={(metricName, value) => {
+    // Note: CLS is a small unitless score (e.g. 0.12) - don't round it, or you'll
+    // lose nearly all precision. Round only duration-based metrics like INP.
+    window.gtag?.('event', metricName, {
+      value: metricName === 'CLS' ? value : Math.round(value),
+      event_category: 'Web Vitals',
+    });
+  }}
+>
+  <MyApplication />
+</PerfProvider>
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=PerfProvider)
+- [Medium companion article](https://medium.com/search?q=PerfProvider)
