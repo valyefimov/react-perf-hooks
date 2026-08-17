@@ -15,18 +15,18 @@ function useRenderCount(name: string, options?: UseRenderCountOptions): number;
 
 ## Parameters
 
-| Name      | Type                   | Required | Description                                |
-| --------- | ---------------------- | -------- | ------------------------------------------- |
+| Name      | Type                    | Required | Description                                 |
+| --------- | ----------------------- | -------- | ------------------------------------------- |
 | `name`    | `string`                | Yes      | Display name used in log/warning messages.  |
 | `options` | `UseRenderCountOptions` | No       | Logging and threshold controls (see below). |
 
 ### Options
 
-| Name                | Type      | Default                                      | Description                                                              |
-| ------------------- | --------- | --------------------------------------------- | -------------------------------------------------------------------------- |
-| `enabled`           | `boolean` | `true` in development, `false` in production | Force enable/disable. Disabled runs are a safe noop that returns `0`.    |
-| `logOnRender`       | `boolean` | `false`                                       | Log the running count via `console.log` on every render.                 |
-| `thresholdWarning`  | `number`  | `undefined`                                   | Fires a single `console.warn` the render the count reaches this value.   |
+| Name               | Type      | Default                                      | Description                                                            |
+| ------------------ | --------- | -------------------------------------------- | ---------------------------------------------------------------------- |
+| `enabled`          | `boolean` | `true` in development, `false` in production | Force enable/disable. Disabled runs are a safe noop that returns `0`.  |
+| `logOnRender`      | `boolean` | `false`                                      | Log the running count via `console.log` on every render.               |
+| `thresholdWarning` | `number`  | `undefined`                                  | Fires a single `console.warn` the render the count reaches this value. |
 
 ## Return value
 
