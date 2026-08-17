@@ -11,5 +11,13 @@
     "src/pages/**/*",
     "docs/**/*"
   ],
-  "exclude": ["node_modules", ".docusaurus", "docs-build", "build", "dist"]
+  "exclude": [
+    "node_modules",
+    ".docusaurus",
+    "docs-build",
+    "build",
+    "dist",
+    "**/*.test.ts",
+    "**/*.test.tsx"
+  ]
 }

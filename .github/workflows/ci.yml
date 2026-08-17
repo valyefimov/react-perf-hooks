@@ -50,7 +50,7 @@ jobs:
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v7.0.0
-        if: matrix.node-version == '27.x'
+        if: matrix.node-version == '26.x'
         with:
           name: coverage
           path: coverage/
@@ -60,7 +60,7 @@ jobs:
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v7.0.0
-        if: matrix.node-version == '27.x'
+        if: matrix.node-version == '26.x'
         with:
           name: dist
           path: dist/
@@ -80,10 +80,10 @@ jobs:
         with:
           run_install: false
 
-      - name: Set up Node 27
+      - name: Set up Node 26
         uses: actions/setup-node@v6.3.0
         with:
-          node-version: 27.x
+          node-version: 26.x
           cache: pnpm
 
       - name: Install dependencies
