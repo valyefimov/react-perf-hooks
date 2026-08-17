@@ -1,0 +1,57 @@
+---
+title: useRenderCount
+description: Lightweight, zero-dependency render counter with optional console logging and a warning threshold.
+---
+
+## Description and use case
+
+`useRenderCount` is the simplest possible render-thrashing indicator: a ref counter incremented synchronously in the render body, returned as a plain number you can drop straight into a debug badge. Reach for it when you just need a quick "how many times did this render" signal, without the overhead of diffing props like `useWhyDidYouUpdate`.
+
+## API signature
+
+```ts
+function useRenderCount(name: string, options?: UseRenderCountOptions): number;
+```
+
+## Parameters
+
+| Name      | Type                    | Required | Description                                 |
+| --------- | ----------------------- | -------- | ------------------------------------------- |
+| `name`    | `string`                | Yes      | Display name used in log/warning messages.  |
+| `options` | `UseRenderCountOptions` | No       | Logging and threshold controls (see below). |
+
+### Options
+
+| Name               | Type      | Default                                      | Description                                                            |
+| ------------------ | --------- | -------------------------------------------- | ---------------------------------------------------------------------- |
+| `enabled`          | `boolean` | `true` in development, `false` in production | Force enable/disable. Disabled runs are a safe noop that returns `0`.  |
+| `logOnRender`      | `boolean` | `false`                                      | Log the running count via `console.log` on every render.               |
+| `thresholdWarning` | `number`  | `undefined`                                  | Fires a single `console.warn` the render the count reaches this value. |
+
+## Return value
+
+The current render count as a plain `number`, starting at `1` on the first render.
+
+## Strict Mode behavior
+
+React Strict Mode (development only) invokes component render bodies twice per commit to surface side-effect bugs. Because `useRenderCount` increments its counter directly in the render body (not in a `useEffect`), each Strict Mode commit bumps the count twice, so the number will run roughly 2x higher than in production. This is a deliberate tradeoff: counting in an effect would under-count by skipping the render phase itself, which defeats the purpose of a render counter.
+
+## Code example
+
+```tsx
+import { useRenderCount } from 'react-perf-hooks';
+
+function DashboardCard() {
+  const renderCount = useRenderCount('DashboardCard', {
+    logOnRender: true,
+    thresholdWarning: 10,
+  });
+
+  return <span className="debug-badge">Rendered {renderCount} times</span>;
+}
+```
+
+## Companion article
+
+- [dev.to companion article](https://dev.to/search?q=useRenderCount)
+- [Medium companion article](https://medium.com/search?q=useRenderCount)
