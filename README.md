@@ -54,7 +54,7 @@ For `useWebVitals`, also install the optional peer dependency:
 npm install web-vitals
 ```
 
-**Requirements:** React >= 16.8
+**Requirements:** React >= 16.8, Node >= 22
 
 ---
 
