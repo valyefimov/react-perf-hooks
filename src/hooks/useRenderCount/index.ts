@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useState } from 'react';
 
 export interface UseRenderCountOptions {
   /**
@@ -15,13 +15,13 @@ export interface UseRenderCountOptions {
   thresholdWarning?: number;
 }
 
-// Keyed by the per-instance id from useId rather than a ref, since reading
-// (or writing) a ref's `current` during render is unsafe: React may discard
-// or replay the render (e.g. Strict Mode, Suspense) without the ref mutation
-// itself being replayed consistently, and the eslint-plugin-react-hooks
-// "refs" rule flags exactly this. A module-level map keyed by a stable id is
-// safe to read and write directly in the render body.
-const renderCounts = new Map<string, number>();
+// Keyed by a per-instance identity object rather than a ref (reading/writing
+// a ref's `current` during render is unsafe and flagged by the
+// eslint-plugin-react-hooks "refs" rule) or `useId` (deterministic across SSR
+// requests, so concurrent requests would collide and leak counts into each
+// other's HTML). A WeakMap keyed on a unique object is GC'd automatically on
+// unmount, unlike a Map keyed by a string id, which would grow forever.
+const renderCounts = new WeakMap<object, number>();
 
 /**
  * Tracks how many times a component has rendered, incremented synchronously
@@ -52,14 +52,14 @@ export function useRenderCount(name: string, options: UseRenderCountOptions = {}
     thresholdWarning,
   } = options;
 
-  const instanceId = useId();
+  const [instanceKey] = useState<object>(() => ({}));
 
   if (!enabled) {
-    return renderCounts.get(instanceId) ?? 0;
+    return renderCounts.get(instanceKey) ?? 0;
   }
 
-  const count = (renderCounts.get(instanceId) ?? 0) + 1;
-  renderCounts.set(instanceId, count);
+  const count = (renderCounts.get(instanceKey) ?? 0) + 1;
+  renderCounts.set(instanceKey, count);
 
   if (logOnRender) {
     console.log(`[useRenderCount] "${name}" rendered ${count} time${count === 1 ? '' : 's'}`);
