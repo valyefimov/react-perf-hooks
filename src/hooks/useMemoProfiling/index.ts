@@ -27,8 +27,6 @@ interface MemoSnapshot<T> {
 const DEFAULT_LABEL = 'default';
 const statsStore = new Map<string, MutableMemoProfilingStats>();
 
-const isProfilingEnabled = (): boolean => process.env.NODE_ENV !== 'production';
-
 const getNow = (): number => {
   if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
     return performance.now();
@@ -80,7 +78,7 @@ const getOrCreateStats = (label: string): MutableMemoProfilingStats => {
 export function getStats(label?: string): MemoProfilingStats {
   const resolvedLabel = normalizeLabel(label);
 
-  if (!isProfilingEnabled()) {
+  if (process.env.NODE_ENV === 'production') {
     return toPublicStats(resolvedLabel);
   }
 
@@ -93,7 +91,7 @@ export function getStats(label?: string): MemoProfilingStats {
  */
 export function useMemoProfiling<T>(factory: () => T, deps: DependencyList, label?: string): T {
   const resolvedLabel = normalizeLabel(label);
-  const profilingEnabled = isProfilingEnabled();
+  const profilingEnabled = process.env.NODE_ENV !== 'production';
 
   // Intentionally mirror useMemo semantics by trusting caller-provided deps.
   /* eslint-disable react-hooks/use-memo, react-hooks/exhaustive-deps */
