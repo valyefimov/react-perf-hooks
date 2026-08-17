@@ -84,8 +84,10 @@ import { datadogRum } from '@datadog/browser-rum';
 ```tsx
 <PerfProvider
   onMetricsReport={(metricName, value) => {
+    // Note: CLS is a small unitless score (e.g. 0.12) - don't round it, or you'll
+    // lose nearly all precision. Round only duration-based metrics like INP.
     window.gtag?.('event', metricName, {
-      value: Math.round(value),
+      value: metricName === 'CLS' ? value : Math.round(value),
       event_category: 'Web Vitals',
     });
   }}

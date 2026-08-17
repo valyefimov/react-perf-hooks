@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
 
 export type PerfMetricAttribution = unknown;
 
@@ -44,18 +44,12 @@ export interface PerfProviderProps {
  * }
  */
 export function PerfProvider({ onMetricsReport, children }: PerfProviderProps) {
-  const onMetricsReportRef = useRef(onMetricsReport);
-
-  useEffect(() => {
-    onMetricsReportRef.current = onMetricsReport;
-  }, [onMetricsReport]);
-
   const value = useMemo<PerfContextValue>(
     () => ({
       reportMetric: (metricName, metricValue, attribution) =>
-        onMetricsReportRef.current(metricName, metricValue, attribution),
+        onMetricsReport(metricName, metricValue, attribution),
     }),
-    [],
+    [onMetricsReport],
   );
 
   return <PerfContext.Provider value={value}>{children}</PerfContext.Provider>;
