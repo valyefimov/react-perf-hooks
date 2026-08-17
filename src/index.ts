@@ -1,3 +1,11 @@
+export { PerfProvider, usePerfContext } from './components/PerfProvider';
+export type {
+  PerfContextValue,
+  PerfMetricAttribution,
+  PerfMetricsReporter,
+  PerfProviderProps,
+} from './components/PerfProvider';
+
 export { useRenderTracker } from './hooks/useRenderTracker';
 export type { RenderInfo, UseRenderTrackerOptions } from './hooks/useRenderTracker';
 

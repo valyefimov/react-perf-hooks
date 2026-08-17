@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePerfContext } from '../../components/PerfProvider';
 
 export type INPRating = 'good' | 'needs-improvement' | 'poor';
 
@@ -126,19 +127,24 @@ export function useINP(options: UseINPOptions = {}): UseINPReturn {
   const worstValueRef = useRef(0);
   const onMetricRef = useRef(onMetric);
   const isSupported = supportsEventTiming();
+  const perfContext = usePerfContext();
 
   useEffect(() => {
     onMetricRef.current = onMetric;
   }, [onMetric]);
 
-  const updateMetric = useCallback((entry: PerformanceEventTimingLike) => {
-    if (entry.duration <= worstValueRef.current) return;
+  const updateMetric = useCallback(
+    (entry: PerformanceEventTimingLike) => {
+      if (entry.duration <= worstValueRef.current) return;
 
-    const nextMetric = toINPMetric(entry);
-    worstValueRef.current = nextMetric.value;
-    setMetric(nextMetric);
-    onMetricRef.current?.(nextMetric);
-  }, []);
+      const nextMetric = toINPMetric(entry);
+      worstValueRef.current = nextMetric.value;
+      setMetric(nextMetric);
+      onMetricRef.current?.(nextMetric);
+      perfContext?.reportMetric(nextMetric.name, nextMetric.value, nextMetric);
+    },
+    [perfContext],
+  );
 
   useEffect(() => {
     if (!enabled || !isSupported) return;

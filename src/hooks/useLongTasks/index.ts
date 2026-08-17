@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { usePerfContext } from '../../components/PerfProvider';
 
 export interface LongTaskAttribution {
   /** Attribution name reported by the browser. */
@@ -224,6 +225,7 @@ export function useLongTasks(options: UseLongTasksOptions = {}): UseLongTasksRet
   const screenRef = useRef(screen);
   const minDurationRef = useRef(minDuration);
   const maxEntriesRef = useRef(maxEntries);
+  const perfContext = usePerfContext();
 
   useEffect(() => {
     onLongTaskRef.current = onLongTask;
@@ -232,15 +234,19 @@ export function useLongTasks(options: UseLongTasksOptions = {}): UseLongTasksRet
     maxEntriesRef.current = maxEntries;
   }, [maxEntries, minDuration, onLongTask, screen]);
 
-  const handleEntry = useCallback((entry: LongTaskEntryLike) => {
-    if (entry.duration < minDurationRef.current) return;
-    if (!markEntryProcessed(entry)) return;
+  const handleEntry = useCallback(
+    (entry: LongTaskEntryLike) => {
+      if (entry.duration < minDurationRef.current) return;
+      if (!markEntryProcessed(entry)) return;
 
-    const metric = toLongTaskMetric(entry, resolveScreen(screenRef.current));
+      const metric = toLongTaskMetric(entry, resolveScreen(screenRef.current));
 
-    setEntries((current) => retainLatestEntries(current, metric, maxEntriesRef.current));
-    onLongTaskRef.current?.(metric);
-  }, []);
+      setEntries((current) => retainLatestEntries(current, metric, maxEntriesRef.current));
+      onLongTaskRef.current?.(metric);
+      perfContext?.reportMetric(metric.name, metric.duration, metric);
+    },
+    [perfContext],
+  );
 
   useEffect(() => {
     if (!enabled || !isSupported) return;

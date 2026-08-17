@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { PerfProvider } from '../../components/PerfProvider';
 import { useLongTasks } from './index';
 
 type ObserverCallback = (
@@ -203,6 +204,23 @@ describe('useLongTasks', () => {
 
     expect(secondRender.result.current.entries).toEqual([]);
     expect(onLongTask).toHaveBeenCalledTimes(1);
+  });
+
+  it('reports metrics to a wrapping PerfProvider', () => {
+    const onMetricsReport = vi.fn();
+    renderHook(() => useLongTasks(), {
+      wrapper: ({ children }) => (
+        <PerfProvider onMetricsReport={onMetricsReport}>{children}</PerfProvider>
+      ),
+    });
+
+    emitEntry({ name: 'self', duration: 200, startTime: 999 });
+
+    expect(onMetricsReport).toHaveBeenCalledWith(
+      'longtask',
+      200,
+      expect.objectContaining({ name: 'longtask', duration: 200 }),
+    );
   });
 
   it('does not subscribe when enabled=false', () => {

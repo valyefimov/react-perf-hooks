@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { PerfProvider } from '../../components/PerfProvider';
 import { useINP } from './index';
 
 type ObserverCallback = (
@@ -171,6 +172,31 @@ describe('useINP', () => {
 
     expect(result.current.isSupported).toBe(false);
     expect(MockPerformanceObserver.observe).not.toHaveBeenCalled();
+  });
+
+  it('reports metrics to a wrapping PerfProvider', () => {
+    const onMetricsReport = vi.fn();
+    renderHook(() => useINP(), {
+      wrapper: ({ children }) => (
+        <PerfProvider onMetricsReport={onMetricsReport}>{children}</PerfProvider>
+      ),
+    });
+
+    emitEntry({ name: 'click', duration: 220, startTime: 10, interactionId: 1 });
+
+    expect(onMetricsReport).toHaveBeenCalledWith(
+      'INP',
+      220,
+      expect.objectContaining({ name: 'INP', value: 220 }),
+    );
+  });
+
+  it('does not report metrics when no PerfProvider is present', () => {
+    const { result } = renderHook(() => useINP());
+
+    emitEntry({ name: 'click', duration: 220, startTime: 10, interactionId: 1 });
+
+    expect(result.current.value).toBe(220);
   });
 
   it('disconnects the observer on unmount', () => {

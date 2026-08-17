@@ -31,7 +31,7 @@ const sidebars: SidebarsConfig = {
     {
       type: 'category',
       label: 'Guides',
-      items: ['guides/performance-checklist'],
+      items: ['guides/performance-checklist', 'guides/perf-provider'],
     },
   ],
 };
