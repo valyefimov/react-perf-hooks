@@ -18,10 +18,10 @@ function usePerfContext(): PerfContextValue | null;
 
 ## Parameters
 
-| Name                       | Type                                                                | Required | Description                                                          |
-| --------------------------- | -------------------------------------------------------------------- | -------- | ---------------------------------------------------------------------- |
-| `onMetricsReport`           | `(metricName: string, value: number, attribution?: unknown) => void` | Yes      | Called whenever a metric bubbles up from a hook rendered as a descendant. |
-| `children`                  | `ReactNode`                                                         | No       | Application tree to instrument.                                      |
+| Name              | Type                                                                 | Required | Description                                                               |
+| ----------------- | -------------------------------------------------------------------- | -------- | ------------------------------------------------------------------------- |
+| `onMetricsReport` | `(metricName: string, value: number, attribution?: unknown) => void` | Yes      | Called whenever a metric bubbles up from a hook rendered as a descendant. |
+| `children`        | `ReactNode`                                                          | No       | Application tree to instrument.                                           |
 
 ## Code example
 
@@ -91,7 +91,7 @@ import { datadogRum } from '@datadog/browser-rum';
   }}
 >
   <MyApplication />
-</PerfProvider>;
+</PerfProvider>
 ```
 
 ## Companion article
