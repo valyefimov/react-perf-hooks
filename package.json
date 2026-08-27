@@ -48,7 +48,8 @@
     "lint:fix": "eslint src/index.ts src/hooks src/test-setup.ts --fix",
     "format": "prettier --write \"{src,docs,examples}/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,md,mdx}\" \"*.{ts,js,mjs,json,md}\"",
     "format:check": "prettier --check \"{src,docs,examples}/**/*.{ts,tsx,js,jsx,mjs,cjs,mts,cts,md,mdx}\" \"*.{ts,js,mjs,json,md}\"",
-    "ci": "pnpm type-check && pnpm lint && pnpm format:check && pnpm test:run && pnpm build",
+    "ci": "pnpm type-check && pnpm lint && pnpm format:check && pnpm test:run && pnpm build && pnpm size",
+    "size": "size-limit",
     "prepublishOnly": "pnpm run ci",
     "release:patch": "pnpm version patch && pnpm publish --access public",
     "release:minor": "pnpm version minor && pnpm publish --access public",
@@ -75,6 +76,7 @@
     "@eslint/js": "^10.0.1",
     "@ianvs/prettier-plugin-sort-imports": "^4.7.1",
     "@mdx-js/react": "^3.1.1",
+    "@size-limit/preset-small-lib": "^13.0.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.2",
     "@types/node": "^26.2.0",
@@ -88,6 +90,7 @@
     "prism-react-renderer": "^2.4.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
+    "size-limit": "^13.0.3",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.67.0",
@@ -129,5 +132,37 @@
       "last 3 firefox version",
       "last 5 safari version"
     ]
-  }
+  },
+  "size-limit": [
+    {
+      "name": "ESM - single hook (production tree-shaking)",
+      "path": "dist/index.mjs",
+      "import": "{ useRenderCount }",
+      "limit": "2 KB",
+      "ignore": [
+        "react",
+        "react-dom"
+      ]
+    },
+    {
+      "name": "ESM - full library (production build)",
+      "path": "dist/index.mjs",
+      "import": "*",
+      "limit": "11 KB",
+      "ignore": [
+        "react",
+        "react-dom"
+      ]
+    },
+    {
+      "name": "CJS - full library (production build)",
+      "path": "dist/index.js",
+      "import": "*",
+      "limit": "11 KB",
+      "ignore": [
+        "react",
+        "react-dom"
+      ]
+    }
+  ]
 }
