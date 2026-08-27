@@ -41,9 +41,9 @@ import {
 
 ## Development vs production behavior
 
-- `useRenderTracker`, `useRenderBudget`, `useComponentLifecycle`, and `useMemoProfiling` are development-oriented by default.
+- `useRenderTracker`, `useRenderBudget`, `useComponentLifecycle`, `useMemoProfiling`, `useRenderCount`, `useWhyDidYouUpdate`, and `useAllocationTracker` are development-oriented by default.
 - Most debug logging is disabled when `NODE_ENV=production`.
-- If needed, you can force-enable selected hooks in production for temporary diagnostics via their `enabled` options.
+- `useRenderTracker` and `useRenderBudget` can be force-enabled in production for temporary diagnostics via their `enabled` options. `useRenderCount`, `useWhyDidYouUpdate`, `useAllocationTracker`, and `useMemoProfiling` are always a noop in production, regardless of their options, so bundlers can fully tree-shake their diagnostic logic.
 
 ## Quick start example
 
