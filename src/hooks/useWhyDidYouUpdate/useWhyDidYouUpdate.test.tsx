@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useWhyDidYouUpdate } from './index';
 
 describe('useWhyDidYouUpdate', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
   beforeEach(() => {
     vi.spyOn(console, 'group').mockImplementation(() => {});
     vi.spyOn(console, 'groupEnd').mockImplementation(() => {});
@@ -10,6 +12,7 @@ describe('useWhyDidYouUpdate', () => {
   });
 
   afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
     vi.restoreAllMocks();
   });
 
@@ -224,5 +227,20 @@ describe('useWhyDidYouUpdate', () => {
     propsB = { b: 1 };
     hookB.rerender();
     expect(hookB.result.current).toEqual([]);
+  });
+
+  it('is a static no-op in production, even with enabled: true', () => {
+    process.env.NODE_ENV = 'production';
+
+    let props = { count: 1 };
+    const { result, rerender } = renderHook(() =>
+      useWhyDidYouUpdate('Test', props, { enabled: true, deepCheck: true }),
+    );
+
+    props = { count: 2 };
+    rerender();
+
+    expect(result.current).toEqual([]);
+    expect(console.group).not.toHaveBeenCalled();
   });
 });
