@@ -22,28 +22,30 @@ function useCoiServiceWorker(): void {
 
     let cancelled = false;
 
-    navigator.serviceWorker
-      .register(workerUrl)
-      .then((registration) => {
-        if (cancelled) return;
+    // On first install the worker only starts controlling the page once it
+    // reaches "activated" (via skipWaiting + clients.claim in the worker),
+    // which `controllerchange` fires for - `registration.active` is still
+    // null immediately after `register()` resolves, so checking it there
+    // misses the very first install and leaves the page non-isolated.
+    // Reload once (guarded by sessionStorage) to pick up the newly-applied
+    // headers immediately instead of waiting for a manual navigation.
+    const reloadOnce = () => {
+      if (cancelled) return;
+      if (window.sessionStorage.getItem(RELOAD_FLAG)) return;
 
-        // On first install the worker isn't controlling this page yet, so the
-        // injected headers only apply starting with the next navigation.
-        // Reload once (guarded by sessionStorage) to pick that up immediately
-        // instead of leaving the user on a non-isolated page.
-        const alreadyReloaded = window.sessionStorage.getItem(RELOAD_FLAG);
+      window.sessionStorage.setItem(RELOAD_FLAG, '1');
+      window.location.reload();
+    };
 
-        if (registration.active && !navigator.serviceWorker.controller && !alreadyReloaded) {
-          window.sessionStorage.setItem(RELOAD_FLAG, '1');
-          window.location.reload();
-        }
-      })
-      .catch((error) => {
-        console.error('[coi-serviceworker] registration failed', error);
-      });
+    navigator.serviceWorker.addEventListener('controllerchange', reloadOnce);
+
+    navigator.serviceWorker.register(workerUrl).catch((error) => {
+      console.error('[coi-serviceworker] registration failed', error);
+    });
 
     return () => {
       cancelled = true;
+      navigator.serviceWorker.removeEventListener('controllerchange', reloadOnce);
     };
   }, [workerUrl]);
 }
