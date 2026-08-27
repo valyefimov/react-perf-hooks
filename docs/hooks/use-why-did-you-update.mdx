@@ -29,12 +29,12 @@ function useWhyDidYouUpdate(
 
 ### Options
 
-| Name        | Type                    | Default                                      | Description                                                                        |
-| ----------- | ----------------------- | -------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `enabled`   | `boolean`               | `true` in development, `false` in production | Force enable/disable. Disabled runs are a safe noop that returns `[]`.             |
-| `logType`   | `'console' \| 'object'` | `'console'`                                  | `'console'` logs changes via `console.group`; `'object'` stays silent.             |
-| `deepCheck` | `boolean`               | `false`                                      | Structurally compare changed values to detect reference-only churn.                |
-| `maxDepth`  | `number`                | `10`                                         | Max recursion depth for `deepCheck`, guarding against deep or circular structures. |
+| Name        | Type                    | Default     | Description                                                                                                                                                                                                    |
+| ----------- | ----------------------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `enabled`   | `boolean`               | `true`      | Enable/disable in development. Always a noop returning `[]` in production builds (`NODE_ENV === 'production'`), regardless of this option, so bundlers can eliminate the deep-equality/logging logic entirely. |
+| `logType`   | `'console' \| 'object'` | `'console'` | `'console'` logs changes via `console.group`; `'object'` stays silent.                                                                                                                                         |
+| `deepCheck` | `boolean`               | `false`     | Structurally compare changed values to detect reference-only churn.                                                                                                                                            |
+| `maxDepth`  | `number`                | `10`        | Max recursion depth for `deepCheck`, guarding against deep or circular structures.                                                                                                                             |
 
 ## Return value
 

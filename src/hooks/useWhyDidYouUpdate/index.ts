@@ -17,8 +17,10 @@ export interface WhyDidYouUpdateChange {
 
 export interface UseWhyDidYouUpdateOptions {
   /**
-   * Enable tracking. Defaults to true in development, false in production.
-   * Pass `true` to force-enable in production (e.g. for debugging deploys).
+   * Enable tracking in development. Always a no-op in production builds
+   * (`process.env.NODE_ENV === 'production'`), regardless of this flag, so
+   * bundlers can statically eliminate the deep-equality and logging logic
+   * entirely.
    */
   enabled?: boolean;
   /** How to surface changes. `'console'` logs via console.group, `'object'` is silent. Default: `'console'` */
@@ -123,14 +125,18 @@ export function useWhyDidYouUpdate(
   props: Record<string, unknown>,
   options: UseWhyDidYouUpdateOptions = {},
 ): WhyDidYouUpdateChange[] {
+  const [instanceKey] = useState<object>(() => ({}));
+
+  if (process.env.NODE_ENV === 'production') {
+    return [];
+  }
+
   const {
-    enabled = process.env.NODE_ENV !== 'production',
+    enabled = true,
     logType = 'console',
     deepCheck = false,
     maxDepth = MAX_DEPTH_DEFAULT,
   } = options;
-
-  const [instanceKey] = useState<object>(() => ({}));
 
   if (!enabled) {
     return [];

@@ -22,11 +22,11 @@ function useRenderCount(name: string, options?: UseRenderCountOptions): number;
 
 ### Options
 
-| Name               | Type      | Default                                      | Description                                                            |
-| ------------------ | --------- | -------------------------------------------- | ---------------------------------------------------------------------- |
-| `enabled`          | `boolean` | `true` in development, `false` in production | Force enable/disable. Disabled runs are a safe noop that returns `0`.  |
-| `logOnRender`      | `boolean` | `false`                                      | Log the running count via `console.log` on every render.               |
-| `thresholdWarning` | `number`  | `undefined`                                  | Fires a single `console.warn` the render the count reaches this value. |
+| Name               | Type      | Default     | Description                                                                                                                                                                                      |
+| ------------------ | --------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `enabled`          | `boolean` | `true`      | Enable/disable in development. Always a noop returning `0` in production builds (`NODE_ENV === 'production'`), regardless of this option, so bundlers can eliminate the tracking logic entirely. |
+| `logOnRender`      | `boolean` | `false`     | Log the running count via `console.log` on every render.                                                                                                                                         |
+| `thresholdWarning` | `number`  | `undefined` | Fires a single `console.warn` the render the count reaches this value.                                                                                                                           |
 
 ## Return value
 

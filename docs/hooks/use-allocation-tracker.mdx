@@ -19,14 +19,14 @@ type TrackAllocation = (target: object, allocationName?: string) => boolean;
 
 ## Parameters
 
-| Name                             | Type                            | Required | Description                                                             |
-| -------------------------------- | ------------------------------- | -------- | ----------------------------------------------------------------------- |
-| `options.componentName`          | `string`                        | Yes      | Label used in warnings and callbacks.                                   |
-| `options.enabled`                | `boolean`                       | No       | Enable/disable tracking. Defaults to dev true, production false.        |
-| `options.timeoutMs`              | `number`                        | No       | Delay after unmount before reporting a retained allocation. Default 5s. |
-| `options.onLeakDetected`         | `(componentName, info) => void` | No       | Callback for potential leaks. Defaults to `console.warn`.               |
-| `trackAllocation.target`         | `object`                        | Yes      | Object to observe through `FinalizationRegistry` and `WeakRef`.         |
-| `trackAllocation.allocationName` | `string`                        | No       | Optional label for the tracked allocation.                              |
+| Name                             | Type                            | Required | Description                                                                                                                                                                                                                                   |
+| -------------------------------- | ------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `options.componentName`          | `string`                        | Yes      | Label used in warnings and callbacks.                                                                                                                                                                                                         |
+| `options.enabled`                | `boolean`                       | No       | Enable/disable tracking in development (default `true`). Always a noop in production builds (`NODE_ENV === 'production'`), regardless of this option, so bundlers can eliminate the `FinalizationRegistry`/`WeakRef` tracking logic entirely. |
+| `options.timeoutMs`              | `number`                        | No       | Delay after unmount before reporting a retained allocation. Default 5s.                                                                                                                                                                       |
+| `options.onLeakDetected`         | `(componentName, info) => void` | No       | Callback for potential leaks. Defaults to `console.warn`.                                                                                                                                                                                     |
+| `trackAllocation.target`         | `object`                        | Yes      | Object to observe through `FinalizationRegistry` and `WeakRef`.                                                                                                                                                                               |
+| `trackAllocation.allocationName` | `string`                        | No       | Optional label for the tracked allocation.                                                                                                                                                                                                    |
 
 ## Return value
 

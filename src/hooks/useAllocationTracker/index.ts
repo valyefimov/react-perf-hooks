@@ -19,8 +19,10 @@ export interface UseAllocationTrackerOptions {
   /** Display name used in warnings and callbacks. */
   componentName: string;
   /**
-   * Enable tracking. Defaults to true in development, false in production.
-   * Pass `true` only for diagnostic builds where FinalizationRegistry is available.
+   * Enable tracking in development. Always a no-op in production builds
+   * (`process.env.NODE_ENV === 'production'`), regardless of this flag, so
+   * bundlers can statically eliminate the FinalizationRegistry/WeakRef
+   * tracking logic entirely.
    */
   enabled?: boolean;
   /**
@@ -141,19 +143,24 @@ const scheduleLeakCheck = (record: AllocationRecord, unmountedAt: number): void 
  * JavaScript garbage collection and finalizer delivery are intentionally nondeterministic.
  */
 export function useAllocationTracker(options: UseAllocationTrackerOptions): TrackAllocation {
-  const {
-    componentName,
-    enabled = process.env.NODE_ENV !== 'production',
-    timeoutMs,
-    onLeakDetected,
-  } = options;
+  // A literal top-level check (rather than gating via `enabled`) so
+  // bundlers can fold this to `false` and dead-code-eliminate the
+  // FinalizationRegistry/WeakRef tracking logic below in production builds.
+  // Hooks are still called unconditionally on every render to satisfy the
+  // rules of hooks — process.env.NODE_ENV never changes at runtime, so the
+  // branch taken is stable across a given app's lifetime regardless.
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  const { componentName, enabled = true, timeoutMs, onLeakDetected } = options;
   const normalizedTimeoutMs = normalizeTimeout(timeoutMs);
 
   const allocationIdsRef = useRef<number[]>([]);
 
-  const canTrack = enabled && hasAllocationTrackingSupport();
+  const canTrack = !isProduction && enabled && hasAllocationTrackingSupport();
 
   useEffect(() => {
+    if (isProduction) return;
+
     const allocationIds = allocationIdsRef.current;
 
     return () => {
@@ -167,11 +174,11 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
         scheduleLeakCheck(record, unmountedAt);
       }
     };
-  }, []);
+  }, [isProduction]);
 
   return useCallback<TrackAllocation>(
     (target, allocationName) => {
-      if (!canTrack) return false;
+      if (isProduction || !canTrack) return false;
 
       const allocationRegistry = getRegistry();
 
@@ -195,7 +202,7 @@ export function useAllocationTracker(options: UseAllocationTrackerOptions): Trac
 
       return true;
     },
-    [canTrack, componentName, normalizedTimeoutMs, onLeakDetected],
+    [isProduction, canTrack, componentName, normalizedTimeoutMs, onLeakDetected],
   );
 }
 

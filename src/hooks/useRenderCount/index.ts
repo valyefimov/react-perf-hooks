@@ -2,8 +2,9 @@ import { useState } from 'react';
 
 export interface UseRenderCountOptions {
   /**
-   * Enable tracking. Defaults to true in development, false in production.
-   * Pass `true` to force-enable in production (e.g. for debugging deploys).
+   * Enable tracking in development. Always a no-op in production builds
+   * (`process.env.NODE_ENV === 'production'`), regardless of this flag, so
+   * bundlers can statically eliminate the counting logic entirely.
    */
   enabled?: boolean;
   /** Log the running count to the console on every render. Default: false */
@@ -46,13 +47,13 @@ const renderCounts = new WeakMap<object, number>();
  * }
  */
 export function useRenderCount(name: string, options: UseRenderCountOptions = {}): number {
-  const {
-    enabled = process.env.NODE_ENV !== 'production',
-    logOnRender = false,
-    thresholdWarning,
-  } = options;
-
   const [instanceKey] = useState<object>(() => ({}));
+
+  if (process.env.NODE_ENV === 'production') {
+    return 0;
+  }
+
+  const { enabled = true, logOnRender = false, thresholdWarning } = options;
 
   if (!enabled) {
     return renderCounts.get(instanceKey) ?? 0;

@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { __allocationTrackerInternals, useAllocationTracker } from './index';
 
 describe('useAllocationTracker', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
   beforeEach(() => {
     vi.useFakeTimers();
     vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -10,6 +12,7 @@ describe('useAllocationTracker', () => {
   });
 
   afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
     vi.clearAllTimers();
     vi.useRealTimers();
     vi.restoreAllMocks();
@@ -178,5 +181,22 @@ describe('useAllocationTracker', () => {
 
     act(() => vi.advanceTimersByTime(1));
     expect(onLeakDetected).toHaveBeenCalledTimes(1);
+  });
+
+  it('is a static no-op in production, even with enabled: true', () => {
+    process.env.NODE_ENV = 'production';
+
+    const onLeakDetected = vi.fn();
+    const { result, unmount } = renderHook(() =>
+      useAllocationTracker({ componentName: 'Prod', enabled: true, onLeakDetected }),
+    );
+
+    expect(result.current({})).toBe(false);
+    expect(__allocationTrackerInternals.records.size).toBe(0);
+
+    unmount();
+    act(() => vi.advanceTimersByTime(10000));
+
+    expect(onLeakDetected).not.toHaveBeenCalled();
   });
 });

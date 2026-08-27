@@ -3,12 +3,15 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { useRenderCount } from './index';
 
 describe('useRenderCount', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
   beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
     vi.restoreAllMocks();
   });
 
@@ -61,6 +64,21 @@ describe('useRenderCount', () => {
   it('returns a frozen count and skips logging/warning when disabled', () => {
     const { result, rerender } = renderHook(() =>
       useRenderCount('Test', { enabled: false, logOnRender: true, thresholdWarning: 1 }),
+    );
+
+    rerender();
+    rerender();
+
+    expect(result.current).toBe(0);
+    expect(console.log).not.toHaveBeenCalled();
+    expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  it('is a static no-op in production, even with enabled: true', () => {
+    process.env.NODE_ENV = 'production';
+
+    const { result, rerender } = renderHook(() =>
+      useRenderCount('Test', { enabled: true, logOnRender: true, thresholdWarning: 1 }),
     );
 
     rerender();
