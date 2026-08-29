@@ -8,6 +8,7 @@ on:
       - 'src/components/**'
       - 'src/pages/**'
       - 'src/css/**'
+      - 'src/theme/**'
       - 'static/**'
       - 'docusaurus.config.ts'
       - 'sidebars.ts'
