@@ -9,6 +9,8 @@
 
 **Live docs:** [react-perf-hooks docs website](https://valyefimov.github.io/react-perf-hooks/)
 
+**Video:** [Watch on YouTube](https://youtu.be/Mf0-RR4GV9k)
+
 ---
 
 ## Repository layout
