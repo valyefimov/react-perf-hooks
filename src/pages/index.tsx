@@ -58,6 +58,28 @@ export default function Home(): ReactNode {
           </div>
         </section>
 
+        <section className={styles.videoSection}>
+          <Heading as="h2">Video walkthrough</Heading>
+          {/* A plain iframe is blocked here: the COI service worker sets COEP
+              require-corp, which YouTube's embed page doesn't satisfy. */}
+          <a
+            className={styles.videoLink}
+            href="https://youtu.be/Mf0-RR4GV9k"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src="https://i.ytimg.com/vi/Mf0-RR4GV9k/hqdefault.jpg"
+              alt="Debug React Performance Without Guessing - watch on YouTube"
+              className={styles.videoThumb}
+              loading="lazy"
+            />
+            <span className={styles.videoPlay} aria-hidden="true">
+              ▶
+            </span>
+          </a>
+        </section>
+
         <section className={styles.gridSection}>
           <Heading as="h2">What this docs site includes</Heading>
           <div className={styles.cardGrid}>
