@@ -1,4 +1,5 @@
 import Link from '@docusaurus/Link';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import Heading from '@theme/Heading';
 import Layout from '@theme/Layout';
 import type { ReactNode } from 'react';
@@ -21,6 +22,9 @@ const hooks = [
   { name: 'useDebouncedState', to: '/docs/hooks/use-debounced-state' },
   { name: 'useThrottledState', to: '/docs/hooks/use-throttled-state' },
   { name: 'useIntersectionObserver', to: '/docs/hooks/use-intersection-observer' },
+  { name: 'useIdleCallbackWorker', to: '/docs/hooks/use-idle-callback-worker' },
+  { name: 'useWhyDidYouUpdate', to: '/docs/hooks/use-why-did-you-update' },
+  { name: 'useRenderCount', to: '/docs/hooks/use-render-count' },
 ];
 
 export default function Home(): ReactNode {
@@ -36,8 +40,7 @@ export default function Home(): ReactNode {
             Measure React performance without slowing your workflow
           </Heading>
           <p className={styles.subtitle}>
-            Explore all hooks with API references, interactive demos, and practical guidance before
-            you install.
+            API references and live demos for every hook, so you can try them before you install.
           </p>
           <div className={styles.ctaRow}>
             <Link className="button button--primary button--lg" to="/docs/getting-started">
@@ -60,48 +63,33 @@ export default function Home(): ReactNode {
 
         <section className={styles.videoSection}>
           <Heading as="h2">Video walkthrough</Heading>
-          {/* A plain iframe is blocked here: the COI service worker sets COEP
-              require-corp, which YouTube's embed page doesn't satisfy. */}
-          <a
-            className={styles.videoLink}
-            href="https://youtu.be/Mf0-RR4GV9k"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <img
-              src="https://i.ytimg.com/vi/Mf0-RR4GV9k/hqdefault.jpg"
-              alt="Debug React Performance Without Guessing - watch on YouTube"
-              className={styles.videoThumb}
-              loading="lazy"
-            />
-            <span className={styles.videoPlay} aria-hidden="true">
-              ▶
-            </span>
-          </a>
+          <video
+            className={styles.video}
+            src={useBaseUrl('/video/demo.mp4')}
+            poster={useBaseUrl('/video/demo-poster.png')}
+            controls
+            preload="metadata"
+            playsInline
+          />
         </section>
 
         <section className={styles.gridSection}>
           <Heading as="h2">What this docs site includes</Heading>
           <div className={styles.cardGrid}>
             <article className={styles.card}>
-              <h3>16 hook references</h3>
+              <h3>19 hook references</h3>
               <p>
-                Every hook has signature details, parameter and return tables, and copy-ready usage
-                examples.
+                Each hook page has the signature, parameter and return tables, and a copy-paste
+                example.
               </p>
             </article>
             <article className={styles.card}>
               <h3>Interactive demos</h3>
-              <p>
-                Each hook page links to a StackBlitz workspace so developers can test behavior
-                interactively.
-              </p>
+              <p>Each hook page links to a StackBlitz workspace where you can run it.</p>
             </article>
             <article className={styles.card}>
               <h3>Performance guide</h3>
-              <p>
-                Best-practice checklist linked to companion long-form articles for deeper dives.
-              </p>
+              <p>A checklist for rolling the hooks out in a real codebase.</p>
             </article>
           </div>
         </section>

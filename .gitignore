@@ -21,3 +21,6 @@ yarn-error.log*
 .codex
 .claude
 graphify-out
+
+# termdub render cache
+.termdub/

@@ -9,7 +9,7 @@
 
 **Live docs:** [react-perf-hooks docs website](https://valyefimov.github.io/react-perf-hooks/)
 
-**Video:** [Watch on YouTube](https://youtu.be/Mf0-RR4GV9k)
+**Video:** [Watch the demo](https://valyefimov.github.io/react-perf-hooks/video/demo.mp4)
 
 ---
 
@@ -38,9 +38,9 @@ Docusaurus has its own `tsconfig.docs.json`.
 
 ## Why react-perf-hooks?
 
-Most hook libraries give you `useDebounce` and `useLocalStorage`. This one does one thing: helps you **measure, diagnose, and understand performance** in React apps.
+Most hook libraries give you `useDebounce` and `useLocalStorage`. This one is for measuring performance in React apps: how often components render, how long renders take, and what real users experience.
 
-All hooks are **tree-shakeable**, **TypeScript-first**, and have **zero runtime dependencies** (web-vitals is an optional peer dep).
+The hooks are tree-shakeable, written in TypeScript, and have no runtime dependencies. `web-vitals` is an optional peer dependency, needed only by `useWebVitals`.
 
 ---
 
@@ -83,6 +83,7 @@ npm install web-vitals
 | `useWhyDidYouUpdate` | Diagnose wasted renders by diffing props and flagging reference-only changes | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-why-did-you-update) |
 | `PerfProvider` | Centralized React Context that collects metrics from `useINP`, `useCLS`, and `useLongTasks` for one analytics callback | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/guides/perf-provider) |
 | `useRenderCount` | Lightweight render counter with optional console logging and a warning threshold | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-render-count) |
+| `useFps` | Track rolling-average FPS and switch to a lighter UI when it drops | [Full docs](https://valyefimov.github.io/react-perf-hooks/docs/hooks/use-fps) |
 
 See the [docs overview](https://valyefimov.github.io/react-perf-hooks/docs/getting-started) for a complete reference.
 
